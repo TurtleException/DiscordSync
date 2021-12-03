@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Activity.ActivityType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -89,7 +90,7 @@ public class DiscordAPI {
     /**
      * Provides the Discord {@link Guild}.
      */
-    public Guild getGuild() {
+    public @Nullable Guild getGuild() {
         return GUILD;
     }
 }

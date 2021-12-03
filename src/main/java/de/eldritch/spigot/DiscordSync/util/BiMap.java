@@ -2,6 +2,7 @@ package de.eldritch.spigot.DiscordSync.util;
 
 import java.util.HashMap;
 
+// TODO: remove
 public class BiMap<K, V> {
     private final HashMap<K, V> map = new HashMap<>();
     private final HashMap<V, K> inv = new HashMap<>();

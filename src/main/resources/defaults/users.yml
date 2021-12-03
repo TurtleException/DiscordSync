@@ -1,0 +1,11 @@
+# This is where user associations are stored.
+# The plugin only needs to know the UUID of a Minecraft account and its corresponding Discord user-ID.
+# Names will be retrieved by the Discord API when the plugin is loaded or a new player joins.
+#
+# --- DO NOT MODIFY THIS FILE IF YOU DON'T KNOW WHAT YOU ARE DOING!
+# This may result in false associations, create loops or users might be ignored.
+# ---
+#
+#
+# --- EXAMPLE
+# c919f678869041d8979afbd91c740bb1: 871569116564172820L

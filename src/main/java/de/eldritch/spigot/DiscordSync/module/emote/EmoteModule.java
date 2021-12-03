@@ -11,15 +11,15 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class EmoteModule extends PluginModule {
-    public EmoteModule() throws PluginModuleEnableException {
+    public EmoteModule() {
         super();
-
-        if (DiscordSync.singleton.getDiscordAPI() == null)
-            throw new PluginModuleEnableException("Module is dependant on JDA connection.");
     }
 
     @Override
-    public void onEnable() {
+    public void onEnable() throws PluginModuleEnableException {
+        if (DiscordSync.singleton.getDiscordAPI() == null)
+            throw new PluginModuleEnableException("Module is dependant on JDA connection.");
+
         DiscordSync.singleton.getServer().getPluginManager().registerEvents(new PlayerJoinListener(), DiscordSync.singleton);
     }
 
