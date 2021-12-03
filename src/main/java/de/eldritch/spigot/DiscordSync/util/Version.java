@@ -1,5 +1,7 @@
 package de.eldritch.spigot.DiscordSync.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,7 +36,7 @@ public record Version(byte MAJOR, byte MINOR, short BUILD, String EXTRA) {
     }
 
     /**
-     * Compares another {@link Version} object and returns wether
+     * Compares another {@link Version} object and returns whether
      * it represents a more recent version.
      * <p>
      *     This ignores version extras and only compares major,
@@ -47,5 +49,20 @@ public record Version(byte MAJOR, byte MINOR, short BUILD, String EXTRA) {
         if (this.MAJOR < v.MAJOR) return true;
         if (this.MINOR < v.MINOR) return true;
         return this.BUILD < v.BUILD;
+    }
+
+    /**
+     * Returns a string representation of the version.
+     * <p>
+     *     Schema: (depending on whether <code>EXTRA</code> is defined)
+     *     <li><code>MAJOR.MINOR-BUILD</code></li>
+     *     <li><code>MAJOR.MINOR-BUILD_EXTRA</code></li>
+     * </p>
+     * @return a string representation of the object.
+     */
+    @Override
+    public @NotNull String toString() {
+        return String.valueOf(MAJOR) + "." + String.valueOf(MINOR) + "-" + String.valueOf(BUILD) +
+                ((EXTRA != null && !EXTRA.equals("")) ? "_" + EXTRA : "");
     }
 }

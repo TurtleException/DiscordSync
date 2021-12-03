@@ -3,6 +3,7 @@ package de.eldritch.spigot.DiscordSync.module.whitelist.listener;
 import de.eldritch.spigot.DiscordSync.DiscordSync;
 import de.eldritch.spigot.DiscordSync.module.whitelist.Request;
 import de.eldritch.spigot.DiscordSync.module.whitelist.WhitelistModule;
+import de.eldritch.spigot.DiscordSync.util.DiscordUtil;
 import de.eldritch.spigot.DiscordSync.util.VerificationUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
@@ -35,9 +36,9 @@ public class DiscordWhitelistListener extends ListenerAdapter {
             event.deferReply(true).queue();
 
             EmbedBuilder embedBuilder = new EmbedBuilder()
-                    .setFooter("TurtleBot", "https://cdn.discordapp.com/avatars/871569116564172820/932406d21fa56dfe55dd36c5dcf850e6.png")
-                    .setTimestamp(Instant.now().atOffset(ZoneOffset.UTC))
-                    .setColor(0x2F3136);
+                    .setFooter(DiscordUtil.FOOTER_TEXT, DiscordUtil.FOOTER_URL)
+                    .setTimestamp(DiscordUtil.getTimestamp())
+                    .setColor(DiscordUtil.COLOR_NEUTRAL);
 
             // verify command
             if (!event.getName().equalsIgnoreCase("whitelist") || event.getMember() == null) {

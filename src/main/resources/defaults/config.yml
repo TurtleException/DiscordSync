@@ -9,6 +9,10 @@ modules:
       # Synchronized channel id
       channel: null
   status:
+    # Number of times an update can fail before creating a new message.
+    errorTolerance: 10
+    # Number of ticks between each update (1 second = 20 ticks)
+    interval: 100
     discord:
       # Status channel id
       channel: null
