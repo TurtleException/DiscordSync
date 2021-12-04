@@ -13,8 +13,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.Button;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.Instant;
-import java.time.ZoneOffset;
 import java.util.UUID;
 
 public class DiscordWhitelistListener extends ListenerAdapter {
@@ -36,7 +34,7 @@ public class DiscordWhitelistListener extends ListenerAdapter {
             event.deferReply(true).queue();
 
             EmbedBuilder embedBuilder = new EmbedBuilder()
-                    .setFooter(DiscordUtil.FOOTER_TEXT, DiscordUtil.FOOTER_URL)
+                    .setFooter(DiscordUtil.FOOTER_TEXT, DiscordUtil.getAvatarURL())
                     .setTimestamp(DiscordUtil.getTimestamp())
                     .setColor(DiscordUtil.COLOR_NEUTRAL);
 

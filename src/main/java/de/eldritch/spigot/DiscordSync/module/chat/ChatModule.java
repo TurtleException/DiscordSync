@@ -22,19 +22,17 @@ public class ChatModule extends PluginModule {
         if (DiscordSync.singleton.getDiscordAPI() == null)
             throw new PluginModuleEnableException("Module is dependant on JDA connection.");
 
-        // minecraft listener
         DiscordSync.singleton.getServer().getPluginManager().registerEvents(new MinecraftEventListener(this), DiscordSync.singleton);
         DiscordSync.singleton.getServer().getPluginManager().registerEvents(new MinecraftListener(this), DiscordSync.singleton);
         DiscordSync.singleton.getServer().getPluginManager().registerEvents(new MinecraftJoinListener(), DiscordSync.singleton);
 
-        // discord listener
-        Objects.requireNonNull(DiscordSync.singleton.getDiscordAPI()).getJDA().addEventListener(new DiscordListener(this));
+        DiscordSync.singleton.getDiscordAPI().getJDA().addEventListener(new DiscordListener(this));
     }
 
 
     /**
      * Passes a Discord message to Minecraft.
-     * @param msg
+     * @param msg The source message.
      */
     public void process(SynchronizedDiscordMessage msg) {
         DiscordSync.singleton.getServer().spigot().broadcast(msg.toMinecraft());
@@ -47,9 +45,13 @@ public class ChatModule extends PluginModule {
         if (DiscordSync.singleton.getDiscordAPI() != null) {
             if (msg.getReplyTarget() != null) {
                 try {
-                    // get target message and create replay
+                    // get target message and create reply
                     Objects.requireNonNull(this.getTextChannel().retrieveMessageById(msg.getReplyTarget())).complete().reply(msg.toDiscord()).queue();
                     return; // prevent the message from being sent separately
+                } catch (IllegalArgumentException e) {
+                    // The @ at the beginning was not a reply target
+                    this.getTextChannel().sendMessage("@" + msg.getReplyTarget() + " " + msg.toDiscord()).queue();
+                    return;
                 } catch (NullPointerException e) {
                     DiscordSync.singleton.getLogger().log(Level.WARNING, "Unable to send discord message '" + msg.toDiscord() + "' as reply.", e);
                 }

@@ -1,4 +1,21 @@
 package de.eldritch.spigot.DiscordSync.module.chat.listener;
 
-public class MinecraftListener {
+import de.eldritch.spigot.DiscordSync.module.chat.ChatModule;
+import de.eldritch.spigot.DiscordSync.module.chat.SynchronizedMinecraftMessage;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+
+public class MinecraftListener implements Listener {
+    private ChatModule module;
+
+    public MinecraftListener(ChatModule module) {
+        this.module = module;
+    }
+
+    @EventHandler
+    public void onPlayerChatEvent(AsyncPlayerChatEvent event) {
+        SynchronizedMinecraftMessage minecraftMessage = new SynchronizedMinecraftMessage(event.getMessage(), event.getPlayer());
+        module.process(minecraftMessage);
+    }
 }

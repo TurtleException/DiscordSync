@@ -94,7 +94,7 @@ public class StatusModule extends PluginModule {
                 .setTitle("Server Status")
                 .setDescription("Letztes Update: " + TimeFormat.RELATIVE.now() + ".\n\n> " + EMBED_DESCRIPTION)
                 .setColor(DiscordUtil.COLOR_NEUTRAL)
-                .setFooter(DiscordUtil.FOOTER_TEXT, DiscordUtil.FOOTER_URL)
+                .setFooter(DiscordUtil.FOOTER_TEXT, DiscordUtil.getAvatarURL())
                 .setTimestamp(DiscordUtil.getTimestamp());
 
         // set thumbnail

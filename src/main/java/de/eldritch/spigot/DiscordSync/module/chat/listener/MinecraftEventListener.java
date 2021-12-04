@@ -1,8 +1,8 @@
 package de.eldritch.spigot.DiscordSync.module.chat.listener;
 
-import de.eldritch.spigot.DiscordSync.DiscordSync;
 import de.eldritch.spigot.DiscordSync.module.chat.ChatModule;
 import de.eldritch.spigot.DiscordSync.module.language.LanguageModule;
+import de.eldritch.spigot.DiscordSync.util.DiscordUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -52,8 +52,6 @@ public class MinecraftEventListener implements Listener {
     public void onPlayerAchievement(PlayerAdvancementDoneEvent event) {
         if (event.getAdvancement().getKey().getKey().startsWith("recipes")) return;
 
-        System.out.println(event.getAdvancement().getKey().toString());
-
         module.sendEmbed(this.getPlayerEmbed(event.getPlayer())
                 .setDescription(String.format(LanguageModule.get("chat.type.advancement.task", "de_de"), event.getPlayer().getDisplayName(), "*" + LanguageModule.getAdvancementTitle(event.getAdvancement(), "de_de") + "*"))
                 .addField("Beschreibung", (LanguageModule.getAdvancementDesc(event.getAdvancement(), "de_de") != null) ? LanguageModule.getAdvancementDesc(event.getAdvancement(), "de_de") : "???", true)
@@ -64,9 +62,8 @@ public class MinecraftEventListener implements Listener {
     private EmbedBuilder getPlayerEmbed(Player player) {
         return new EmbedBuilder()
                 .setThumbnail(ChatModule.getBustUrl(player.getUniqueId().toString()))
-                .setFooter(DiscordSync.class.getSimpleName(), DiscordSync.singleton.getDiscordAPI() != null
-                        ? DiscordSync.singleton.getDiscordAPI().getJDA().getSelfUser().getAvatarUrl() : null)
-                .setColor(0x2F3136);
+                .setFooter(DiscordUtil.FOOTER_TEXT, DiscordUtil.getAvatarURL())
+                .setColor(DiscordUtil.COLOR_NEUTRAL);
     }
 
     private String getLastPlayed(Player player) {

@@ -10,8 +10,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class SynchronizedDiscordMessage {
-    private Message message;
-    private Member author;
+    private final Message message;
+    private final Member author;
 
     public SynchronizedDiscordMessage(Message message, Member author) {
         this.message = message;

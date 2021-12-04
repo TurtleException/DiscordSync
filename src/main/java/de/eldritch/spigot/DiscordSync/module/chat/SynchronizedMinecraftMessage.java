@@ -7,23 +7,25 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class SynchronizedMinecraftMessage {
-    private String message;
-    private Player author;
+    private final String message;
+    private final Player author;
 
     private String replyTarget = null;
 
     public SynchronizedMinecraftMessage(String message, Player author) {
-        this.message = message;
         this.author = author;
+        String processedMessage = message;
 
 
         String[] tokens = message.split(" ");
 
         // remove response-prefix from actual message
         if (message.startsWith("@") && tokens.length > 0) {
-            this.message = message.substring(tokens[0].length() + " ".length());
+            processedMessage = message.substring(tokens[0].length() + " ".length());
             replyTarget = tokens[0].substring(1);
         }
+
+        this.message = processedMessage;
     }
 
     /**

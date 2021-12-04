@@ -12,6 +12,11 @@ import de.eldritch.spigot.DiscordSync.user.UserAssociationService;
 import de.eldritch.spigot.DiscordSync.util.IllegalVersionException;
 import de.eldritch.spigot.DiscordSync.util.Performance;
 import de.eldritch.spigot.DiscordSync.util.Version;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -95,6 +100,26 @@ public class DiscordSync extends JavaPlugin {
      */
     public String getServerName() {
         return serverName;
+    }
+
+    /**
+     * @return Default plugin chat prefix.
+     */
+    public static TextComponent getChatPrefix() {
+        ComponentBuilder builder = new ComponentBuilder();
+        builder.append("[")
+                .color(net.md_5.bungee.api.ChatColor.DARK_GRAY)
+                .append("SERVER")
+                .color(net.md_5.bungee.api.ChatColor.GREEN)
+                .append("] ")
+                .color(net.md_5.bungee.api.ChatColor.DARK_GRAY);
+
+        TextComponent component = new TextComponent(builder.create());
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                new Text(ChatColor.GREEN + "TurtleFly\n" + ChatColor.ITALIC.toString() + ChatColor.GRAY.toString() + "v" + singleton.getDescription().getVersion())
+        ));
+
+        return new TextComponent(component);
     }
 
     public Version getVersion() {
