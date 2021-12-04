@@ -45,7 +45,7 @@ public class DiscordWhitelistListener extends ListenerAdapter {
                 return;
             }
 
-            OptionMapping nameOption = event.getOption("Name");
+            OptionMapping nameOption = event.getOption("name");
             if (nameOption == null) {
                 event.replyEmbeds(embedBuilder.setDescription("Bitte gib einen Namen an.")
                         .build()).setEphemeral(true).queue();

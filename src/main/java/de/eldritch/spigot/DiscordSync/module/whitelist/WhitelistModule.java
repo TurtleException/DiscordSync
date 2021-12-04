@@ -55,7 +55,7 @@ public class WhitelistModule extends PluginModule {
         DiscordSync.singleton.getDiscordAPI().getJDA().addEventListener(new DiscordWhitelistListener(this));
         DiscordSync.singleton.getDiscordAPI().getJDA().upsertCommand(
                 new CommandData("whitelist", "Erstelle eine Anfrage auf die Minecraft Whitelist zu kommen.")
-                        .addOption(OptionType.STRING, "Name", "Dein Minecraft-Name", true)
+                        .addOption(OptionType.STRING, "name", "Dein Minecraft-Name", true)
         ).queue();
 
         queue = new HashSet<>();
