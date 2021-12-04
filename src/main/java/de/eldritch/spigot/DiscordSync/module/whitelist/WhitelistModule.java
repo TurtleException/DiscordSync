@@ -34,7 +34,7 @@ public class WhitelistModule extends PluginModule {
         if (files == null || files.length == 0) {
             DiscordSync.singleton.getLogger().info("requests.yml does not exist. Attempting to create a new file...");
             try {
-                if (!DiscordSync.singleton.getDataFolder().mkdir())
+                if (!DiscordSync.singleton.getDataFolder().exists() && !DiscordSync.singleton.getDataFolder().mkdir())
                     throw new IOException("Could not create plugin data folder.");
                 new File(DiscordSync.singleton.getDataFolder(), "requests.yml").createNewFile();
 
@@ -47,7 +47,7 @@ public class WhitelistModule extends PluginModule {
         try {
             requestYamlFile = Objects.requireNonNull(files)[0];
             requestYaml.load(requestYamlFile);
-        } catch (IOException | InvalidConfigurationException e) {
+        } catch (IOException | InvalidConfigurationException | ArrayIndexOutOfBoundsException e) {
             throw new PluginModuleEnableException("Unable to load requests.yml", e);
         }
 

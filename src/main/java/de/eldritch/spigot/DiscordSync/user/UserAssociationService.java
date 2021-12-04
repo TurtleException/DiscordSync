@@ -34,7 +34,7 @@ public class UserAssociationService {
         if (files == null || files.length == 0) {
             DiscordSync.singleton.getLogger().info("users.yml does not exist. Attempting to create a new file...");
             try {
-                if (!DiscordSync.singleton.getDataFolder().mkdir())
+                if (!DiscordSync.singleton.getDataFolder().exists() && !DiscordSync.singleton.getDataFolder().mkdir())
                     throw new IOException("Could not create plugin data folder.");
                 new File(DiscordSync.singleton.getDataFolder(), "users.yml").createNewFile();
 
