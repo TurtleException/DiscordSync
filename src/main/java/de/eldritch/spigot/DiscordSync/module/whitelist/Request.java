@@ -30,4 +30,16 @@ public class Request {
     public void update() {
 
     }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
 }

@@ -65,6 +65,7 @@ public class DiscordWhitelistListener extends ListenerAdapter {
                     .setTitle(":pencil: Whitelist Anfrage")
                     .addField("Discord", event.getMember().getAsMention(), true)
                     .addField("Minecraft", nameOption.getAsString(), true)
+                    .addField("Discord-ID", "`" + event.getMember().getId() + "`", false)
                     .addField("Minecraft UUID", "`" + uuid + "`", false)
                     .setThumbnail("https://mc-heads.net/body/" + uuid)
                     .build()
