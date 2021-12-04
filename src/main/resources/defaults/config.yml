@@ -3,7 +3,7 @@ discord:
   token: null
   # Your server id
   guild: null
-modules:
+module:
   chat:
     discord:
       # Synchronized channel id
