@@ -7,9 +7,11 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Activity.ActivityType;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class DiscordAPI {
@@ -21,6 +23,7 @@ public class DiscordAPI {
         try {
             // instantiate JDA
             API = JDABuilder.createDefault(DiscordSync.singleton.getConfig().getString("discord.token", "null"))
+                    .enableIntents(Arrays.asList(GatewayIntent.values()))
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
                     .build();
             API.awaitReady();
@@ -49,10 +52,13 @@ public class DiscordAPI {
 
         OnlineStatus status = (OnlineStatus.fromKey(strStatus) != null) ? OnlineStatus.fromKey(strStatus) : OnlineStatus.ONLINE;
 
+        if (status.equals(OnlineStatus.UNKNOWN))
+            status = OnlineStatus.ONLINE;
+
         ActivityType actType;
         try {
             actType = ActivityType.valueOf(strActType);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             actType = ActivityType.PLAYING;
         }
 
