@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.HashSet;
-import java.util.logging.Level;
 
 public class WhitelistModule extends PluginModule {
     private TextChannel channel;
@@ -46,46 +45,6 @@ public class WhitelistModule extends PluginModule {
             } catch (NumberFormatException e) {
                 getLogger().warning("Property 'channel' of module '" + getName() + "' should be of type long");
             }
-        }
-    }
-
-    /**
-     * Attempts to retrieve all currently issued whitelist requests from the Discord {@link TextChannel}.
-     */
-    private void retrieveForeignQueue() {
-        try {
-            if (DiscordSync.singleton.getDiscordAPI() != null
-                    && DiscordSync.singleton.getDiscordAPI().getGuild() != null
-                    && channel != null) {
-                int limit = getConfig().isInt("cache-limit") ? getConfig().getInt("cache-limit") : Integer.parseInt(getConfig().getString("cache-limit", "null"));
-
-                getLogger().info("Attempting to retrieve " + limit + " messages from channel history.");
-                for (final int[] i = {1}; i[0] <= limit; i[0]++) {
-                    channel.getHistory().retrievePast(1).queue(messages -> {
-                        if (messages.isEmpty()) {
-                            i[0] = limit + 1;
-                        } else {
-                            Message message = messages.get(0);
-                            Request request = Request.from(message);
-
-                            if (request == null) {
-                                // request is invalid
-                                message.addReaction("U+26A0").queue();      // warning           -> invalid
-                                message.removeReaction("U+1F7E2").queue();  // green circle      -> accept
-                                message.removeReaction("U+1F534").queue();  // red circle        -> deny
-                                message.removeReaction("U+2705").queue();   // check mark button -> accepted
-                                message.removeReaction("U+274C").queue();   // cross mark        -> denied
-                                getLogger().info("Request " + message.getId() + " denied: INVALID");
-                            } else {
-                                // request is valid
-                                // TODO
-                            }
-                        }
-                    });
-                }
-            }
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING, "Encountered exception when retrieving foreign queue", e);
         }
     }
 

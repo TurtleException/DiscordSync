@@ -1,4 +1,4 @@
-package de.eldritch.spigot.DiscordSync.util;
+package de.eldritch.spigot.DiscordSync.util.version;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -1,4 +1,4 @@
-package de.eldritch.spigot.DiscordSync.util;
+package de.eldritch.spigot.DiscordSync.util.version;
 
 public class IllegalVersionException extends Exception {
     public IllegalVersionException(String raw, Throwable cause) {
