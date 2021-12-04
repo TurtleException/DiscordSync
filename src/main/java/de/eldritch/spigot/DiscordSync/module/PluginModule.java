@@ -4,7 +4,6 @@ import de.eldritch.spigot.DiscordSync.DiscordSync;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.Dictionary;
 import java.util.logging.*;
 
 /**

@@ -4,12 +4,8 @@ import de.eldritch.spigot.DiscordSync.DiscordSync;
 import de.eldritch.spigot.DiscordSync.user.listener.DiscordNameListener;
 import de.eldritch.spigot.DiscordSync.user.listener.MinecraftRegisterListener;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

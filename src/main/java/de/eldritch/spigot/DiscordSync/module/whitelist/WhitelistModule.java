@@ -70,7 +70,7 @@ public class WhitelistModule extends PluginModule {
                         getConfig().isLong("channel") ? getConfig().getLong("channel") : Long.parseLong(getConfig().getString("channel", "null"))
                 );
             } catch (NumberFormatException e) {
-                getLogger().warning("Property 'channel' of module '" + getName() + "' should be of type long");
+                getLogger().log(Level.WARNING, "Property 'channel' (" + getConfig().getString("channel", "null") + ") should be of type long", e);
             }
         }
     }

@@ -3,6 +3,7 @@ package de.eldritch.spigot.DiscordSync;
 import de.eldritch.spigot.DiscordSync.discord.DiscordAPI;
 import de.eldritch.spigot.DiscordSync.discord.DiscordConnectionException;
 import de.eldritch.spigot.DiscordSync.module.ModuleManager;
+import de.eldritch.spigot.DiscordSync.module.PluginModule;
 import de.eldritch.spigot.DiscordSync.module.chat.ChatModule;
 import de.eldritch.spigot.DiscordSync.module.emote.EmoteModule;
 import de.eldritch.spigot.DiscordSync.module.language.LanguageModule;
@@ -19,7 +20,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileReader;
@@ -111,10 +111,10 @@ public class DiscordSync extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("Disabling modules...");
-        moduleManager.getRegisteredModules().forEach(pluginModule -> {
+        for (PluginModule pluginModule : moduleManager.getRegisteredModules()) {
             moduleManager.unregister(pluginModule);
             getLogger().info("Module '" + pluginModule.getName() + "' disabled.");
-        });
+        }
 
         discordAPI.getJDA().shutdown();
     }
