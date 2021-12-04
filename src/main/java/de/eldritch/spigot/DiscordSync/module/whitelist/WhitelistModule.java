@@ -29,6 +29,9 @@ public class WhitelistModule extends PluginModule {
         if (DiscordSync.singleton.getDiscordAPI() == null)
             throw new PluginModuleEnableException("Module is dependant on JDA connection.");
 
+        if (DiscordSync.singleton.getDiscordAPI().getGuild() == null)
+            throw new PluginModuleEnableException(new NullPointerException("Guild cannot be null"));
+
 
         File[] files = DiscordSync.singleton.getDataFolder().listFiles((dir, name) -> name.equals("requests.yml"));
         if (files == null || files.length == 0) {
@@ -53,7 +56,7 @@ public class WhitelistModule extends PluginModule {
 
 
         DiscordSync.singleton.getDiscordAPI().getJDA().addEventListener(new DiscordWhitelistListener(this));
-        DiscordSync.singleton.getDiscordAPI().getJDA().upsertCommand(
+        DiscordSync.singleton.getDiscordAPI().getGuild().upsertCommand(
                 new CommandData("whitelist", "Erstelle eine Anfrage auf die Minecraft Whitelist zu kommen.")
                         .addOption(OptionType.STRING, "name", "Dein Minecraft-Name", true)
         ).queue();

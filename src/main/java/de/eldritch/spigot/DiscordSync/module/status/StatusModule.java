@@ -16,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.logging.Level;
 
 // TODO: update documentation
 public class StatusModule extends PluginModule {
@@ -25,7 +26,7 @@ public class StatusModule extends PluginModule {
     private int errorTolerance;
 
     private static final String EMBED_DESCRIPTION =
-            "Der Bot versucht diese Nachricht alle 5 Sekunden zu aktualisieren. "
+            "Der Bot versucht diese Nachricht laufend zu aktualisieren. "
           + "Da je nach Auslastung der *Discord API* oder des Servers einige dieser "
           + "Updates ausfallen könnten ist spätestens nach einer Minute damit zu "
           + "rechnen, dass der Server offline ist oder das Plugin nicht funktioniert.\n ";
@@ -41,6 +42,7 @@ public class StatusModule extends PluginModule {
                     ? getConfig().getInt("errorTolerance")
                     : Integer.parseInt(getConfig().getString("errorTolerance", "null"));
         } catch (NumberFormatException e) {
+            getLogger().log(Level.WARNING, "Property 'errorTolerance' (" + getConfig().getString("errorTolerance", "null") + ") should be of type int", e);
             this.errorTolerance = 10;
         }
 
@@ -66,12 +68,18 @@ public class StatusModule extends PluginModule {
      */
     private void scheduleTask() {
         this.cancelTask();
+
+        long interval;
+        try {
+            interval = getConfig().isLong("interval") ? getConfig().getLong("interval")
+                    : Long.parseLong(getConfig().getString("interval", "null"));
+        } catch (NumberFormatException e) {
+            getLogger().log(Level.WARNING, "Property 'interval' (" + getConfig().getString("interval", "null") + ") should be of type int", e);
+            interval = 100L;
+        }
+
         this.taskId = DiscordSync.singleton.getServer().getScheduler().scheduleSyncRepeatingTask(
-                DiscordSync.singleton, () -> {
-                    this.updateMessage(this.buildMessage().build());
-                }, 0L,
-                getConfig().isLong("interval") ? getConfig().getLong("interval")
-                        : Long.parseLong(getConfig().getString("interval", "100"))
+                DiscordSync.singleton, () -> this.updateMessage(this.buildMessage().build()), interval, 0L
         );
     }
 
