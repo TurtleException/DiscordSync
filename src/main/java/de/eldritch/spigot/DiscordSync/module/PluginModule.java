@@ -4,8 +4,8 @@ import de.eldritch.spigot.DiscordSync.DiscordSync;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Dictionary;
+import java.util.logging.*;
 
 /**
  * Represents a specific section of the plugin, usually to allow
@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  */
 public abstract class PluginModule {
     private final String moduleName = this.getClass().getSimpleName().substring(0, this.getClass().getSimpleName().length() - "Module".length()).toLowerCase();
-    private final ConfigurationSection config = DiscordSync.singleton.getConfig().getConfigurationSection("module." + moduleName);
+    private ConfigurationSection config = DiscordSync.singleton.getConfig().getConfigurationSection("module." + moduleName);
 
     private final Logger logger;
 
@@ -21,8 +21,13 @@ public abstract class PluginModule {
 
     public PluginModule() {
         logger = Logger.getLogger("MODULE | " + moduleName.toUpperCase());
-        logger.setParent(DiscordSync.singleton.getLogger());
-        logger.setUseParentHandlers(true);
+        logger.addHandler(new StreamHandler() {
+            @Override
+            public void publish(LogRecord record) {
+                record.setMessage("[" + record.getLoggerName() + "] " + record.getMessage());
+                DiscordSync.singleton.getLogger().log(record);
+            }
+        });
     }
 
     public void onEnable() throws PluginModuleEnableException {
@@ -53,6 +58,9 @@ public abstract class PluginModule {
      * the plugins main {@link FileConfiguration}.
      */
     public ConfigurationSection getConfig() {
+        if (config == null) {
+            config = DiscordSync.singleton.getConfig().createSection("module." + moduleName);
+        }
         return config;
     }
 
