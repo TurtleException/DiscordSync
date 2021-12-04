@@ -4,6 +4,7 @@ import de.eldritch.spigot.DiscordSync.DiscordSync;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -41,7 +42,7 @@ public abstract class PluginModule {
                 enabled = true;
                 this.onEnable();
             } catch (PluginModuleEnableException e) {
-                DiscordSync.singleton.getLogger().warning("Exception while attempting to enable module '" + getName() + "'.");
+                DiscordSync.singleton.getLogger().log(Level.WARNING, "Exception while attempting to enable module '" + getName() + "'.", e);
                 enabled = false;
             }
         }

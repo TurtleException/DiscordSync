@@ -20,15 +20,16 @@ modules:
       message: null
     # Custom names for worlds
     worlds:
-      world: Overworld
-      world_nether: Nether
-      world_the_end: End
+      world: 'Overworld'
+      world_nether: 'Nether'
+      world_the_end: 'End'
     # Custom emotes for worlds
     emotes:
       world: ':deciduous_tree:'
       world_nether: ':fire:'
       world_the_end: ':skull:'
   whitelist:
+    channel: null
     # user ids with permission to accept whitelist requests
     moderators:
       - null

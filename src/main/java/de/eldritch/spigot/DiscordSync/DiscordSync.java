@@ -17,12 +17,16 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -39,6 +43,35 @@ public class DiscordSync extends JavaPlugin {
         singleton = this;
 
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Performance(), 100L, 1L);
+
+        // make sure config is available
+        try {
+            YamlConfiguration defaults_config = new YamlConfiguration();
+            YamlConfiguration defaults_users = new YamlConfiguration();
+            defaults_config.load(new InputStreamReader(Objects.requireNonNull(DiscordSync.class.getClassLoader().getResourceAsStream("defaults/config.yml"))));
+            defaults_users.load(new InputStreamReader(Objects.requireNonNull(DiscordSync.class.getClassLoader().getResourceAsStream("defaults/users.yml"))));
+
+            getConfig().setDefaults(defaults_config);
+
+            if (!getDataFolder().exists()) {
+                getDataFolder().mkdirs();
+            }
+
+            File file_config = new File(getDataFolder(), "config.yml");
+            File file_users = new File(getDataFolder(), "users.yml");
+
+            if (!file_config.exists()) {
+                file_config.createNewFile();
+                defaults_config.save(file_config);
+            }
+
+            if (!file_users.exists()) {
+                file_users.createNewFile();
+                defaults_users.save(file_users);
+            }
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING, "Unable to save default config", e);
+        }
 
         // update server name
         try {
