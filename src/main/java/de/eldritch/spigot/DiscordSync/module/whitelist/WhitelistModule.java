@@ -18,6 +18,7 @@ import java.util.logging.Level;
 
 public class WhitelistModule extends PluginModule {
     private TextChannel channel;
+    private long commandId = 0;
 
     private HashSet<Request> queue;
 
@@ -55,15 +56,31 @@ public class WhitelistModule extends PluginModule {
         }
 
 
-        DiscordSync.singleton.getDiscordAPI().getJDA().addEventListener(new DiscordWhitelistListener(this));
         DiscordSync.singleton.getDiscordAPI().getGuild().upsertCommand(
                 new CommandData("whitelist", "Erstelle eine Anfrage auf die Minecraft Whitelist zu kommen.")
                         .addOption(OptionType.STRING, "name", "Dein Minecraft-Name", true)
-        ).queue();
+        ).queue(command -> {
+            commandId = command.getIdLong();
+            getLogger().log(Level.INFO, "Successfully created command 'whitelist' (" + command.getId() + ")");
+        }, throwable -> {
+            getLogger().log(Level.WARNING, "Unable to create command 'whitelist'", throwable);
+        });
+        DiscordSync.singleton.getDiscordAPI().getJDA().addEventListener(new DiscordWhitelistListener(this));
 
         queue = new HashSet<>();
 
         this.reloadChannel();
+    }
+
+    @Override
+    public void onDisable() {
+        if (DiscordSync.singleton.getDiscordAPI().getGuild() != null) {
+            DiscordSync.singleton.getDiscordAPI().getGuild().deleteCommandById(commandId).queue(unused -> {
+                getLogger().info("Deleted command 'whitelist' (" + commandId + ")");
+            }, throwable -> {
+                getLogger().log(Level.WARNING, "Unable to delete command 'whitelist' (" + commandId + ")", throwable);
+            });
+        }
     }
 
     public void reloadChannel() {

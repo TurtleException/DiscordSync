@@ -61,15 +61,15 @@ public class DiscordWhitelistListener extends ListenerAdapter {
             }
 
             // create message
-            event.replyEmbeds(embedBuilder
-                    .setTitle(":pencil: Whitelist Anfrage")
-                    .addField("Discord", event.getMember().getAsMention(), true)
-                    .addField("Minecraft", nameOption.getAsString(), true)
-                    .addField("Discord-ID", "`" + event.getMember().getId() + "`", false)
-                    .addField("Minecraft UUID", "`" + uuid + "`", false)
-                    .setThumbnail("https://mc-heads.net/body/" + uuid)
-                    .build()
-            ).setEphemeral(false).addActionRow(
+            event.getHook().setEphemeral(false)
+                    .sendMessageEmbeds(embedBuilder
+                            .setTitle(":pencil: Whitelist Anfrage")
+                            .addField("Minecraft", nameOption.getAsString(), true)
+                            .addField("Discord-ID", "`" + event.getMember().getId() + "`", false)
+                            .addField("Minecraft UUID", "`" + uuid + "`", false)
+                            .setThumbnail("https://mc-heads.net/body/" + uuid)
+                            .build()
+            ).addActionRow(
                     Button.success("accept", "Annehmen"),
                     Button.danger("deny", "Ablehnen")
             ).queue();
