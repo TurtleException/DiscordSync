@@ -11,10 +11,6 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class EmoteModule extends PluginModule {
-    public EmoteModule() {
-        super();
-    }
-
     @Override
     public void onEnable() throws PluginModuleEnableException {
         if (DiscordSync.singleton.getDiscordAPI() == null)
