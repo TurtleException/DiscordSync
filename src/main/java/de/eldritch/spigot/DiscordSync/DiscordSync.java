@@ -8,7 +8,6 @@ import de.eldritch.spigot.DiscordSync.module.chat.ChatModule;
 import de.eldritch.spigot.DiscordSync.module.emote.EmoteModule;
 import de.eldritch.spigot.DiscordSync.module.language.LanguageModule;
 import de.eldritch.spigot.DiscordSync.module.status.StatusModule;
-import de.eldritch.spigot.DiscordSync.module.whitelist.WhitelistModule;
 import de.eldritch.spigot.DiscordSync.user.UserAssociationService;
 import de.eldritch.spigot.DiscordSync.util.version.IllegalVersionException;
 import de.eldritch.spigot.DiscordSync.util.Performance;
@@ -101,8 +100,7 @@ public class DiscordSync extends JavaPlugin {
                 Map.entry(ChatModule.class, new Object[]{}),
                 Map.entry(EmoteModule.class, new Object[]{}),
                 Map.entry(LanguageModule.class, new Object[]{}),
-                Map.entry(StatusModule.class, new Object[]{}),
-                Map.entry(WhitelistModule.class, new Object[]{})
+                Map.entry(StatusModule.class, new Object[]{})
         );
 
         moduleManager.getRegisteredModules().forEach(pluginModule -> pluginModule.setEnabled(true));
