@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 // TODO
-public class Request {
+public class WhitelistRequest {
     private Member member;
     private UUID uuid;
 
@@ -16,15 +16,15 @@ public class Request {
         PENDING, ACCEPTED, DENIED
     }
 
-    private Request(Member member, UUID uuid) {
+    private WhitelistRequest(Member member, UUID uuid) {
         this.member = member;
         this.uuid = uuid;
 
         this.update();
     }
 
-    public static @NotNull Request of(Member member, UUID uuid) {
-        return new Request(member, uuid);
+    public static @NotNull WhitelistRequest of(Member member, UUID uuid) {
+        return new WhitelistRequest(member, uuid);
     }
 
     public void update() {

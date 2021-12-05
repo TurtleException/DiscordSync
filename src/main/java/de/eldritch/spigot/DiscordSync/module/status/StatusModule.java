@@ -181,6 +181,9 @@ public class StatusModule extends PluginModule {
                     ? getConfig().getLong("discord.message")
                     : Long.parseLong(getConfig().getString("discord.message", "null"));
         } catch (NumberFormatException e) {
+            getLogger().log(Level.WARNING, "Properties 'discord.channel' (" + getConfig().getString("discord.channel", "null") + ") "
+                    + ", 'discord.message' (" + getConfig().getString("discord.message", "null") + " should be of type long", e);
+            DiscordSync.singleton.getModuleManager().unregister(this);
             return;
         }
 
@@ -192,7 +195,9 @@ public class StatusModule extends PluginModule {
             errorIncrement = 0;
         }, (failure) -> {
             errorIncrement++;
+            getLogger().log(Level.WARNING, "Unable to update status message.", failure);
             if (errorIncrement > errorTolerance && errorTolerance >= 0) {
+                getLogger().log(Level.WARNING, "Creating new message...");
                 errorIncrement = 0;
                 // see https://stackoverflow.com/a/59805069 for further information on how to proceed here
                 channel.sendMessageEmbeds(embed).queue(newMessage -> {

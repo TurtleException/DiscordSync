@@ -1,6 +1,8 @@
 package de.eldritch.spigot.DiscordSync.util;
 
 import de.eldritch.spigot.DiscordSync.DiscordSync;
+import net.dv8tion.jda.api.EmbedBuilder;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
@@ -23,5 +25,12 @@ public class DiscordUtil {
         } else {
             return null;
         }
+    }
+
+    public static @NotNull EmbedBuilder getDefaultEmbed() {
+        return new EmbedBuilder()
+                .setFooter(DiscordUtil.FOOTER_TEXT, DiscordUtil.getAvatarURL())
+                .setTimestamp(DiscordUtil.getTimestamp())
+                .setColor(DiscordUtil.COLOR_NEUTRAL);
     }
 }

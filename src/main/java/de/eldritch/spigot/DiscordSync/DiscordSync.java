@@ -128,6 +128,10 @@ public class DiscordSync extends JavaPlugin {
         return uaService;
     }
 
+    public ModuleManager getModuleManager() {
+        return moduleManager;
+    }
+
     /**
      * @return The <code>server-name</code> specified in <code>server.properties</code>.
      */

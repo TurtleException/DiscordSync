@@ -25,7 +25,7 @@ public class VerificationUtil {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader((status < 300) ? con.getInputStream() : con.getErrorStream()));
 
-            if (status >= 300) {
+            if (status != 200) {
                 DiscordSync.singleton.getLogger().warning("Unexpected status " + status + " when retrieving UUID for user '" + name + "'.");
 
                 StringBuilder content = new StringBuilder();

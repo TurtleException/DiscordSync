@@ -1,7 +1,7 @@
 package de.eldritch.spigot.DiscordSync.module.whitelist.listener;
 
 import de.eldritch.spigot.DiscordSync.DiscordSync;
-import de.eldritch.spigot.DiscordSync.module.whitelist.Request;
+import de.eldritch.spigot.DiscordSync.module.whitelist.WhitelistRequest;
 import de.eldritch.spigot.DiscordSync.module.whitelist.WhitelistModule;
 import de.eldritch.spigot.DiscordSync.util.DiscordUtil;
 import de.eldritch.spigot.DiscordSync.util.VerificationUtil;
@@ -13,7 +13,9 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.Button;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class DiscordWhitelistListener extends ListenerAdapter {
     private final WhitelistModule module;
@@ -40,14 +42,14 @@ public class DiscordWhitelistListener extends ListenerAdapter {
 
             // verify command
             if (!event.getName().equalsIgnoreCase("whitelist") || event.getMember() == null) {
-                event.replyEmbeds(embedBuilder.setDescription("Etwas ist schief gelaufen... Wende dich bitte an die Serverleitung.")
+                event.replyEmbeds(DiscordUtil.getDefaultEmbed().setDescription("Etwas ist schief gelaufen... Wende dich bitte an die Serverleitung.")
                         .build()).setEphemeral(true).queue();
                 return;
             }
 
             OptionMapping nameOption = event.getOption("name");
             if (nameOption == null) {
-                event.replyEmbeds(embedBuilder.setDescription("Bitte gib einen Namen an.")
+                event.replyEmbeds(DiscordUtil.getDefaultEmbed().setDescription("Bitte gib einen Namen an.")
                         .build()).setEphemeral(true).queue();
                 return;
             }
@@ -55,33 +57,47 @@ public class DiscordWhitelistListener extends ListenerAdapter {
             // verify name
             UUID uuid = VerificationUtil.retrieveUUID(nameOption.getAsString());
             if (uuid == null) {
-                event.replyEmbeds(embedBuilder.setDescription("Bitte gib einen gültigen Minecraft-Namen an.")
+                event.replyEmbeds(DiscordUtil.getDefaultEmbed().setDescription("Bitte gib einen gültigen Minecraft-Namen an.")
                         .build()).setEphemeral(true).queue();
                 return;
             }
 
             // create message
-            event.getHook().setEphemeral(false)
-                    .sendMessageEmbeds(embedBuilder
-                            .setTitle(":pencil: Whitelist Anfrage")
-                            .addField("Minecraft", nameOption.getAsString(), true)
-                            .addField("Discord-ID", "`" + event.getMember().getId() + "`", false)
-                            .addField("Minecraft UUID", "`" + uuid + "`", false)
-                            .setThumbnail("https://mc-heads.net/body/" + uuid)
-                            .build()
-            ).addActionRow(
+            event.getChannel().sendMessageEmbeds(embedBuilder
+                    .setTitle(":pencil: Whitelist Anfrage")
+                    .addField("Discord", event.getMember().getAsMention(), true)
+                    .addField("Minecraft", nameOption.getAsString(), true)
+                    // .addField("Discord-ID", "`" + event.getMember().getId() + "`", false)
+                    // .addField("Minecraft UUID", "`" + uuid + "`", false)
+                    .setThumbnail("https://mc-heads.net/body/" + uuid)
+                    .build()
+            ).setActionRow(
                     Button.success("accept", "Annehmen"),
                     Button.danger("deny", "Ablehnen")
-            ).queue();
+            ).queue(message -> {
+                module.getLogger().log(Level.INFO, "Successfully created request " + message.getId() + ".");
 
-            // create request
-            module.request(Request.of(event.getMember(), uuid));
+                // cancel command response
+                event.getHook().sendMessageEmbeds(DiscordUtil.getDefaultEmbed().setDescription("OK! Deine Anfrage wurde eingereicht.")
+                        .build()).setEphemeral(true).queue();
+
+                // create request
+                module.request(WhitelistRequest.of(event.getMember(), uuid));
+            }, throwable -> {
+                module.getLogger().log(Level.WARNING, "Unable to create request.", throwable);
+                event.getHook().sendMessageEmbeds(DiscordUtil.getDefaultEmbed().setDescription("Etwas ist schief gelaufen... Wende dich bitte an die Serverleitung.")
+                        .build()).setEphemeral(true).queue();
+            });
         }
     }
 
     @Override
     public void onButtonClick(@NotNull ButtonClickEvent event) {
-        if (event.isFromGuild()
+        if (event.getButton() != null) {
+            event.getInteraction().editButton(event.getButton().asDisabled()).queue();
+        }
+
+        if (!(event.isFromGuild()
                 && DiscordSync.singleton.getDiscordAPI() != null
                 && DiscordSync.singleton.getDiscordAPI().getGuild() != null
                 && event.getGuild() != null
@@ -90,14 +106,28 @@ public class DiscordWhitelistListener extends ListenerAdapter {
                 && event.getUser().equals(DiscordSync.singleton.getDiscordAPI().getJDA().getSelfUser())
                 && event.getButton() != null
                 && event.getButton().getId() != null
-        ) {
+        )) return;
+
+        try {
+            EmbedBuilder builder = new EmbedBuilder(event.getInteraction().getMessage().getEmbeds().get(0));
+
             if (event.getButton().getId().equals("accept")) {
                 event.getChannel().sendMessage("Accepted.").queue();
+
+                event.getHook().editOriginalEmbeds(builder.setColor(Color.GREEN).addField("Status", "Angenommen", true).build());
+
                 // TODO
             } else if (event.getButton().getId().equals("deny")) {
                 event.getChannel().sendMessage("Denied.").queue();
+
+                event.getHook().editOriginalEmbeds(builder.setColor(Color.RED).addField("Status", "Abgelehnt", true).build());
+
                 // TODO
+            } else {
+                throw new IllegalStateException("Unexpected message on button click");
             }
+        } catch (Exception e) {
+            module.getLogger().log(Level.WARNING, "Unable to process button click", e);
         }
     }
 }

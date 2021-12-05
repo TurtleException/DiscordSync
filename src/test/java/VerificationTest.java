@@ -10,6 +10,7 @@ import java.util.UUID;
 public class VerificationTest {
     public static void main(String[] args) throws Exception {
         System.out.println("TurtleException:    " + retrieveUUID("TurtleException"));
+        System.out.println("TurtleExcep    :    " + retrieveUUID("TurtleExcep"));
         System.out.println("Miriiii:            " + retrieveUUID("Miriiii"));
         System.out.println("iFelixi:            " + retrieveUUID("iFelixi"));
         System.out.println("Foxo:               " + retrieveUUID("Foxo"));
@@ -32,6 +33,7 @@ public class VerificationTest {
 
 
             int status = con.getResponseCode();
+            System.out.println(status);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader((status < 300) ? con.getInputStream() : con.getErrorStream()));
 

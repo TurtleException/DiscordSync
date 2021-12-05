@@ -20,7 +20,7 @@ public class WhitelistModule extends PluginModule {
     private TextChannel channel;
     private long commandId = 0;
 
-    private HashSet<Request> queue;
+    private HashSet<WhitelistRequest> queue;
 
     private final YamlConfiguration requestYaml = new YamlConfiguration();
     private File requestYamlFile;
@@ -95,7 +95,7 @@ public class WhitelistModule extends PluginModule {
         }
     }
 
-    public void request(Request request) {
+    public void request(WhitelistRequest request) {
         requestYaml.set(request.getMember().getId(), request.getUuid().toString());
         try {
             requestYaml.save(requestYamlFile);
