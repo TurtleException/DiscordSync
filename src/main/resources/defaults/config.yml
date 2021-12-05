@@ -28,3 +28,8 @@ module:
       world: ':deciduous_tree:'
       world_nether: ':fire:'
       world_the_end: ':skull:'
+  whitelist:
+    channel: null
+    # user ids with permission to accept whitelist requests
+    moderators:
+      - null
