@@ -1,6 +1,7 @@
 package de.eldritch.spigot.DiscordSync.user;
 
 import de.eldritch.spigot.DiscordSync.DiscordSync;
+import de.eldritch.spigot.DiscordSync.user.command.CommandVerify;
 import de.eldritch.spigot.DiscordSync.user.listener.DiscordNameListener;
 import de.eldritch.spigot.DiscordSync.user.listener.MinecraftRegisterListener;
 import net.dv8tion.jda.api.entities.Member;
@@ -51,6 +52,9 @@ public class UserAssociationService {
         /* register listeners */
         DiscordSync.singleton.getDiscordAPI().getJDA().addEventListener(new DiscordNameListener());
         DiscordSync.singleton.getServer().getPluginManager().registerEvents(new MinecraftRegisterListener(), DiscordSync.singleton);
+
+        /* register commands */
+        Objects.requireNonNull(DiscordSync.singleton.getCommand("verify")).setExecutor(new CommandVerify());
     }
 
     public @Nullable User get(@NotNull Predicate<User> predicate) {

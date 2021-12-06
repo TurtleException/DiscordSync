@@ -145,13 +145,13 @@ public class DiscordSync extends JavaPlugin {
         builder.append("[")
                 .color(net.md_5.bungee.api.ChatColor.DARK_GRAY)
                 .append("SERVER")
-                .color(net.md_5.bungee.api.ChatColor.GREEN)
+                .color(net.md_5.bungee.api.ChatColor.GOLD)
                 .append("] ")
                 .color(net.md_5.bungee.api.ChatColor.DARK_GRAY);
 
         TextComponent component = new TextComponent(builder.create());
         component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                new Text(ChatColor.GREEN + "TurtleFly\n" + ChatColor.ITALIC.toString() + ChatColor.GRAY.toString() + "v" + singleton.getDescription().getVersion())
+                new Text(ChatColor.GOLD + "DiscordSync\n" + ChatColor.ITALIC.toString() + ChatColor.GRAY.toString() + "v" + singleton.getDescription().getVersion())
         ));
 
         return new TextComponent(component);
