@@ -1,7 +1,9 @@
 package de.eldritch.spigot.DiscordSync.user;
 
 import de.eldritch.spigot.DiscordSync.DiscordSync;
+import de.eldritch.spigot.DiscordSync.message.MessageService;
 import net.dv8tion.jda.api.entities.Member;
+import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -15,6 +17,8 @@ public class User {
     public User(OfflinePlayer minecraftUser, Member discordUser) {
         this.minecraftUser = minecraftUser;
         this.discordUser = discordUser;
+
+        this.setName(discordUser.getEffectiveName(), false);
     }
 
 
@@ -52,6 +56,7 @@ public class User {
      * @param updateDiscord Whether the discord nickname should be updated.
      */
     public void setName(String name, boolean updateDiscord) {
+        String oldName = this.name;
         this.name = name;
 
         try {
@@ -67,6 +72,15 @@ public class User {
 
         if (updateDiscord) {
             getDiscord().modifyNickname(name).queue();
+        }
+
+        if (minecraftUser.isOnline()) {
+            for (Player onlinePlayer : DiscordSync.singleton.getServer().getOnlinePlayers()) {
+                onlinePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, MessageService.get(
+                        "user.action.renameBroadcast",
+                        oldName != null ? oldName : minecraftUser.getName(), name
+                ));
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ package de.eldritch.spigot.DiscordSync.util;
 
 import de.eldritch.spigot.DiscordSync.DiscordSync;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,5 +38,21 @@ public class DiscordUtil {
 
     public static @NotNull String getActualName(@NotNull User user) {
         return user.getName() + "#" + user.getDiscriminator();
+    }
+
+    public static Member getMember(User user) {
+        Member member;
+
+        if (DiscordSync.singleton.getDiscordAPI() == null
+                || DiscordSync.singleton.getDiscordAPI().getGuild() == null
+        ) return null;
+
+        member = DiscordSync.singleton.getDiscordAPI().getGuild().getMember(user);
+        if (member != null)
+             return member;
+
+        member = DiscordSync.singleton.getDiscordAPI().getGuild().retrieveMember(user).complete();
+
+        return member;
     }
 }

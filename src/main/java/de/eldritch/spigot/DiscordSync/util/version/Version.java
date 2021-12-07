@@ -2,12 +2,13 @@ package de.eldritch.spigot.DiscordSync.util.version;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public record Version(byte MAJOR, byte MINOR, short BUILD, String EXTRA) {
     public static Version parse(String raw) throws IllegalVersionException {
-        String[] parts = raw.split("\\.|-");
+        String[] parts = raw.split("\\.|-|_");
 
         byte major;
         byte minor;
@@ -62,7 +63,7 @@ public record Version(byte MAJOR, byte MINOR, short BUILD, String EXTRA) {
      */
     @Override
     public @NotNull String toString() {
-        return String.valueOf(MAJOR) + "." + String.valueOf(MINOR) + "-" + String.valueOf(BUILD) +
+        return new DecimalFormat("00").format(MAJOR) + "." + new DecimalFormat("00").format(MINOR) + "-" + new DecimalFormat("000").format(BUILD) +
                 ((EXTRA != null && !EXTRA.equals("")) ? "_" + EXTRA : "");
     }
 }

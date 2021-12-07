@@ -7,12 +7,12 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -21,7 +21,10 @@ import java.util.logging.Level;
 public class MessageService {
     private final YamlConfiguration config = new YamlConfiguration();
 
-    private ChatColor defColor;
+    private String defColor;
+
+    private static final HoverEvent EMPTY_HOVER_EVENT = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(""));
+    private static final ClickEvent EMPTY_CLICK_EVENT = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "");
 
 
     public MessageService() {
@@ -34,16 +37,15 @@ public class MessageService {
      */
     public void reloadYaml() {
         try {
-            config.load(new InputStreamReader(Objects.requireNonNull(DiscordSync.class.getResourceAsStream("messages.yml"))));
-            String defaultColorString = config.getString("defaultColor", "7");
-            defColor = ChatColor.getByChar(defaultColorString.length() > 0 ? defaultColorString.charAt(0) : '7');
+            config.load(new InputStreamReader(Objects.requireNonNull(DiscordSync.class.getClassLoader().getResourceAsStream("messages.yml"))));
         } catch (NullPointerException | IOException | InvalidConfigurationException e) {
             DiscordSync.singleton.getLogger().log(Level.WARNING, "Unable to reload message.yml", e);
         }
+        defColor = "§r" + config.getString("defaultColor", "§7");
     }
 
     public static void sendMessage(CommandSender commandSender, CharSequence... content) {
-        ComponentBuilder builder = new ComponentBuilder(get("general.prefix"));
+        ComponentBuilder builder = new ComponentBuilder(get("general.prefix", DiscordSync.singleton.getVersion().toString()));
 
         for (CharSequence charSequence : content) {
             LinkedList<String> args = new LinkedList<>();
@@ -73,7 +75,7 @@ public class MessageService {
      * @see MessageService#getComponent(String, LinkedList)
      */
     public static @NotNull TextComponent get(@NotNull String key, String... args) {
-        LinkedList<String> argsQueue = new LinkedList<>(List.of(args));
+        LinkedList<String> argsQueue = new LinkedList<>(Arrays.asList(args));
         return DiscordSync.singleton.getMessageService().getComponent(key, argsQueue);
     }
 
@@ -85,21 +87,25 @@ public class MessageService {
         }
 
         while (!args.isEmpty() && content.contains("%s")) {
-            content.replaceFirst("%s", args.pollFirst());
+            if (args.peek() == null) {
+                DiscordSync.singleton.getLogger().warning("Argument '" + args.pollFirst() + "' of component '" + key + "' (\"" + content + "\") is null.");
+            } else {
+                content = content.replaceFirst("%s", args.pollFirst());
+            }
         }
+
+        content = defColor + content;
+
+        content = content.replaceAll("\n", "\n§r");
+        content = content.replaceAll("§r", defColor);
 
         TextComponent component = new TextComponent(TextComponent.fromLegacyText(content));
-        component.setColor(defColor);
 
         HoverEvent hoverEvent = getHoverEvent(key, args);
-        if (hoverEvent != null) {
-            component.setHoverEvent(hoverEvent);
-        }
+        component.setHoverEvent(hoverEvent != null ? hoverEvent : EMPTY_HOVER_EVENT);
 
         ClickEvent clickEvent = getClickEvent(key, args);
-        if (clickEvent != null) {
-            component.setClickEvent(clickEvent);
-        }
+        component.setClickEvent(clickEvent != null ? clickEvent : EMPTY_CLICK_EVENT);
 
         return component;
     }
@@ -108,9 +114,11 @@ public class MessageService {
         HoverEvent.Action action;
         try {
             action = HoverEvent.Action.valueOf(config.getString("messages." + key + ".hoverEvent.action", null));
-        } catch (IllegalArgumentException ignored) {
+        } catch (IllegalArgumentException | NullPointerException ignored) {
             return null;
         }
+
+        String reference = config.getString("messages." + key + ".hoverEvent.content", "<hover\\key: \"" + key + "\">");
 
         if (action.equals(HoverEvent.Action.SHOW_ENTITY)) {
             // TODO
@@ -119,7 +127,7 @@ public class MessageService {
             // TODO
             return null;
         } else if (action.equals(HoverEvent.Action.SHOW_TEXT)) {
-            return new HoverEvent(action, new Text(new BaseComponent[]{this.getComponent(key + ".hoverEvent", args)}));
+            return new HoverEvent(action, new Text(new BaseComponent[]{this.getComponent(reference, args)}));
         }
         return null;
     }
@@ -128,11 +136,11 @@ public class MessageService {
         ClickEvent.Action action;
         try {
             action = ClickEvent.Action.valueOf(config.getString("messages." + key + ".clickEvent.action", null));
-        } catch (IllegalArgumentException ignored) {
+        } catch (IllegalArgumentException | NullPointerException ignored) {
             return null;
         }
 
-        String value = config.getString("messages." + key + ".click.content");
+        String value = config.getString("messages." + key + ".clickEvent.content");
         if (value == null) {
             return null;
         }

@@ -1,5 +1,9 @@
 package de.eldritch.spigot.DiscordSync.module.chat;
 
+import de.eldritch.spigot.DiscordSync.DiscordSync;
+import de.eldritch.spigot.DiscordSync.message.MessageService;
+import de.eldritch.spigot.DiscordSync.user.User;
+import de.eldritch.spigot.DiscordSync.util.DiscordUtil;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.md_5.bungee.api.ChatColor;
@@ -22,14 +26,6 @@ public class SynchronizedDiscordMessage {
      * Formats the message to be compatible with the Minecraft chat.
      */
     public TextComponent toMinecraft() {
-        TextComponent name = new TextComponent(
-                (author.getUser().isBot() || author.getUser().isSystem() ? ChatColor.GRAY : ChatColor.BLUE)
-                        + ((author.getNickname() != null) ? author.getNickname() : author.getUser().getName())
-                        + ChatColor.DARK_GRAY + ": " );
-        name.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(
-                ((author.getColor() != null) ? ChatColor.of(author.getColor()) : ChatColor.BLUE) + author.getEffectiveName() + "#" + author.getUser().getDiscriminator()
-        )));
-
         // stripped content for now as markdown is not supported
         TextComponent content = new TextComponent(" " + ChatColor.GRAY + message.getContentStripped());
         content.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "@" + message.getId() + " "));
@@ -49,7 +45,30 @@ public class SynchronizedDiscordMessage {
             attachments.append(" [FILE]");
         }
 
-        return new TextComponent(name, content, new TextComponent(attachments.create()));
+        String message = content.toLegacyText() + new TextComponent(attachments.create()).toLegacyText();
+
+        User user = DiscordSync.singleton.getUserAssociationService().get(user1 -> user1.getDiscord().getId().equals(author.getId()));
+        if (user != null) {
+            return new TextComponent(MessageService.get(
+                    "module.chat.message.discord.registered",
+                    user.getName(),
+                    user.getName(),
+                    user.getMinecraft().getName(),
+                    DiscordUtil.getActualName(user.getDiscord().getUser())
+            ), MessageService.get(
+                    "module.chat.message",
+                    message
+            ));
+        } else {
+            return new TextComponent(MessageService.get(
+                    "module.chat.message.discord.generic",
+                    author.getEffectiveName(),
+                    author.getEffectiveName()
+            ), MessageService.get(
+                    "module.chat.message",
+                    message
+            ));
+        }
     }
 
     /**

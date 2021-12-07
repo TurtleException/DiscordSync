@@ -1,6 +1,8 @@
 package de.eldritch.spigot.DiscordSync.user;
 
 import de.eldritch.spigot.DiscordSync.DiscordSync;
+import de.eldritch.spigot.DiscordSync.message.Container;
+import de.eldritch.spigot.DiscordSync.message.MessageService;
 import de.eldritch.spigot.DiscordSync.user.command.CommandVerify;
 import de.eldritch.spigot.DiscordSync.user.listener.DiscordNameListener;
 import de.eldritch.spigot.DiscordSync.user.listener.DiscordVerificationListener;
@@ -9,6 +11,7 @@ import net.dv8tion.jda.api.entities.Member;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,6 +68,7 @@ public class UserAssociationService {
     }
 
     public void registerUser(@NotNull User user) {
+        getUserConfig().set(user.getMinecraft().getUniqueId().toString(), user.getDiscord().getUser().getId());
         users.add(user);
     }
 
@@ -72,6 +76,12 @@ public class UserAssociationService {
         User user = this.get(user1 -> user1.getDiscord().equals(member));
         if (user != null) {
             user.setName(name, false);
+
+            if (user.getMinecraft().isOnline()) {
+                MessageService.sendMessage(user.getMinecraft().getPlayer(),
+                        Container.of("user.action.rename", name)
+                );
+            }
         }
     }
 
@@ -113,6 +123,14 @@ public class UserAssociationService {
         }
 
         this.reloadUsers();
+    }
+
+    public void saveConfig() {
+        try {
+            config.save(configFile);
+        } catch (IOException e) {
+            DiscordSync.singleton.getLogger().log(Level.SEVERE, "Unable to save 'users.yml'!", e);
+        }
     }
 
     public ConfigurationSection getUserConfig() {

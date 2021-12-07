@@ -49,7 +49,7 @@ public class LanguageModule extends PluginModule {
 
     public String getString(String key, String language) {
         return StringEscapeUtils.unescapeJava(LANG
-                .getOrDefault(language, null)
+                .getOrDefault(language, new HashMap<>())
                 .getOrDefault(key, null));
     }
 

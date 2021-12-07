@@ -9,7 +9,11 @@ import de.eldritch.spigot.DiscordSync.user.User;
 import de.eldritch.spigot.DiscordSync.util.DiscordUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.operator.DelayRestAction;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -79,9 +83,9 @@ public class CommandVerify implements CommandExecutor {
             }
         }
 
-        // match nickname
+        // match effective name (basically nickname from a users' perspective)
         for (Member member : members) {
-            if (member.getNickname() != null && member.getNickname().equals(name.toString())) {
+            if (member.getEffectiveName().equals(name.toString())) {
                 this.onMatch(player, member);
                 return true;
             }

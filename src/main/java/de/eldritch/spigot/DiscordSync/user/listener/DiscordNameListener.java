@@ -11,6 +11,7 @@ public class DiscordNameListener extends ListenerAdapter {
     @Override
     public void onGuildMemberUpdateNickname(@NotNull GuildMemberUpdateNicknameEvent event) {
         DiscordSync.singleton.getUserAssociationService().update(event.getMember(), event.getNewNickname());
+        DiscordSync.singleton.getLogger().info("User " + event.getMember().getId() + " has been renamed to '" + event.getNewNickname() + "'.");
     }
 
     @Override
@@ -19,6 +20,7 @@ public class DiscordNameListener extends ListenerAdapter {
             Member member = DiscordSync.singleton.getDiscordAPI().getGuild().getMember(event.getUser());
             if (member != null && member.getNickname() == null) {
                 DiscordSync.singleton.getUserAssociationService().update(member, member.getEffectiveName());
+                DiscordSync.singleton.getLogger().info("User " + event.getUser().getId() + " has been renamed to '" + event.getNewName() + "'.");
             }
         }
     }

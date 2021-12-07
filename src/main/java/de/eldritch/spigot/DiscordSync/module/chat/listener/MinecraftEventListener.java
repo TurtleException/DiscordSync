@@ -1,7 +1,9 @@
 package de.eldritch.spigot.DiscordSync.module.chat.listener;
 
+import de.eldritch.spigot.DiscordSync.DiscordSync;
 import de.eldritch.spigot.DiscordSync.module.chat.ChatModule;
 import de.eldritch.spigot.DiscordSync.module.language.LanguageModule;
+import de.eldritch.spigot.DiscordSync.user.User;
 import de.eldritch.spigot.DiscordSync.util.DiscordUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.bukkit.entity.Player;
@@ -32,6 +34,12 @@ public class MinecraftEventListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        User user = DiscordSync.singleton.getUserAssociationService().get(user1 -> user1.getMinecraft().getUniqueId().equals(event.getPlayer().getUniqueId()));
+        if (user != null) {
+            // update name in minecraft
+            user.setName(user.getName(), false);
+        }
+
         module.sendEmbed(this.getPlayerEmbed(event.getPlayer())
                 .setDescription(String.format(LanguageModule.get("multiplayer.player.joined", "de_de"), event.getPlayer().getDisplayName()))
                 .addField("Zuletzt online", event.getPlayer().hasPlayedBefore()

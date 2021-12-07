@@ -1,14 +1,16 @@
-defaultColor: '7'
+defaultColor: "§7"
 messages:
     general.prefix:
         content: "§8[§6DiscordSync§8] §r"
         hoverEvent:
             action: "SHOW_TEXT"
-            content: "§6DiscordSync\n§o§7§bv${project.version}"
+            content: "general.prefixHover"
+    general.prefixHover:
+        content: "§6DiscordSync\n§o§7§bv%s"
     user.verify.missingName:
         content: "Bitte gib deinen Discord-Namen an! "
     user.verify.error.notFound:
-        content: "Discord User §6%s §rnicht gefunden."
+        content: "Discord User §6%s §rnicht gefunden. "
     user.verify.error.alreadyRegistered.minecraft:
         content: "Du bist bereits als §6%s §rregistriert."
     user.verify.error.alreadyRegistered.discord:
@@ -21,7 +23,7 @@ messages:
             action: "SHOW_TEXT"
             content: "user.verify.error.sendMessageHover"
     user.verify.error.sendMessageHover:
-        content: "§cFehler§8: §rPrivate Nachricht konnte nicht gesendet werden.\n\nUm zu verifizieren, dass es sich bei §6%s §rtatsächlich um dich\nhandelt, schreibt dir der Bot eine Nachricht auf Discord, die du bestätigen\nmusst. Beim senden der Nachricht ist aber etwas schief gelaufen.\n\n§aMögliche Lösung§8: §rÜberprüfe, ob du Nachrichten von Servermitgliedern erhalten\nkannst. Ist das nicht der Fall, können wir leider nicht verifizieren, dass\ndir dieser Account tatsächlich gehört. Wende dich in diesem Fall bitte an\ndie Serverleitung."
+        content: "§cFehler§8: §rPrivate Nachricht konnte nicht gesendet werden.\n\nUm zu verifizieren, dass es sich bei §6%s §rtatsächlich um dich\nhandelt, schreibt dir der Bot eine Nachricht auf Discord, die du bestätigen\nmusst. Beim Senden der Nachricht ist aber etwas schief gelaufen.\n\n§aMögliche Lösung§8: §rÜberprüfe, ob du Nachrichten von Servermitgliedern erhalten\nkannst. Ist das nicht der Fall, können wir leider nicht verifizieren, dass\ndir dieser Account tatsächlich gehört. Wende dich in diesem Fall bitte an\ndie Serverleitung."
     user.verify.error.openChannel:
         content: "§8[Warum?]"
         hoverEvent:
@@ -30,9 +32,9 @@ messages:
     user.verify.error.openChannelHover:
         content: "§cFehler§8: §rPrivater Channel konnte nicht geöffnet werden.\n\nUm zu verifizieren, dass es sich bei §6%s §rtatsächlich um dich\nhandelt, schreibt dir der Bot eine Nachricht auf Discord, die du bestätigen\nmusst. Beim öffnen des privaten Channels ist aber etwas schief gelaufen und\nder Bot kann dir keine Nachricht schreiben.\n\n§aMögliche Lösung§8: §rÜberprüfe, ob du Nachrichten von Servermitgliedern erhalten\nkannst. Ist das nicht der Fall, können wir leider nicht verifizieren, dass\ndir dieser Account tatsächlich gehört. Wende dich in diesem Fall bitte an\ndie Serverleitung."
     user.verify.error.general:
-        content: "Verifikation fehlgeschlagen."
+        content: "Verifikation fehlgeschlagen. "
     user.verify.example:
-        content: "§8[BEISPIELE]"
+        content: "§8[Beispiele]"
         hoverEvent:
             action: "SHOW_TEXT"
             content: "user.verify.exampleHover"
@@ -51,9 +53,40 @@ messages:
         content: "Erfolgreich verifiziert!"
     user.verify.requestDenied:
         content: "§6%s §rhat deine Anfrage abgelehnt."
+    user.action.rename:
+        content: "Du heißt jetzt $6%s$r."
+    user.action.renameBroadcast:
+        content: "§6%s §rheißt jetzt §6%s§r."
+    user.hoverLore:
+        content: "§6%s\nMinecraft: %s\nDiscord:   %s"
+    user.genericHoverLore:
+        content: "%s §8(nicht verifiziert)"
     misc.internalError:
         content: "Ein interner Fehler ist aufgetreten."
     module.chat.synchronizedJoin:
         content: "Discord Chat synchronisiert."
     module.chat.nonSynchronizedJoin:
         content: "Discord Chat nicht synchronisiert."
+    module.chat.message.minecraft.generic:
+        content: "§6%s§8:  "
+        hoverEvent:
+            action: "SHOW_TEXT"
+            content: "user.genericHoverLore"
+    module.chat.message.minecraft.registered:
+        content: "§6%s§8:  "
+        hoverEvent:
+            action: "SHOW_TEXT"
+            content: "user.hoverLore"
+    module.chat.message.discord.generic:
+        content: "§9%s§8:  "
+        hoverEvent:
+            action: "SHOW_TEXT"
+            content: "user.genericHoverLore"
+    module.chat.message.discord.registered:
+        content: "§9%s§8:  "
+        hoverEvent:
+            action: "SHOW_TEXT"
+            content: "user.hoverLore"
+    module.chat.message:
+        content: "§r%s"
+

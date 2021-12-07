@@ -5,6 +5,7 @@ import de.eldritch.spigot.DiscordSync.message.Container;
 import de.eldritch.spigot.DiscordSync.message.MessageService;
 import de.eldritch.spigot.DiscordSync.user.User;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
@@ -21,14 +22,15 @@ import java.util.UUID;
 public class DiscordVerificationListener extends ListenerAdapter {
     @Override
     public void onButtonClick(@NotNull ButtonClickEvent event) {
-        if (!(event.isFromGuild()
-                && DiscordSync.singleton.getDiscordAPI() != null
-                && DiscordSync.singleton.getDiscordAPI().getGuild() != null
-                && event.getMessage().getAuthor().equals(DiscordSync.singleton.getDiscordAPI().getJDA().getSelfUser())
-                && event.getButton() != null
-                && event.getButton().getId() != null
-                && this.isVerificationMessage(event.getMessage())
-        )) return;
+        if (event.isFromGuild()
+                || DiscordSync.singleton.getDiscordAPI() == null
+                || DiscordSync.singleton.getDiscordAPI().getGuild() == null
+                || !event.getMessage().getAuthor().equals(DiscordSync.singleton.getDiscordAPI().getJDA().getSelfUser())
+                || event.getButton() == null
+                || event.getButton().getId() == null
+                || !this.isVerificationMessage(event.getMessage())
+                || DiscordSync.singleton.getDiscordAPI().getGuild().getMember(event.getUser()) == null
+        ) return;
 
         MessageEmbed embed = event.getMessage().getEmbeds().get(0);
         String uuidStr = DiscordSync.singleton.getUserAssociationService().getRequestConfig().getString(event.getMessageId());
@@ -45,6 +47,12 @@ public class DiscordVerificationListener extends ListenerAdapter {
             return;
         }
 
+        Member member = DiscordSync.singleton.getDiscordAPI().getGuild().getMemberById(event.getUser().getId());
+        if (member == null) {
+            event.reply("Ein interner Fehler ist aufgetreten.").setEphemeral(true).queue();
+            return;
+        }
+
         // mark the interaction as successful
         event.deferEdit().queue();
 
@@ -53,8 +61,7 @@ public class DiscordVerificationListener extends ListenerAdapter {
 
         if (event.getButton().getId().equals("accept")) {
             DiscordSync.singleton.getUserAssociationService().registerUser(new User(
-                    DiscordSync.singleton.getServer().getPlayer(uuid),
-                    DiscordSync.singleton.getDiscordAPI().getGuild().getMember(event.getUser())
+                    DiscordSync.singleton.getServer().getPlayer(uuid), member
             ));
             if (player != null && player.isOnline()) {
                 MessageService.sendMessage(player, "user.verify.requestAccepted");

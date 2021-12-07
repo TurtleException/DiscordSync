@@ -9,6 +9,7 @@ import de.eldritch.spigot.DiscordSync.module.chat.listener.MinecraftJoinListener
 import de.eldritch.spigot.DiscordSync.module.chat.listener.MinecraftListener;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.logging.Level;
@@ -17,10 +18,20 @@ import java.util.logging.Level;
  * Mirrors the Minecraft chat with Discord and provides custom formatting.
  */
 public class ChatModule extends PluginModule {
+    private TextChannel textChannel;
+
     @Override
     public void onEnable() throws PluginModuleEnableException {
         if (DiscordSync.singleton.getDiscordAPI() == null)
             throw new PluginModuleEnableException("Module is dependant on JDA connection.");
+
+        if (DiscordSync.singleton.getDiscordAPI().getGuild() == null)
+            throw new PluginModuleEnableException("Guild cannot be null.");
+
+        textChannel = DiscordSync.singleton.getDiscordAPI().getGuild().getTextChannelById(getConfig().getString("discord.channel", "null"));
+
+        if (textChannel == null)
+            throw new PluginModuleEnableException("Channel cannot be null.");
 
         DiscordSync.singleton.getServer().getPluginManager().registerEvents(new MinecraftEventListener(this), DiscordSync.singleton);
         DiscordSync.singleton.getServer().getPluginManager().registerEvents(new MinecraftListener(this), DiscordSync.singleton);
@@ -71,8 +82,8 @@ public class ChatModule extends PluginModule {
         }
     }
 
-    private TextChannel getTextChannel() {
-        return Objects.requireNonNull(DiscordSync.singleton.getDiscordAPI()).getGuild().getTextChannelById(getConfig().getString("discord.textChannel", "null"));
+    private @NotNull TextChannel getTextChannel() {
+        return textChannel;
     }
 
     public static String getBustUrl(String name) {
