@@ -2,13 +2,12 @@ package de.eldritch.spigot.DiscordSync.message;
 
 import de.eldritch.spigot.DiscordSync.DiscordSync;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +42,22 @@ public class MessageService {
         }
     }
 
+    public static void sendMessage(CommandSender commandSender, CharSequence... content) {
+        ComponentBuilder builder = new ComponentBuilder(get("general.prefix"));
+
+        for (CharSequence charSequence : content) {
+            LinkedList<String> args = new LinkedList<>();
+            if (charSequence instanceof Container) {
+                args.addAll(List.of(((Container) charSequence).getValues()));
+                builder.append(DiscordSync.singleton.getMessageService().getComponent(((Container) charSequence).getKey(), args));
+            } else if (charSequence instanceof String) {
+                builder.append(DiscordSync.singleton.getMessageService().getComponent((String) charSequence, args));
+            }
+        }
+
+        commandSender.spigot().sendMessage(builder.create());
+    }
+
     /**
      * Retrieves the content of a message in legacy text and returns a new
      * {@link TextComponent} containing the formatted message.
@@ -55,14 +70,14 @@ public class MessageService {
      *             message.
      * @return Formatted {@link TextComponent}.
      *
-     * @see MessageService#get(String, LinkedList)
+     * @see MessageService#getComponent(String, LinkedList)
      */
-    public @NotNull TextComponent get(@NotNull String key, String... args) {
+    public static @NotNull TextComponent get(@NotNull String key, String... args) {
         LinkedList<String> argsQueue = new LinkedList<>(List.of(args));
-        return this.get(key, argsQueue);
+        return DiscordSync.singleton.getMessageService().getComponent(key, argsQueue);
     }
 
-    private @NotNull TextComponent get(@NotNull String key, LinkedList<String> args) {
+    private @NotNull TextComponent getComponent(@NotNull String key, LinkedList<String> args) {
         String content = config.getString("messages." + key + ".content", null);
 
         if (content == null) {
@@ -104,7 +119,7 @@ public class MessageService {
             // TODO
             return null;
         } else if (action.equals(HoverEvent.Action.SHOW_TEXT)) {
-            return new HoverEvent(action, new Text(new BaseComponent[]{this.get(key + ".hoverEvent", args)}));
+            return new HoverEvent(action, new Text(new BaseComponent[]{this.getComponent(key + ".hoverEvent", args)}));
         }
         return null;
     }

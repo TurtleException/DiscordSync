@@ -1,6 +1,8 @@
 package de.eldritch.spigot.DiscordSync.user.command;
 
 import de.eldritch.spigot.DiscordSync.DiscordSync;
+import de.eldritch.spigot.DiscordSync.message.Container;
+import de.eldritch.spigot.DiscordSync.message.MessageService;
 import de.eldritch.spigot.DiscordSync.user.User;
 import de.eldritch.spigot.DiscordSync.util.DiscordUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -25,9 +27,9 @@ public class CommandVerify implements CommandExecutor {
         if (!(sender instanceof Player player)) return true;
 
         if (args.length == 0) {
-            player.spigot().sendMessage(DiscordSync.singleton.getMessageService().get("general.prefix"),
-                    DiscordSync.singleton.getMessageService().get("user.verify.missingName"),
-                    DiscordSync.singleton.getMessageService().get("user.verify.example")
+            MessageService.sendMessage(player,
+                    "user.verify.missingName",
+                    "user.verify.example"
             );
             return true;
         }
@@ -40,9 +42,8 @@ public class CommandVerify implements CommandExecutor {
 
         // check errors
         if (DiscordSync.singleton.getDiscordAPI() == null || DiscordSync.singleton.getDiscordAPI().getGuild() == null) {
-            player.spigot().sendMessage(
-                    DiscordSync.singleton.getMessageService().get("general.prefix"),
-                    DiscordSync.singleton.getMessageService().get("misc.internalError")
+            MessageService.sendMessage(player,
+                    "misc.internalError"
             );
             DiscordSync.singleton.getLogger().log(Level.WARNING, "Illegal state when calling verify command. Discord API is unavailable.");
             return true;
@@ -75,10 +76,9 @@ public class CommandVerify implements CommandExecutor {
             }
         }
 
-        player.spigot().sendMessage(
-                DiscordSync.singleton.getMessageService().get("general.prefix"),
-                DiscordSync.singleton.getMessageService().get("user.verify.discordUserNotFound", name.toString()),
-                DiscordSync.singleton.getMessageService().get("user.verify.example")
+        MessageService.sendMessage(player,
+                Container.of("user.verify.discordUserNotFound", name.toString()),
+                "user.verify.example"
         );
         return true;
     }
@@ -86,9 +86,8 @@ public class CommandVerify implements CommandExecutor {
     private void onMatch(Player player, Member member) {
         User checkUser = DiscordSync.singleton.getUserAssociationService().get(user -> user.getDiscord().getId().equals(member.getId()));
         if (checkUser != null) {
-            player.spigot().sendMessage(
-                    DiscordSync.singleton.getMessageService().get("general.prefix"),
-                    DiscordSync.singleton.getMessageService().get("user.verify.discordUserAlreadyRegistered", member.getEffectiveName())
+            MessageService.sendMessage(player,
+                    Container.of("user.verify.discordUserAlreadyRegistered", member.getEffectiveName())
             );
             return;
         }
@@ -122,9 +121,8 @@ public class CommandVerify implements CommandExecutor {
                 }
                 message.editMessage(message).setActionRow(buttons.stream().toList()).queueAfter(10L, TimeUnit.MINUTES);
 
-                player.spigot().sendMessage(
-                        DiscordSync.singleton.getMessageService().get("general.prefix"),
-                        DiscordSync.singleton.getMessageService().get("user.verify.requestSuccess")
+                MessageService.sendMessage(player,
+                        "user.verify.requestSuccess"
                 );
 
 
@@ -132,10 +130,9 @@ public class CommandVerify implements CommandExecutor {
 
                 /* --- FAILED TO SEND MESSAGE --- */
 
-                player.spigot().sendMessage(
-                        DiscordSync.singleton.getMessageService().get("general.prefix"),
-                        DiscordSync.singleton.getMessageService().get("user.verify.error.general"),
-                        DiscordSync.singleton.getMessageService().get("user.verify.error.sendMessage", member.getEffectiveName())
+                MessageService.sendMessage(player,
+                        "user.verify.error.general",
+                        Container.of("user.verify.error.sendMessage", member.getEffectiveName())
                 );
 
 
@@ -144,10 +141,9 @@ public class CommandVerify implements CommandExecutor {
 
             /* --- FAILED TO OPEN CHANNEL --- */
 
-            player.spigot().sendMessage(
-                    DiscordSync.singleton.getMessageService().get("general.prefix"),
-                    DiscordSync.singleton.getMessageService().get("user.verify.error.general"),
-                    DiscordSync.singleton.getMessageService().get("user.verify.error.openChannel", member.getEffectiveName())
+            MessageService.sendMessage(player,
+                    "user.verify.error.general",
+                    Container.of("user.verify.error.openChannel", member.getEffectiveName())
             );
 
 
