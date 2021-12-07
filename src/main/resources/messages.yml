@@ -7,9 +7,11 @@ messages:
             content: "§6DiscordSync\n§o§7§bv${project.version}"
     user.verify.missingName:
         content: "Bitte gib deinen Discord-Namen an! "
-    user.verify.discordUserNotFound:
+    user.verify.error.notFound:
         content: "Discord User §6%s §rnicht gefunden."
-    user.verify.discordUserAlreadyRegistered:
+    user.verify.error.alreadyRegistered.minecraft:
+        content: "Du bist bereits als §6%s §rregistriert."
+    user.verify.error.alreadyRegistered.discord:
         content: "§6%s §rist bereits registriert."
     user.verify.requestSuccess:
         content: "Bitte schau in deine Discord Nachrichten."
@@ -41,6 +43,14 @@ messages:
         clickEvent:
             action: "SUGGEST_COMMAND"
             content: "/verify "
+    user.verify.error.alreadyRequested:
+        content: "Du hast bereits eine Anfrage gestellt, dich als §6%s §rzu verifizieren."
+    user.verify.error.blocked:
+        content: "§6%s §rhat Anfragen von dir blockiert."
+    user.verify.requestAccepted:
+        content: "Erfolgreich verifiziert!"
+    user.verify.requestDenied:
+        content: "§6%s §rhat deine Anfrage abgelehnt."
     misc.internalError:
         content: "Ein interner Fehler ist aufgetreten."
     module.chat.synchronizedJoin:

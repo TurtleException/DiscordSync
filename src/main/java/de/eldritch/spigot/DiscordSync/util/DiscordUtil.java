@@ -2,6 +2,7 @@ package de.eldritch.spigot.DiscordSync.util;
 
 import de.eldritch.spigot.DiscordSync.DiscordSync;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,5 +33,9 @@ public class DiscordUtil {
                 .setFooter(DiscordUtil.FOOTER_TEXT, DiscordUtil.getAvatarURL())
                 .setTimestamp(DiscordUtil.getTimestamp())
                 .setColor(DiscordUtil.COLOR_NEUTRAL);
+    }
+
+    public static @NotNull String getActualName(@NotNull User user) {
+        return user.getName() + "#" + user.getDiscriminator();
     }
 }

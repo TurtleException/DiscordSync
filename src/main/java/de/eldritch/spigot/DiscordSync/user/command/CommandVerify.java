@@ -1,5 +1,7 @@
 package de.eldritch.spigot.DiscordSync.user.command;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import de.eldritch.spigot.DiscordSync.DiscordSync;
 import de.eldritch.spigot.DiscordSync.message.Container;
 import de.eldritch.spigot.DiscordSync.message.MessageService;
@@ -14,13 +16,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class CommandVerify implements CommandExecutor {
+    private Multimap<UUID, Long> requestCache = HashMultimap.create();
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!command.getName().equalsIgnoreCase("verify")) return false;
@@ -30,6 +32,15 @@ public class CommandVerify implements CommandExecutor {
             MessageService.sendMessage(player,
                     "user.verify.missingName",
                     "user.verify.example"
+            );
+            return true;
+        }
+
+        // check if player is already registered
+        User user = DiscordSync.singleton.getUserAssociationService().get(user1 -> user1.getMinecraft().getUniqueId().equals(player.getUniqueId()));
+        if (user != null) {
+            MessageService.sendMessage(player,
+                    Container.of("user.verify.error.alreadyRegistered.minecraft", DiscordUtil.getActualName(user.getDiscord().getUser()))
             );
             return true;
         }
@@ -77,22 +88,40 @@ public class CommandVerify implements CommandExecutor {
         }
 
         MessageService.sendMessage(player,
-                Container.of("user.verify.discordUserNotFound", name.toString()),
+                Container.of("user.verify.error.notFound", name.toString()),
                 "user.verify.example"
         );
         return true;
     }
 
     private void onMatch(Player player, Member member) {
+        // check if user is already registered
         User checkUser = DiscordSync.singleton.getUserAssociationService().get(user -> user.getDiscord().getId().equals(member.getId()));
         if (checkUser != null) {
             MessageService.sendMessage(player,
-                    Container.of("user.verify.discordUserAlreadyRegistered", member.getEffectiveName())
+                    Container.of("user.verify.error.alreadyRegistered.discord", DiscordUtil.getActualName(member.getUser()))
+            );
+            return;
+        }
+
+        // check if user has blocked requests from player
+        if (DiscordSync.singleton.getUserAssociationService().getBlockedSection().getStringList(member.getId()).contains(player.getUniqueId().toString())) {
+            MessageService.sendMessage(player,
+                    Container.of("user.verify.error.blocked", DiscordUtil.getActualName(member.getUser()))
             );
             return;
         }
 
         member.getUser().openPrivateChannel().queue(privateChannel -> {
+
+            // check if request is already queued
+            if (requestCache.containsEntry(player.getUniqueId(), member.getIdLong())) {
+                MessageService.sendMessage(player,
+                        Container.of("user.verify.error.alreadyRequested", DiscordUtil.getActualName(member.getUser()))
+                );
+                return;
+            }
+
             privateChannel.sendMessageEmbeds(new EmbedBuilder(DiscordUtil.getDefaultEmbed())
                     .setTitle("Minecraft Account-Verknüpfung")
                     .setDescription("Es wird versucht einen Minecraft-Account mit diesem Discord-Account zu verbinden.\n"
@@ -112,6 +141,8 @@ public class CommandVerify implements CommandExecutor {
 
                 /* --- MESSAGE SENT SUCCESSFULLY --- */
 
+                DiscordSync.singleton.getUserAssociationService().getRequestConfig().set(message.getId(), player.getUniqueId());
+
                 // disable all buttons except "block" after 10 minutes
                 ArrayList<Button> buttons = new ArrayList<>(message.getButtons());
                 for (int i = 0; i < buttons.size(); i++) {
@@ -119,7 +150,10 @@ public class CommandVerify implements CommandExecutor {
                         buttons.set(i, buttons.get(i).asDisabled());
                     }
                 }
-                message.editMessage(message).setActionRow(buttons.stream().toList()).queueAfter(10L, TimeUnit.MINUTES);
+                message.editMessage(message).setActionRow(buttons.stream().toList()).queueAfter(10L, TimeUnit.MINUTES, message1 -> {
+                    DiscordSync.singleton.getUserAssociationService().getRequestConfig().set(message.getId(), null);
+                });
+
 
                 MessageService.sendMessage(player,
                         "user.verify.requestSuccess"
@@ -132,7 +166,7 @@ public class CommandVerify implements CommandExecutor {
 
                 MessageService.sendMessage(player,
                         "user.verify.error.general",
-                        Container.of("user.verify.error.sendMessage", member.getEffectiveName())
+                        Container.of("user.verify.error.sendMessage", DiscordUtil.getActualName(member.getUser()))
                 );
 
 
@@ -143,7 +177,7 @@ public class CommandVerify implements CommandExecutor {
 
             MessageService.sendMessage(player,
                     "user.verify.error.general",
-                    Container.of("user.verify.error.openChannel", member.getEffectiveName())
+                    Container.of("user.verify.error.openChannel", DiscordUtil.getActualName(member.getUser()))
             );
 
 

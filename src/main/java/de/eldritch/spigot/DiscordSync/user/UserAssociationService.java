@@ -3,8 +3,10 @@ package de.eldritch.spigot.DiscordSync.user;
 import de.eldritch.spigot.DiscordSync.DiscordSync;
 import de.eldritch.spigot.DiscordSync.user.command.CommandVerify;
 import de.eldritch.spigot.DiscordSync.user.listener.DiscordNameListener;
+import de.eldritch.spigot.DiscordSync.user.listener.DiscordVerificationListener;
 import de.eldritch.spigot.DiscordSync.user.listener.MinecraftRegisterListener;
 import net.dv8tion.jda.api.entities.Member;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -51,6 +53,7 @@ public class UserAssociationService {
 
         /* register listeners */
         DiscordSync.singleton.getDiscordAPI().getJDA().addEventListener(new DiscordNameListener());
+        DiscordSync.singleton.getDiscordAPI().getJDA().addEventListener(new DiscordVerificationListener());
         DiscordSync.singleton.getServer().getPluginManager().registerEvents(new MinecraftRegisterListener(), DiscordSync.singleton);
 
         /* register commands */
@@ -81,9 +84,9 @@ public class UserAssociationService {
         int temp = users.size();
         users.clear();
 
-        for (String key : config.getKeys(false)) {
+        for (String key : getUserConfig().getKeys(false)) {
             try {
-                long discordId = config.isLong(key) ? config.getLong(key) : Long.parseLong(config.getString(key, "null"));
+                long discordId = getUserConfig().isLong(key) ? getUserConfig().getLong(key) : Long.parseLong(getUserConfig().getString(key, "null"));
                 if (DiscordSync.singleton.getDiscordAPI().getGuild() == null)
                     throw new NullPointerException("Guild cannot be null");
 
@@ -92,7 +95,7 @@ public class UserAssociationService {
                         DiscordSync.singleton.getDiscordAPI().getGuild().getMemberById(discordId)
                 ));
             } catch (Exception e) {
-                DiscordSync.singleton.getLogger().log(Level.WARNING, "Unable to parse {" + key + ": " + config.get(key, "null") + "} to user association.", e);
+                DiscordSync.singleton.getLogger().log(Level.WARNING, "Unable to parse {" + key + ": " + getUserConfig().get(key, "null") + "} to user association.", e);
             }
         }
         DiscordSync.singleton.getLogger().info("OK! " + users.size() + " users loaded. (previously " + temp + ")");
@@ -110,5 +113,17 @@ public class UserAssociationService {
         }
 
         this.reloadUsers();
+    }
+
+    public ConfigurationSection getUserConfig() {
+        return config.isConfigurationSection("user") ? config.getConfigurationSection("user") : config.createSection("user");
+    }
+
+    public ConfigurationSection getRequestConfig() {
+        return config.isConfigurationSection("request") ? config.getConfigurationSection("request") : config.createSection("request");
+    }
+
+    public ConfigurationSection getBlockedSection() {
+        return config.isConfigurationSection("blocked") ? config.getConfigurationSection("blocked") : config.createSection("blocked");
     }
 }
