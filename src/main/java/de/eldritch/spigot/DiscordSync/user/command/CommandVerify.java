@@ -6,12 +6,6 @@ import de.eldritch.spigot.DiscordSync.util.DiscordUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.components.Button;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,7 +18,6 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-// TODO: simplify
 public class CommandVerify implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -32,9 +25,9 @@ public class CommandVerify implements CommandExecutor {
         if (!(sender instanceof Player player)) return true;
 
         if (args.length == 0) {
-            player.spigot().sendMessage(DiscordSync.getChatPrefix(),
-                    new TextComponent(ChatColor.GRAY + "Bitte gib deinen Discord Namen an! "),
-                    this.getExamplesAsHover()
+            player.spigot().sendMessage(DiscordSync.singleton.getMessageService().get("general.prefix"),
+                    DiscordSync.singleton.getMessageService().get("user.verify.missingName"),
+                    DiscordSync.singleton.getMessageService().get("user.verify.example")
             );
             return true;
         }
@@ -47,7 +40,10 @@ public class CommandVerify implements CommandExecutor {
 
         // check errors
         if (DiscordSync.singleton.getDiscordAPI() == null || DiscordSync.singleton.getDiscordAPI().getGuild() == null) {
-            player.spigot().sendMessage(DiscordSync.getChatPrefix(), new TextComponent(ChatColor.GRAY + "Ein interner Fehler ist aufgetreten."));
+            player.spigot().sendMessage(
+                    DiscordSync.singleton.getMessageService().get("general.prefix"),
+                    DiscordSync.singleton.getMessageService().get("misc.internalError")
+            );
             DiscordSync.singleton.getLogger().log(Level.WARNING, "Illegal state when calling verify command. Discord API is unavailable.");
             return true;
         }
@@ -79,11 +75,10 @@ public class CommandVerify implements CommandExecutor {
             }
         }
 
-        player.spigot().sendMessage(DiscordSync.getChatPrefix(),
-                new TextComponent(ChatColor.GRAY + "Discord User "),
-                new TextComponent(ChatColor.GOLD + name.toString()),
-                new TextComponent(ChatColor.GRAY + " nicht gefunden. "),
-                this.getExamplesAsHover()
+        player.spigot().sendMessage(
+                DiscordSync.singleton.getMessageService().get("general.prefix"),
+                DiscordSync.singleton.getMessageService().get("user.verify.discordUserNotFound", name.toString()),
+                DiscordSync.singleton.getMessageService().get("user.verify.example")
         );
         return true;
     }
@@ -91,10 +86,10 @@ public class CommandVerify implements CommandExecutor {
     private void onMatch(Player player, Member member) {
         User checkUser = DiscordSync.singleton.getUserAssociationService().get(user -> user.getDiscord().getId().equals(member.getId()));
         if (checkUser != null) {
-            player.spigot().sendMessage(new ComponentBuilder(DiscordSync.getChatPrefix())
-                    .append(member.getEffectiveName()).color(ChatColor.GOLD)
-                    .append(" ist bereits registriert.").color(ChatColor.GRAY)
-                    .create());
+            player.spigot().sendMessage(
+                    DiscordSync.singleton.getMessageService().get("general.prefix"),
+                    DiscordSync.singleton.getMessageService().get("user.verify.discordUserAlreadyRegistered", member.getEffectiveName())
+            );
             return;
         }
 
@@ -127,8 +122,9 @@ public class CommandVerify implements CommandExecutor {
                 }
                 message.editMessage(message).setActionRow(buttons.stream().toList()).queueAfter(10L, TimeUnit.MINUTES);
 
-                player.spigot().sendMessage(DiscordSync.getChatPrefix(),
-                        new TextComponent(ChatColor.GRAY + "Bitte schau in deine Discord Nachrichten.")
+                player.spigot().sendMessage(
+                        DiscordSync.singleton.getMessageService().get("general.prefix"),
+                        DiscordSync.singleton.getMessageService().get("user.verify.requestSuccess")
                 );
 
 
@@ -136,31 +132,10 @@ public class CommandVerify implements CommandExecutor {
 
                 /* --- FAILED TO SEND MESSAGE --- */
 
-                TextComponent hover = new TextComponent(new ComponentBuilder()
-                        .append("Fehler").color(ChatColor.RED)
-                        .append(": ").color(ChatColor.DARK_GRAY)
-                        .append("Private Nachricht konnte nicht gesendet werden.\n\n")
-                        .append("Um zu verifizieren, dass es sich bei ")
-                        .append(member.getEffectiveName()).color(ChatColor.GOLD)
-                        .append("tatsächlich um dich\n")
-                        .append("handelt, schreibt dir der Bot eine Nachricht auf Discord, die du bestätigen\n")
-                        .append("musst. Beim senden der Nachricht ist aber etwas schief gelaufen.\n\n")
-                        .append("Mögliche Lösung").color(ChatColor.GREEN)
-                        .append(": ").color(ChatColor.DARK_GRAY)
-                        .append("Überprüfe, ob du Nachrichten von Servermitgliedern erhalten\n")
-                        .append("kannst. Ist das nicht der Fall, können wir leider nicht verifizieren, dass\n")
-                        .append("dir dieser Account tatsächlich gehört. Wende dich in diesem Fall bitte an\n")
-                        .append("die Serverleitung.")
-                        .create());
-                hover.setColor(ChatColor.GRAY);
-
-                player.spigot().sendMessage(DiscordSync.getChatPrefix(),
-                        new TextComponent(new ComponentBuilder()
-                                .append("Verifikation fehlgeschlagen. ").color(ChatColor.GRAY)
-                                .create()),
-                        new TextComponent(new ComponentBuilder(ChatColor.DARK_GRAY + "[Warum?]")
-                                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new BaseComponent[]{hover})))
-                                .create())
+                player.spigot().sendMessage(
+                        DiscordSync.singleton.getMessageService().get("general.prefix"),
+                        DiscordSync.singleton.getMessageService().get("user.verify.error.general"),
+                        DiscordSync.singleton.getMessageService().get("user.verify.error.sendMessage", member.getEffectiveName())
                 );
 
 
@@ -169,54 +144,13 @@ public class CommandVerify implements CommandExecutor {
 
             /* --- FAILED TO OPEN CHANNEL --- */
 
-            TextComponent hover = new TextComponent(new ComponentBuilder()
-                    .append("Fehler").color(ChatColor.RED)
-                    .append(": ").color(ChatColor.DARK_GRAY)
-                    .append("Privater Channel konnte nicht geöffnet werden.\n\n")
-                    .append("Um zu verifizieren, dass es sich bei ")
-                    .append(member.getEffectiveName()).color(ChatColor.GOLD)
-                    .append("tatsächlich um dich\n")
-                    .append("handelt, schreibt dir der Bot eine Nachricht auf Discord, die du bestätigen\n")
-                    .append("musst. Beim öffnen des privaten Channels ist aber etwas schief gelaufen und\n")
-                    .append("der Bot kann dir keine Nachricht schreiben.\n\n")
-                    .append("Mögliche Lösung").color(ChatColor.GREEN)
-                    .append(": ").color(ChatColor.DARK_GRAY)
-                    .append("Überprüfe, ob du Nachrichten von Servermitgliedern erhalten\n")
-                    .append("kannst. Ist das nicht der Fall, können wir leider nicht verifizieren, dass\n")
-                    .append("dir dieser Account tatsächlich gehört. Wende dich in diesem Fall bitte an\n")
-                    .append("die Serverleitung.")
-                    .create());
-            hover.setColor(ChatColor.GRAY);
-
-            player.spigot().sendMessage(DiscordSync.getChatPrefix(),
-                    new TextComponent(new ComponentBuilder()
-                            .append("Verifikation fehlgeschlagen. ").color(ChatColor.GRAY)
-                            .create()),
-                    new TextComponent(new ComponentBuilder(ChatColor.DARK_GRAY + "[Warum?]")
-                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new BaseComponent[]{hover})))
-                            .create())
+            player.spigot().sendMessage(
+                    DiscordSync.singleton.getMessageService().get("general.prefix"),
+                    DiscordSync.singleton.getMessageService().get("user.verify.error.general"),
+                    DiscordSync.singleton.getMessageService().get("user.verify.error.openChannel", member.getEffectiveName())
             );
 
 
         });
-    }
-
-    private TextComponent getExamplesAsHover() {
-        return new TextComponent(new ComponentBuilder(ChatColor.DARK_GRAY + "[BEISPIELE]")
-                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(this.getExamples())))
-                .create());
-    }
-
-    private BaseComponent[] getExamples() {
-        return new BaseComponent[]{new TextComponent(
-                         ChatColor.GRAY + "Discord-Name" + ChatColor.DARK_GRAY + " (+Discriminator)"
-                + "\n" + ChatColor.AQUA + "/verify TurtleException#8673"
-                + "\n"
-                + "\n" + ChatColor.GRAY + "Server-Nickname" + ChatColor.DARK_GRAY + " (beta)"
-                + "\n" + ChatColor.AQUA + "/verify Turtleboi"
-                + "\n"
-                + "\n" + ChatColor.GRAY + "Discord ID"
-                + "\n" + ChatColor.AQUA + "/verify 871569116564172820"
-        )};
     }
 }

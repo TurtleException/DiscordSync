@@ -2,6 +2,7 @@ package de.eldritch.spigot.DiscordSync;
 
 import de.eldritch.spigot.DiscordSync.discord.DiscordAPI;
 import de.eldritch.spigot.DiscordSync.discord.DiscordConnectionException;
+import de.eldritch.spigot.DiscordSync.message.MessageService;
 import de.eldritch.spigot.DiscordSync.module.ModuleManager;
 import de.eldritch.spigot.DiscordSync.module.PluginModule;
 import de.eldritch.spigot.DiscordSync.module.chat.ChatModule;
@@ -34,6 +35,7 @@ public class DiscordSync extends JavaPlugin {
     private String serverName;
 
     private DiscordAPI             discordAPI;
+    private MessageService         messageService;
     private UserAssociationService uaService;
     private ModuleManager          moduleManager;
 
@@ -89,6 +91,8 @@ public class DiscordSync extends JavaPlugin {
             getLogger().log(Level.SEVERE, "Unable to instantiate DiscordAPI.", e);
         }
 
+        messageService = new MessageService();
+
         try {
             uaService = new UserAssociationService();
             uaService.reload();
@@ -120,6 +124,10 @@ public class DiscordSync extends JavaPlugin {
 
     public DiscordAPI getDiscordAPI() {
         return discordAPI;
+    }
+
+    public MessageService getMessageService() {
+        return messageService;
     }
 
     public UserAssociationService getUserAssociationService() {

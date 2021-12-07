@@ -1,0 +1,49 @@
+defaultColor: '7'
+messages:
+    general.prefix:
+        content: "§8[§6DiscordSync§8] §r"
+        hoverEvent:
+            action: "SHOW_TEXT"
+            content: "§6DiscordSync\n§o§7§bv${project.version}"
+    user.verify.missingName:
+        content: "Bitte gib deinen Discord-Namen an! "
+    user.verify.discordUserNotFound:
+        content: "Discord User §6%s §rnicht gefunden."
+    user.verify.discordUserAlreadyRegistered:
+        content: "§6%s §rist bereits registriert."
+    user.verify.requestSuccess:
+        content: "Bitte schau in deine Discord Nachrichten."
+    user.verify.error.sendMessage:
+        content: "§8[Warum?]"
+        hoverEvent:
+            action: "SHOW_TEXT"
+            content: "user.verify.error.sendMessageHover"
+    user.verify.error.sendMessageHover:
+        content: "§cFehler§8: §rPrivate Nachricht konnte nicht gesendet werden.\n\nUm zu verifizieren, dass es sich bei §6%s §rtatsächlich um dich\nhandelt, schreibt dir der Bot eine Nachricht auf Discord, die du bestätigen\nmusst. Beim senden der Nachricht ist aber etwas schief gelaufen.\n\n§aMögliche Lösung§8: §rÜberprüfe, ob du Nachrichten von Servermitgliedern erhalten\nkannst. Ist das nicht der Fall, können wir leider nicht verifizieren, dass\ndir dieser Account tatsächlich gehört. Wende dich in diesem Fall bitte an\ndie Serverleitung."
+    user.verify.error.openChannel:
+        content: "§8[Warum?]"
+        hoverEvent:
+            action: "SHOW_TEXT"
+            content: "user.verify.error.openChannelHover"
+    user.verify.error.openChannelHover:
+        content: "§cFehler§8: §rPrivater Channel konnte nicht geöffnet werden.\n\nUm zu verifizieren, dass es sich bei §6%s §rtatsächlich um dich\nhandelt, schreibt dir der Bot eine Nachricht auf Discord, die du bestätigen\nmusst. Beim öffnen des privaten Channels ist aber etwas schief gelaufen und\nder Bot kann dir keine Nachricht schreiben.\n\n§aMögliche Lösung§8: §rÜberprüfe, ob du Nachrichten von Servermitgliedern erhalten\nkannst. Ist das nicht der Fall, können wir leider nicht verifizieren, dass\ndir dieser Account tatsächlich gehört. Wende dich in diesem Fall bitte an\ndie Serverleitung."
+    user.verify.error.general:
+        content: "Verifikation fehlgeschlagen."
+    user.verify.example:
+        content: "§8[BEISPIELE]"
+        hoverEvent:
+            action: "SHOW_TEXT"
+            content: "user.verify.exampleHover"
+    user.verify.exampleHover:
+        content: "Discord-Name §8(+Discriminator)\n§b/verify TurtleException#8673\n\nServer-Nickname §8(beta)\n§b/verify Turtleboi\n\nDiscord ID\n§b/verify 871569116564172820"
+    user.verify.usage:
+        content: "Nutze §b§6/verify§r, um dich auf Discord zu verifizieren. "
+        clickEvent:
+            action: "SUGGEST_COMMAND"
+            content: "/verify "
+    misc.internalError:
+        content: "Ein interner Fehler ist aufgetreten."
+    module.chat.synchronizedJoin:
+        content: "Discord Chat synchronisiert."
+    module.chat.nonSynchronizedJoin:
+        content: "Discord Chat nicht synchronisiert."

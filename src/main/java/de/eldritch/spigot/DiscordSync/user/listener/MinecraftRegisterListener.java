@@ -17,13 +17,10 @@ public class MinecraftRegisterListener implements Listener {
         if (user == null) {
             DiscordSync.singleton.getLogger().info("Player '" + event.getPlayer().getName() + "' is not registered yet.");
 
-            event.getPlayer().spigot().sendMessage(DiscordSync.getChatPrefix(),
-                    new TextComponent(ChatColor.GRAY + "Nutze "),
-                    new TextComponent(new ComponentBuilder("/verify <Discord-Name>")
-                            .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/verify "))
-                            .color(ChatColor.AQUA).bold(true)
-                            .create()),
-                    new TextComponent(ChatColor.GRAY + " um dich auf Discord zu verifizieren.")
+            event.getPlayer().spigot().sendMessage(
+                    DiscordSync.singleton.getMessageService().get("general.prefix"),
+                    DiscordSync.singleton.getMessageService().get("user.verify.usage"),
+                    DiscordSync.singleton.getMessageService().get("user.verify.example")
             );
         } else {
             DiscordSync.singleton.getLogger().info("Player '" + event.getPlayer().getName() + "' is already registered.");
