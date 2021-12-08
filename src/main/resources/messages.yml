@@ -89,4 +89,8 @@ messages:
             content: "user.hoverLore"
     module.chat.message:
         content: "§r%s"
+    module.chat.message.bare.minecraft:
+        content: "§6%s§8:  §r%s"
+    module.chat.message.bare.discord:
+        content: "§9%s§8:  §r%s"
 

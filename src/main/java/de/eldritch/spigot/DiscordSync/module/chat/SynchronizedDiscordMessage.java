@@ -46,29 +46,7 @@ public class SynchronizedDiscordMessage {
         }
 
         String message = content.toLegacyText() + new TextComponent(attachments.create()).toLegacyText();
-
-        User user = DiscordSync.singleton.getUserAssociationService().get(user1 -> user1.getDiscord().getId().equals(author.getId()));
-        if (user != null) {
-            return new TextComponent(MessageService.get(
-                    "module.chat.message.discord.registered",
-                    user.getName(),
-                    user.getName(),
-                    user.getMinecraft().getName(),
-                    DiscordUtil.getActualName(user.getDiscord().getUser())
-            ), MessageService.get(
-                    "module.chat.message",
-                    message
-            ));
-        } else {
-            return new TextComponent(MessageService.get(
-                    "module.chat.message.discord.generic",
-                    author.getEffectiveName(),
-                    author.getEffectiveName()
-            ), MessageService.get(
-                    "module.chat.message",
-                    message
-            ));
-        }
+        return MessageService.get("module.chat.message.bare.minecraft", author.getEffectiveName(), message);
     }
 
     /**
