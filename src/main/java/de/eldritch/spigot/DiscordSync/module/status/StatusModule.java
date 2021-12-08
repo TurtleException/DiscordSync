@@ -79,7 +79,7 @@ public class StatusModule extends PluginModule {
         }
 
         this.taskId = DiscordSync.singleton.getServer().getScheduler().scheduleSyncRepeatingTask(
-                DiscordSync.singleton, () -> this.updateMessage(this.buildMessage().build()), interval, 0L
+                DiscordSync.singleton, () -> this.updateMessage(this.buildMessage().build()), 60L, interval
         );
     }
 
@@ -177,14 +177,28 @@ public class StatusModule extends PluginModule {
             channelId = getConfig().isLong("discord.channel")
                     ? getConfig().getLong("discord.channel")
                     : Long.parseLong(getConfig().getString("discord.channel", "null"));
+        } catch (NumberFormatException e) {
+            getLogger().log(Level.WARNING, "Property 'discord.channel' (" + getConfig().getString("discord.channel", "null")
+                    + ") should be of type long", e);
+            for (MessageEmbed.Field field : embed.getFields()) {
+                if (field.getName() != null && (field.getName().contains("Offline") || field.getName().contains("offline"))) {
+                    // prevent infinite loop
+                    return;
+                }
+            }
+            DiscordSync.singleton.getModuleManager().unregister(this);
+            return;
+        }
+
+        try {
             messageId = getConfig().isLong("discord.message")
                     ? getConfig().getLong("discord.message")
                     : Long.parseLong(getConfig().getString("discord.message", "null"));
         } catch (NumberFormatException e) {
-            getLogger().log(Level.WARNING, "Properties 'discord.channel' (" + getConfig().getString("discord.channel", "null") + ") "
-                    + ", 'discord.message' (" + getConfig().getString("discord.message", "null") + " should be of type long", e);
-            DiscordSync.singleton.getModuleManager().unregister(this);
-            return;
+            getLogger().log(Level.WARNING, "Property 'discord.message' (" + getConfig().getString("discord.message", "null")
+                    + ") should be of type long", e);
+            messageId = 0L;
+            errorIncrement = errorTolerance;
         }
 
         TextChannel channel = DiscordSync.singleton.getDiscordAPI().getGuild().getTextChannelById(channelId);

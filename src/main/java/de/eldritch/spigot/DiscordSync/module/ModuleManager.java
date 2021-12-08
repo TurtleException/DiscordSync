@@ -52,7 +52,7 @@ public class ModuleManager {
 
     public boolean unregister(PluginModule module) {
         if (modules.contains(module)) {
-            module.onDisable();
+            module.setEnabled(false);
             return modules.remove(module);
         }
         return false;

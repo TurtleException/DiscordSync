@@ -1,9 +1,6 @@
 package de.eldritch.spigot.DiscordSync.module.chat;
 
-import de.eldritch.spigot.DiscordSync.DiscordSync;
 import de.eldritch.spigot.DiscordSync.message.MessageService;
-import de.eldritch.spigot.DiscordSync.user.User;
-import de.eldritch.spigot.DiscordSync.util.DiscordUtil;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.md_5.bungee.api.ChatColor;
@@ -29,7 +26,7 @@ public class SynchronizedDiscordMessage {
         // stripped content for now as markdown is not supported
         TextComponent content = new TextComponent(" " + ChatColor.GRAY + message.getContentStripped());
         content.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "@" + message.getId() + " "));
-        content.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("" + ChatColor.ITALIC + ChatColor.GRAY + "Klicke zum antworten.")));
+        content.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText("§7§oKlicke zum antworten."))));
 
         ComponentBuilder attachments = new ComponentBuilder();
         if (!message.getAttachments().isEmpty()) {
@@ -46,7 +43,7 @@ public class SynchronizedDiscordMessage {
         }
 
         String message = content.toLegacyText() + new TextComponent(attachments.create()).toLegacyText();
-        return MessageService.get("module.chat.message.bare.minecraft", author.getEffectiveName(), message);
+        return MessageService.get("module.chat.message.bare.discord", author.getEffectiveName(), message);
     }
 
     /**

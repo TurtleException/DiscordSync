@@ -5,7 +5,6 @@ import de.eldritch.spigot.DiscordSync.module.chat.ChatModule;
 import de.eldritch.spigot.DiscordSync.module.chat.SynchronizedDiscordMessage;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
 public class DiscordListener extends ListenerAdapter {

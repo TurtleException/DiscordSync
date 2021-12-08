@@ -8,10 +8,12 @@ import de.eldritch.spigot.DiscordSync.module.PluginModule;
 import de.eldritch.spigot.DiscordSync.module.chat.ChatModule;
 import de.eldritch.spigot.DiscordSync.module.emote.EmoteModule;
 import de.eldritch.spigot.DiscordSync.module.language.LanguageModule;
+import de.eldritch.spigot.DiscordSync.module.status.StatusModule;
 import de.eldritch.spigot.DiscordSync.user.UserAssociationService;
 import de.eldritch.spigot.DiscordSync.util.version.IllegalVersionException;
 import de.eldritch.spigot.DiscordSync.util.Performance;
 import de.eldritch.spigot.DiscordSync.util.version.Version;
+import net.dv8tion.jda.api.JDA;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,9 +21,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
+import java.time.Duration;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class DiscordSync extends JavaPlugin {
@@ -109,7 +111,8 @@ public class DiscordSync extends JavaPlugin {
         moduleManager = new ModuleManager(
                 Map.entry(ChatModule.class, new Object[]{}),
                 Map.entry(EmoteModule.class, new Object[]{}),
-                Map.entry(LanguageModule.class, new Object[]{})
+                Map.entry(LanguageModule.class, new Object[]{}),
+                Map.entry(StatusModule.class, new Object[]{})
         );
 
         moduleManager.getRegisteredModules().forEach(pluginModule -> pluginModule.setEnabled(true));
@@ -118,14 +121,25 @@ public class DiscordSync extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("Disabling modules...");
-        for (PluginModule pluginModule : moduleManager.getRegisteredModules()) {
+        for (PluginModule pluginModule : Set.copyOf(moduleManager.getRegisteredModules())) {
             moduleManager.unregister(pluginModule);
             getLogger().info("Module '" + pluginModule.getName() + "' disabled.");
         }
 
         uaService.saveConfig();
 
+
         discordAPI.getJDA().shutdown();
+        try {
+            discordAPI.getJDA().getCallbackPool().awaitTermination(30L, TimeUnit.SECONDS);
+            if (discordAPI.getJDA().getStatus().equals(JDA.Status.SHUTDOWN)) {
+                getLogger().info("Successfully shut down JDA.");
+            } else {
+                getLogger().warning("JDA shutdown took to long.");
+            }
+        } catch (InterruptedException e) {
+            getLogger().log(Level.WARNING, "Encountered an exception while shutting down JDA.", e);
+        }
     }
 
 
