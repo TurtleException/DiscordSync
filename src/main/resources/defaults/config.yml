@@ -1,29 +1,20 @@
 discord:
-  # Your application token
   token: null
-  # Your server id
   guild: null
 module:
   chat:
     discord:
-      # Synchronized channel id
       channel: null
   status:
-    # Number of times an update can fail before creating a new message.
     errorTolerance: 10
-    # Number of ticks between each update (1 second = 20 ticks)
     interval: 100
     discord:
-      # Status channel id
       channel: null
-      # DO NOT CHANGE THIS:
       message: null
-    # Custom names for worlds
     worlds:
       world: 'Overworld'
       world_nether: 'Nether'
       world_the_end: 'End'
-    # Custom emotes for worlds
     emotes:
       world: ':deciduous_tree:'
       world_nether: ':fire:'

@@ -14,7 +14,7 @@ messages:
     user.verify.error.alreadyRegistered.minecraft:
         content: "Du bist bereits als §6%s §rregistriert."
     user.verify.error.alreadyRegistered.discord:
-        content: "§6%s §rist bereits registriert."
+        content: "§6%s §rist bereits verifiziert."
     user.verify.requestSuccess:
         content: "Bitte schau in deine Discord Nachrichten."
     user.verify.error.sendMessage:
@@ -54,13 +54,26 @@ messages:
     user.verify.requestDenied:
         content: "§6%s §rhat deine Anfrage abgelehnt."
     user.action.rename:
-        content: "Du heißt jetzt $6%s$r."
+        content: "Du heißt jetzt §6%s§r."
     user.action.renameBroadcast:
         content: "§6%s §rheißt jetzt §6%s§r."
     user.hoverLore:
         content: "§6%s\nMinecraft: %s\nDiscord:   %s"
     user.genericHoverLore:
         content: "%s §8(nicht verifiziert)"
+    user.welcomeBack:
+        content: "Willkommen zurück, §6%s§r <3"
+    user.rename.error.notVerified:
+        content: "Du bist noch nicht verifiziert."
+    user.rename.error.discord:
+        content: "Konnte Discord-Namen nicht ändern. "
+    user.rename.error.discord.hierarchy:
+        content: "§8[Warum?]"
+        hoverEvent:
+            action: "SHOW_TEXT"
+            content: "user.rename.error.discord.hierarchyHover"
+    user.rename.error.discord.hierarchyHover:
+        content: "§6Der Bot hat nicht genug Rechte dafür :c\n\nAufgrund der Hierarchie auf Discord kann der Bot deinen\nNamen nur ändern, wenn er einen höheren Rang als du hat.\nDa der Bot allerdings den gleichen, oder einen niedrigeren\nRang hat geht das nicht."
     misc.internalError:
         content: "Ein interner Fehler ist aufgetreten."
     module.chat.synchronizedJoin:
@@ -93,4 +106,3 @@ messages:
         content: "§6%s§8:  §r%s"
     module.chat.message.bare.discord:
         content: "§9%s§8:  §r%s"
-

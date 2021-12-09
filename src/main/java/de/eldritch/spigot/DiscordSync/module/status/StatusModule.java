@@ -56,8 +56,17 @@ public class StatusModule extends PluginModule {
         this.updateMessage(this.buildMessage().clearFields()
                 .addField(":red_circle: Offline", "Der Server wurde " + TimeFormat.RELATIVE.now() + " gestoppt.", false)
                 .addField("Plugin Version", "`" + DiscordSync.singleton.getVersion().toString() + "`", false)
+                .setDescription(null)
                 .build()
         );
+
+        try {
+            getLogger().info("Waiting 2000 millis to ensure offline update.");
+            Thread.sleep(2000);
+            getLogger().info("OK!");
+        } catch (InterruptedException e) {
+            getLogger().log(Level.WARNING, "Encountered exception while waiting.", e);
+        }
     }
 
     /**

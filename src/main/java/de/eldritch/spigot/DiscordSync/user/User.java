@@ -3,6 +3,7 @@ package de.eldritch.spigot.DiscordSync.user;
 import de.eldritch.spigot.DiscordSync.DiscordSync;
 import de.eldritch.spigot.DiscordSync.message.MessageService;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -19,17 +20,6 @@ public class User {
         this.discordUser = discordUser;
 
         this.setName(discordUser.getEffectiveName(), false);
-    }
-
-
-    /**
-     * Retrieves the nickname from Discord. If {@link Member#getNickname()} returns
-     * <code>null</code> (meaning the member does not have a nickname set) this
-     * method will return {@link Member#getEffectiveName()} (The {@link
-     * net.dv8tion.jda.api.entities.User Users} actual name).
-     */
-    public String retrieveName() {
-        return discordUser.getNickname() != null ? discordUser.getNickname() : discordUser.getEffectiveName();
     }
 
     /**
@@ -71,10 +61,19 @@ public class User {
         } catch (NullPointerException ignored) {}
 
         if (updateDiscord) {
-            getDiscord().modifyNickname(name).queue();
+            try {
+                getDiscord().modifyNickname(name).queue();
+            } catch (HierarchyException e) {
+                if (minecraftUser.isOnline()) {
+                    MessageService.sendMessage(minecraftUser.getPlayer(),
+                            "user.rename.error.discord",
+                            "user.rename.error.discord.hierarchy"
+                    );
+                }
+            }
         }
 
-        if (minecraftUser.isOnline()) {
+        if (minecraftUser.isOnline() && !name.equals(oldName)) {
             for (Player onlinePlayer : DiscordSync.singleton.getServer().getOnlinePlayers()) {
                 onlinePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, MessageService.get(
                         "user.action.renameBroadcast",

@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -127,6 +126,8 @@ public class DiscordSync extends JavaPlugin {
         }
 
         uaService.saveConfig();
+
+        this.saveConfig();
 
 
         discordAPI.getJDA().shutdown();

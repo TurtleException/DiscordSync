@@ -87,6 +87,6 @@ public class ChatModule extends PluginModule {
     }
 
     public static String getBustUrl(String name) {
-        return "https://minotar.net/armor/bust/" + name;
+        return "https://mc-heads.net/avatar/" + name;
     }
 }

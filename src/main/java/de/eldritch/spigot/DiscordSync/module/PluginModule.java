@@ -20,6 +20,7 @@ public abstract class PluginModule {
 
     public PluginModule() {
         logger = Logger.getLogger("MODULE | " + moduleName.toUpperCase());
+        logger.setUseParentHandlers(false);
         logger.addHandler(new StreamHandler() {
             @Override
             public void publish(LogRecord record) {
@@ -41,6 +42,7 @@ public abstract class PluginModule {
         if (enabled && !b) {
             enabled = false;
             this.onDisable();
+            DiscordSync.singleton.getConfig().set("module." + moduleName, getConfig());
         } else if (!enabled && b) {
             try {
                 enabled = true;

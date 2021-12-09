@@ -22,7 +22,9 @@ public class ModuleManager {
      * Registers modules by instantiating them one at a time.
      */
     public void registerModules(HashMap<Class<? extends PluginModule>, Object[]> modClasses) {
-        modClasses.forEach((clazz, params) -> {
+        for (Map.Entry<Class<? extends PluginModule>, Object[]> entry : modClasses.entrySet()) {
+            Class<? extends PluginModule> clazz = entry.getKey();
+            Object[] params = entry.getValue();
             Class<?>[] paramTypes = new Class<?>[params.length];
             for (int i = 0; i < params.length; i++) {
                 paramTypes[i] = params[i].getClass();
@@ -40,7 +42,7 @@ public class ModuleManager {
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException | PluginModuleEnableException e) {
                 DiscordSync.singleton.getLogger().log(Level.WARNING, "Unable to instantiate " + clazz.getSimpleName() + ". It will be ignored.", e);
             }
-        });
+        }
     }
 
     /**

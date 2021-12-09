@@ -11,5 +11,8 @@ website: https://github.com/TurtleException/DiscordSync
 
 commands:
   verify:
-    description: Verbindet das Minecraft-Konto mit dem angegebenen Discord-Account
+    description: Verbinde dein Minecraft-Konto mit Discord.
     usage: /verify <Discord Name>
+  nick:
+    description: Ändere oder entferne deinen Namen.
+    usage: /nick  |  /nick <Name>

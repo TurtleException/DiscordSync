@@ -1,10 +1,10 @@
 package de.eldritch.spigot.DiscordSync.user.listener;
 
 import de.eldritch.spigot.DiscordSync.DiscordSync;
-import de.eldritch.spigot.DiscordSync.message.Container;
 import de.eldritch.spigot.DiscordSync.message.MessageService;
 import de.eldritch.spigot.DiscordSync.user.User;
 import de.eldritch.spigot.DiscordSync.user.UserAssociationService;
+import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,7 +23,8 @@ public class MinecraftRegisterListener implements Listener {
                             "user.verify.example"
                     ), 40L);
         } else {
-            DiscordSync.singleton.getLogger().info("Player '" + event.getPlayer().getName() + "' is already registered.");
+            DiscordSync.singleton.getLogger().info("Player '" + event.getPlayer().getName() + "' is already registered as '" + user.getName() + "'.");
+            event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, MessageService.get("user.welcomeBack", user.getName()));
         }
     }
 

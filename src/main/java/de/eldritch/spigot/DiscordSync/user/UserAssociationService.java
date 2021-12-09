@@ -3,6 +3,7 @@ package de.eldritch.spigot.DiscordSync.user;
 import de.eldritch.spigot.DiscordSync.DiscordSync;
 import de.eldritch.spigot.DiscordSync.message.Container;
 import de.eldritch.spigot.DiscordSync.message.MessageService;
+import de.eldritch.spigot.DiscordSync.user.command.CommandNick;
 import de.eldritch.spigot.DiscordSync.user.command.CommandVerify;
 import de.eldritch.spigot.DiscordSync.user.listener.DiscordNameListener;
 import de.eldritch.spigot.DiscordSync.user.listener.DiscordVerificationListener;
@@ -11,7 +12,6 @@ import net.dv8tion.jda.api.entities.Member;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,6 +60,7 @@ public class UserAssociationService {
         DiscordSync.singleton.getServer().getPluginManager().registerEvents(new MinecraftRegisterListener(), DiscordSync.singleton);
 
         /* register commands */
+        Objects.requireNonNull(DiscordSync.singleton.getCommand("nick")).setExecutor(new CommandNick());
         Objects.requireNonNull(DiscordSync.singleton.getCommand("verify")).setExecutor(new CommandVerify());
     }
 
@@ -101,8 +102,8 @@ public class UserAssociationService {
                     throw new NullPointerException("Guild cannot be null");
 
                 users.add(new User(
-                        DiscordSync.singleton.getServer().getPlayer(UUID.fromString(key)),
-                        DiscordSync.singleton.getDiscordAPI().getGuild().getMemberById(discordId)
+                        DiscordSync.singleton.getServer().getOfflinePlayer(UUID.fromString(key)),
+                        Objects.requireNonNull(DiscordSync.singleton.getDiscordAPI().getGuild().getMemberById(discordId))
                 ));
             } catch (Exception e) {
                 DiscordSync.singleton.getLogger().log(Level.WARNING, "Unable to parse {" + key + ": " + getUserConfig().get(key, "null") + "} to user association.", e);
