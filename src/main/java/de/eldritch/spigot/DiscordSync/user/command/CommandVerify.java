@@ -128,7 +128,7 @@ public class CommandVerify implements CommandExecutor {
                     .setDescription("""
                             Hey, bist du das?
                             Mit einem Klick auf `Ja` verknüpfst du diesen Discord-Account mit dem Minecraft-Konto, um bspw. deinen Namen zu synchronisieren. Das gilt natürlich nur für den jeweiligen Discord-Server. Die Anfrage läuft in 10 Minuten ab.
-                            Um in Zukunft keine Anfragen dieses Spielers/dieser Spielerin zu erhalten kannst du den dauerhaft Account blockieren.""")
+                            Um in Zukunft keine Anfragen dieses Spielers/dieser Spielerin zu erhalten kannst du den Account oder direkt alle Anfragen dauerhaft blockieren.""")
                     .setThumbnail("https://mc-heads.net/body/" + player.getUniqueId())
                     .addField("Spieler*in", player.getName(), true)
                     .addField("Server", member.getGuild().getName() + (
