@@ -15,7 +15,7 @@ public class MinecraftRegisterListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         User user = getUAService().get(user1 -> user1.getMinecraft().getUniqueId().equals(event.getPlayer().getUniqueId()));
         if (user == null) {
-            DiscordSync.singleton.getLogger().info("Player '" + event.getPlayer().getName() + "' is not registered yet.");
+            DiscordSync.singleton.getLogger().info("Player '" + event.getPlayer().getName() + "' is not verified yet.");
 
             Bukkit.getScheduler().runTaskLaterAsynchronously(DiscordSync.singleton, () ->
                     MessageService.sendMessage(event.getPlayer(),
@@ -23,7 +23,7 @@ public class MinecraftRegisterListener implements Listener {
                             "user.verify.example"
                     ), 40L);
         } else {
-            DiscordSync.singleton.getLogger().info("Player '" + event.getPlayer().getName() + "' is already registered as '" + user.getName() + "'.");
+            DiscordSync.singleton.getLogger().info("Player '" + event.getPlayer().getName() + "' is already verified as '" + user.getName() + "'.");
             event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, MessageService.get("user.welcomeBack", user.getName()));
         }
     }

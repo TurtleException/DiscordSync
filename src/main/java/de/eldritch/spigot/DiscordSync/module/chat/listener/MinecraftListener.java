@@ -1,6 +1,5 @@
 package de.eldritch.spigot.DiscordSync.module.chat.listener;
 
-import de.eldritch.spigot.DiscordSync.message.MessageService;
 import de.eldritch.spigot.DiscordSync.module.chat.ChatModule;
 import de.eldritch.spigot.DiscordSync.module.chat.SynchronizedMinecraftMessage;
 import org.bukkit.event.EventHandler;
@@ -19,10 +18,6 @@ public class MinecraftListener implements Listener {
         SynchronizedMinecraftMessage minecraftMessage = new SynchronizedMinecraftMessage(event.getMessage(), event.getPlayer());
         module.process(minecraftMessage);
 
-        event.setFormat(MessageService.get(
-                "module.chat.message.bare.minecraft",
-                event.getPlayer().getDisplayName(),
-                event.getMessage()
-        ).toLegacyText());
+        event.setCancelled(true);
     }
 }

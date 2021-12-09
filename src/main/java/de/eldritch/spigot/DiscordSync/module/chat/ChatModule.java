@@ -1,6 +1,7 @@
 package de.eldritch.spigot.DiscordSync.module.chat;
 
 import de.eldritch.spigot.DiscordSync.DiscordSync;
+import de.eldritch.spigot.DiscordSync.message.MessageService;
 import de.eldritch.spigot.DiscordSync.module.PluginModule;
 import de.eldritch.spigot.DiscordSync.module.PluginModuleEnableException;
 import de.eldritch.spigot.DiscordSync.module.chat.listener.DiscordListener;
@@ -9,6 +10,7 @@ import de.eldritch.spigot.DiscordSync.module.chat.listener.MinecraftJoinListener
 import de.eldritch.spigot.DiscordSync.module.chat.listener.MinecraftListener;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -57,17 +59,22 @@ public class ChatModule extends PluginModule {
             if (msg.getReplyTarget() != null) {
                 try {
                     // get target message and create reply
-                    Objects.requireNonNull(this.getTextChannel().retrieveMessageById(msg.getReplyTarget())).complete().reply(msg.toDiscord()).queue();
+                    Objects.requireNonNull(this.getTextChannel().retrieveMessageById(msg.getReplyTarget())).complete().reply(msg.toDiscord()).queue(message -> {
+                        msg.send(Objects.requireNonNull(Objects.requireNonNull(message.getReferencedMessage()).getMember()), message.getReferencedMessage());
+                    });
                     return; // prevent the message from being sent separately
                 } catch (IllegalArgumentException e) {
                     // The @ at the beginning was not a reply target
+                    msg.send();
                     this.getTextChannel().sendMessage("@" + msg.getReplyTarget() + " " + msg.toDiscord()).queue();
                     return;
                 } catch (NullPointerException e) {
+                    msg.send();
                     DiscordSync.singleton.getLogger().log(Level.WARNING, "Unable to send discord message '" + msg.toDiscord() + "' as reply.", e);
                 }
             }
 
+            msg.send();
             this.getTextChannel().sendMessage(msg.toDiscord()).queue();
         } else {
             DiscordSync.singleton.getLogger().warning("Unable to send Discord message '" + msg.toDiscord() + "'.");

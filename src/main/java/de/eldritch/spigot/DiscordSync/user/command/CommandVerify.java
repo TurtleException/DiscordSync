@@ -105,7 +105,8 @@ public class CommandVerify implements CommandExecutor {
         }
 
         // check if user has blocked requests from player
-        if (DiscordSync.singleton.getUserAssociationService().getBlockedSection().getStringList(member.getId()).contains(player.getUniqueId().toString())) {
+        List<String> blocks = DiscordSync.singleton.getUserAssociationService().getBlockedSection().getStringList(member.getId());
+        if (blocks.contains(player.getUniqueId().toString()) || blocks.contains("*")) {
             MessageService.sendMessage(player,
                     Container.of("user.verify.error.blocked", DiscordUtil.getActualName(member.getUser()))
             );
@@ -124,9 +125,10 @@ public class CommandVerify implements CommandExecutor {
 
             privateChannel.sendMessageEmbeds(new EmbedBuilder(DiscordUtil.getDefaultEmbed())
                     .setTitle("Minecraft Account-Verknüpfung")
-                    .setDescription("Es wird versucht einen Minecraft-Account mit diesem Discord-Account zu verbinden.\n"
-                            + "Du hast 10 Minuten, um zu bestätigen/abzulehnen. Um in Zukunft keine Anfragen dieses Spielers"
-                            + "/dieser Spielerin zu erhalten kannst du den dauerhaft Account blockieren.")
+                    .setDescription("""
+                            Hey, bist du das?
+                            Mit einem Klick auf `Ja` verknüpfst du diesen Discord-Account mit dem Minecraft-Konto, um bspw. deinen Namen zu synchronisieren. Das gilt natürlich nur für den jeweiligen Discord-Server. Die Anfrage läuft in 10 Minuten ab.
+                            Um in Zukunft keine Anfragen dieses Spielers/dieser Spielerin zu erhalten kannst du den dauerhaft Account blockieren.""")
                     .setThumbnail("https://mc-heads.net/body/" + player.getUniqueId())
                     .addField("Spieler*in", player.getName(), true)
                     .addField("Server", member.getGuild().getName() + (
@@ -136,7 +138,8 @@ public class CommandVerify implements CommandExecutor {
             ).setActionRow(
                     Button.success("accept", "Ja"),
                     Button.danger("deny", "Nein"),
-                    Button.secondary("block", "Blockieren")
+                    Button.secondary("block", "Blockieren"),
+                    Button.secondary("block-all", "Alle Anfragen blockieren")
             ).queue(message -> {
 
                 /* --- MESSAGE SENT SUCCESSFULLY --- */

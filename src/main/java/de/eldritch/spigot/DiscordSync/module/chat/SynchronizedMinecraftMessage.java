@@ -1,7 +1,14 @@
 package de.eldritch.spigot.DiscordSync.module.chat;
 
 import de.eldritch.spigot.DiscordSync.DiscordSync;
+import de.eldritch.spigot.DiscordSync.message.MessageService;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -54,11 +61,47 @@ public class SynchronizedMinecraftMessage {
         return str;
     }
 
+    public void send() {
+        DiscordSync.singleton.getServer().spigot().broadcast(
+                MessageService.get(
+                        "module.chat.message.bare.minecraft.name",
+                        author.getDisplayName()
+                ),
+                MessageService.get(
+                        "module.chat.message.bare.message",
+                        formatNewline(message)
+                )
+        );
+    }
+
+    public void send(@NotNull Member replyTargetAuthor, @NotNull Message replyTarget) {
+        DiscordSync.singleton.getServer().spigot().broadcast(
+                MessageService.get(
+                        "module.chat.message.bare.minecraft.name",
+                        author.getDisplayName()
+                ),
+                MessageService.get(
+                        "module.chat.message.bare.reply",
+                        replyTargetAuthor.getEffectiveName(),
+                        replyTarget.getId(),
+                        replyTarget.getContentStripped()
+                ),
+                MessageService.get(
+                        "module.chat.message.bare.message",
+                        formatNewline(message)
+                )
+        );
+    }
+
     /**
      * @return Message id of the reply target, <code>null</code>
      *         if the message is not a reply.
      */
     public @Nullable String getReplyTarget() {
         return this.replyTarget;
+    }
+
+    private String formatNewline(String message) {
+        return WordUtils.wrap(message, 75, "\n", true);
     }
 }

@@ -1,13 +1,11 @@
 package de.eldritch.spigot.DiscordSync.module.chat;
 
+import de.eldritch.spigot.DiscordSync.DiscordSync;
 import de.eldritch.spigot.DiscordSync.message.MessageService;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class SynchronizedDiscordMessage {
@@ -22,11 +20,9 @@ public class SynchronizedDiscordMessage {
     /**
      * Formats the message to be compatible with the Minecraft chat.
      */
-    public TextComponent toMinecraft() {
+    public BaseComponent[] toMinecraft() {
         // stripped content for now as markdown is not supported
-        TextComponent content = new TextComponent(" " + ChatColor.GRAY + message.getContentStripped());
-        content.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "@" + message.getId() + " "));
-        content.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText("§7§oKlicke zum antworten."))));
+        TextComponent content = new TextComponent(ChatColor.GRAY + message.getContentStripped());
 
         ComponentBuilder attachments = new ComponentBuilder();
         if (!message.getAttachments().isEmpty()) {
@@ -42,8 +38,42 @@ public class SynchronizedDiscordMessage {
             attachments.append(" [FILE]");
         }
 
-        String message = content.toLegacyText() + new TextComponent(attachments.create()).toLegacyText();
-        return MessageService.get("module.chat.message.bare.discord", author.getEffectiveName(), message);
+        TextComponent fullMessage = new TextComponent(content, new TextComponent(attachments.create()));
+        fullMessage.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "@" + message.getId() + " "));
+        fullMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText("§7§oKlicke zum antworten."))));
+
+        if (message.getReferencedMessage() != null) {
+            Message replyTarget = message.getReferencedMessage();
+
+            // define author
+            Member replyTargetAuthor = null;
+            if (DiscordSync.singleton.getDiscordAPI().getGuild() != null) {
+                replyTargetAuthor = DiscordSync.singleton.getDiscordAPI().getGuild().getMember(replyTarget.getAuthor());
+            }
+            String authorName = replyTargetAuthor != null ? replyTargetAuthor.getEffectiveName() : replyTarget.getAuthor().getName();
+
+            return new BaseComponent[]{
+                    MessageService.get(
+                            "module.chat.message.bare.discord.name",
+                            author.getEffectiveName()
+                    ),
+                    MessageService.get(
+                            "module.chat.message.bare.reply",
+                            authorName,
+                            replyTarget.getId(),
+                            replyTarget.getContentStripped()
+                    ),
+                    fullMessage
+            };
+        } else {
+            return new BaseComponent[]{
+                    MessageService.get(
+                            "module.chat.message.bare.discord.name",
+                            author.getEffectiveName()
+                    ),
+                    fullMessage
+            };
+        }
     }
 
     /**

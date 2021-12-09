@@ -78,6 +78,8 @@ public class DiscordVerificationListener extends ListenerAdapter {
             List<String> userBlocks = DiscordSync.singleton.getUserAssociationService().getBlockedSection().getStringList(event.getUser().getId());
             userBlocks.add(uuid.toString());
             DiscordSync.singleton.getUserAssociationService().getBlockedSection().set(event.getUser().getId(), userBlocks);
+        } else if (event.getButton().getId().equals("block-all")) {
+            DiscordSync.singleton.getUserAssociationService().getBlockedSection().set(event.getUser().getId(), List.of("*"));
         }
 
         // delete request
