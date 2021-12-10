@@ -149,7 +149,7 @@ public class CommandVerify implements CommandExecutor {
                 // disable all buttons except "block" after 10 minutes
                 ArrayList<Button> buttons = new ArrayList<>(message.getButtons());
                 for (int i = 0; i < buttons.size(); i++) {
-                    if (!Objects.equals(buttons.get(i).getId(), "block")) {
+                    if (!Objects.equals(buttons.get(i).getId(), "block") && !Objects.equals(buttons.get(i).getId(), "block-all")) {
                         buttons.set(i, buttons.get(i).asDisabled());
                     }
                 }

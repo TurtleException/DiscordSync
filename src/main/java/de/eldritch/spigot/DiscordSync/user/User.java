@@ -73,7 +73,7 @@ public class User {
             }
         }
 
-        if (minecraftUser.isOnline() && !name.equals(oldName)) {
+        if (minecraftUser.isOnline() && name != null && !name.equals(oldName)) {
             for (Player onlinePlayer : DiscordSync.singleton.getServer().getOnlinePlayers()) {
                 onlinePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, MessageService.get(
                         "user.action.renameBroadcast",

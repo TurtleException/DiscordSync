@@ -61,7 +61,9 @@ public class MinecraftEventListener implements Listener {
         User user = DiscordSync.singleton.getUserAssociationService().get(user1 -> user1.getMinecraft().getUniqueId().equals(event.getPlayer().getUniqueId()));
 
         if (user != null && event.getQuitMessage() != null) {
-            event.setQuitMessage(event.getQuitMessage().replaceFirst(Pattern.quote(event.getPlayer().getName()), user.getName()));
+            try {
+                event.setQuitMessage(event.getQuitMessage().replaceFirst(Pattern.quote(event.getPlayer().getName()), user.getName()));
+            } catch (NullPointerException ignored) { }
         }
 
         module.sendEmbed(this.getPlayerEmbed(event.getPlayer())
