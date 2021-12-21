@@ -114,4 +114,4 @@ messages:
             action: "SHOW_TEXT"
             content: "module.chat.message.bare.replyHover"
     module.chat.message.bare.replyHover:
-        content: "§6Antwort auf Nachricht von §9%s§r:\n§o§8@%s\n\n%s"
+        content: "§6Antwort auf Nachricht von %s§r:\n§o§8@%s\n\n%s"

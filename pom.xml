@@ -6,7 +6,7 @@
 
     <groupId>de.eldritch.spigot</groupId>
     <artifactId>DiscordSync</artifactId>
-    <version>01.01-107</version>
+    <version>01.01-121</version>
 
     <!--
          ,,
@@ -44,7 +44,7 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
                             <mainClass>
-                                de.eldritch.TurtleFly.TurtleFly
+                                de.eldritch.spigot.DiscordSync.DiscordSync
                             </mainClass>
                         </manifest>
                     </archive>
