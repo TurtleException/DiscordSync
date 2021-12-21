@@ -78,6 +78,7 @@ public class ChatModule extends PluginModule {
             this.getTextChannel().sendMessage(msg.toDiscord()).queue();
         } else {
             DiscordSync.singleton.getLogger().warning("Unable to send Discord message '" + msg.toDiscord() + "'.");
+            msg.send();
         }
     }
 

@@ -69,7 +69,7 @@ public class SynchronizedMinecraftMessage {
                 ),
                 MessageService.get(
                         "module.chat.message.bare.message",
-                        formatNewline(message)
+                        message
                 )
         );
     }
@@ -84,11 +84,11 @@ public class SynchronizedMinecraftMessage {
                         "module.chat.message.bare.reply",
                         replyTargetAuthor.getEffectiveName(),
                         replyTarget.getId(),
-                        replyTarget.getContentStripped()
+                        formatNewline(replyTarget.getContentStripped())
                 ),
                 MessageService.get(
                         "module.chat.message.bare.message",
-                        formatNewline(message)
+                        message
                 )
         );
     }
