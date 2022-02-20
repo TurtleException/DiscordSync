@@ -42,8 +42,35 @@ public class ConfigUtil {
     public static void validatePluginConfig() throws InvalidConfigurationException {
         FileConfiguration config = DiscordSync.singleton.getConfig();
 
-        /* ----- CHECKS ----- */
+        validateVersion(config);
+
+        /* ----- MANUAL CHECKS ----- */
         // TODO
+    }
+
+    private static void validateVersion(@NotNull FileConfiguration config) throws InvalidConfigurationException {
+        int version = config.getInt("configVersion", -1);
+        int required;
+
+        // retrieve required version
+        try {
+            YamlConfiguration defaultConfig = new YamlConfiguration();
+            InputStream resourceStream = DiscordSync.singleton.getResource("config.yml");
+
+            if (resourceStream == null)
+                throw new NullPointerException("Resource InputStream turned out to be null");
+
+            defaultConfig.load(new InputStreamReader(resourceStream));
+            required = defaultConfig.getInt("configVersion", -1);
+        } catch (Exception e) {
+            throw new InvalidConfigurationException("Unable to validate config version", e);
+        }
+
+        // compare versions
+        if (required == -1)
+            throw new InvalidConfigurationException("Unable to validate config version");
+        if (version != required)
+            throw new InvalidConfigurationException("Config version does not match required version");
     }
 
     private static void validatePresent(@NotNull FileConfiguration config, @NotNull String key) throws InvalidConfigurationException {
