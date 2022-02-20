@@ -21,11 +21,11 @@ public class DiscordSync extends JavaPlugin {
             this.prepare();
             this.checks();
             this.init();
-        } catch (Exception e) {
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
+        } catch (Exception exc) {
+            if (exc instanceof RuntimeException) {
+                throw (RuntimeException) exc;
             } else {
-                throw new RuntimeException(e);
+                throw new RuntimeException(exc);
             }
         }
     }

@@ -1,0 +1,4 @@
+{
+  "example.key": "example value",
+  "example.key.formatted": "example {0} value with {1} format"
+}
