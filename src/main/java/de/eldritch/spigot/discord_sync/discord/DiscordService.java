@@ -14,7 +14,7 @@ public class DiscordService {
     }
 
     private JDABuilder initBuilder() {
-        JDABuilder builder = JDABuilder.createDefault(DiscordSync.singleton.getConfig().getString("discord.token"));
+        JDABuilder builder = JDABuilder.createDefault(DiscordSync.singleton.getConfig().getString("snowflake.token"));
 
         // TODO: configure builder
 

@@ -1,4 +1,4 @@
 {
-  "example.key": "example value",
-  "example.key.formatted": "example {0} value with {1} format"
+  "chat.synchronize.success": "Discord chat synchronized.",
+  "chat.synchronize.failure": "Discord chat could not be synchronized."
 }
