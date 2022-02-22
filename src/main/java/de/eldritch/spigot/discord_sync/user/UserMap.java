@@ -34,10 +34,6 @@ final class UserMap {
             snowflakeIndex.remove(user.snowflake());
     }
 
-    public void remove(@NotNull String uuid) {
-        remove(UUID.fromString(uuid));
-    }
-
     /* ------------------------- */
 
     /**

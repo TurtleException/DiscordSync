@@ -30,14 +30,20 @@ public class UserService {
 
         Set<String> uuids = userConfiguration.getKeys(false);
 
-        // add & modify
+        // schema: {new, mod, del}
+        final int[] stats = {0, 0, 0};
+
+        // create & modify
         for (String uuidStr : uuids) {
             UUID   uuid      = UUID.fromString(uuidStr);
             long   snowflake = userConfiguration.getLong(uuidStr + ".snowflake", -1);
             String name      = userConfiguration.getString(uuidStr + "name", null);
 
             User user = new User(uuid, snowflake, name);
-            userMap.put(user);
+            if (userMap.put(user))
+                stats[0]++;
+            else
+                stats[1]++;
         }
 
         // delete
@@ -45,6 +51,14 @@ public class UserService {
                 .stream()
                 .map(user -> user.uuid().toString())
                 .filter(uuids::contains)
-                .forEach(userMap::remove);
+                .forEach(uuid -> {
+                    userMap.remove(UUID.fromString(uuid));
+                    stats[2]++;
+                });
+
+        DiscordSync.singleton.getLogger().log(Level.INFO, String.format(
+                        "Users reloaded. (%s created, %s modified, %s deleted)",
+                        stats[0], stats[1], stats[2]
+        ));
     }
 }
