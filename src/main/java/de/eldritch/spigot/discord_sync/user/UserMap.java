@@ -6,6 +6,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 final class UserMap {
     private final HashMap<UUID, User> uuidIndex      = new HashMap<>();
@@ -24,6 +26,16 @@ final class UserMap {
     public void remove(@NotNull User user) {
         uuidIndex.remove(user.uuid());
         snowflakeIndex.remove(user.snowflake());
+    }
+
+    public void remove(@NotNull UUID uuid) {
+        User user = uuidIndex.remove(uuid);
+        if (user != null)
+            snowflakeIndex.remove(user.snowflake());
+    }
+
+    public void remove(@NotNull String uuid) {
+        remove(UUID.fromString(uuid));
     }
 
     /* ------------------------- */

@@ -6,7 +6,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -28,26 +28,23 @@ public class UserService {
     public void reloadUsers() {
         DiscordSync.singleton.getLogger().log(Level.INFO, "Reloading users...");
 
-        // stats
-        int sAdded    = 0;
-        int sModified = 0;
-        int sDeleted  = 0;
+        Set<String> uuids = userConfiguration.getKeys(false);
 
-        Collection<User> userView = userMap.getUserView();
-
-        for (String uuidStr : userConfiguration.getKeys(false)) {
+        // add & modify
+        for (String uuidStr : uuids) {
             UUID   uuid      = UUID.fromString(uuidStr);
             long   snowflake = userConfiguration.getLong(uuidStr + ".snowflake", -1);
             String name      = userConfiguration.getString(uuidStr + "name", null);
 
             User user = new User(uuid, snowflake, name);
-            if (userMap.put(user))
-                sAdded++;
-            else
-                sModified++;
+            userMap.put(user);
         }
 
-        // TODO: handle stats
-        // (do we really need those?)
+        // delete
+        userMap.getUserView()
+                .stream()
+                .map(user -> user.uuid().toString())
+                .filter(uuids::contains)
+                .forEach(userMap::remove);
     }
 }
