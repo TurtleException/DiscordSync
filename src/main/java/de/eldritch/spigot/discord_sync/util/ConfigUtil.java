@@ -7,7 +7,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,10 +17,45 @@ import java.util.logging.Level;
 
 public class ConfigUtil {
     /**
+     * Provides a {@link YamlConfiguration} linked with a {@link File} at the provided location. If a resource path is
+     * provided that resource will be loaded as default. If the config file does not already exist a new one will be
+     * created automatically.
+     * @param path Relative path to the configuration <b>not including</b> the <code>.yml</code> suffix. The file will
+     *             be located in the plugins' data folder.
+     * @param resource Path to the resource that should be used as default config, <code>null</code> if no defaults
+     *                 should be applied.
+     * @return The configuration loaded from the file, including default values.
+     * @throws IOException if the file is not actually a file, a new file could not be created, the configuration fails
+     *                     to load or an exception occurs while applying the default values.
+     * @throws InvalidConfigurationException if the configuration fails to load or an exception occurs while applying
+     *                                       the default values.
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static YamlConfiguration getConfig(@NotNull String path, @Nullable String resource) throws IOException, InvalidConfigurationException {
+        File file = new File(DiscordSync.singleton.getDataFolder(), path + ".yml");
+
+        if (file.exists()) {
+            if (!file.isFile())
+                throw new IOException(file + " is not a file");
+        } else {
+            file.mkdirs();
+            file.createNewFile();
+        }
+
+        YamlConfiguration configuration = new YamlConfiguration();
+        configuration.load(file);
+
+        if (resource != null)
+            applyDefaults(configuration, resource);
+
+        return configuration;
+    }
+
+    /**
      * Retrieves the configuration at the specified path and applies it as defaults to the {@link FileConfiguration}
      * provided as the first parameter.
      * @param config {@link FileConfiguration} to apply defaults to.
-     * @param resource Resource path to defaults config.
+     * @param resource Resource path to defaults config, including the <code>.yml</code> suffix.
      * @throws IOException if the defaults-config fails to load.
      * @throws InvalidConfigurationException if the defaults-config fails to load.
      */
@@ -47,7 +84,7 @@ public class ConfigUtil {
         validateVersion(config);
 
         /* ----- MANUAL CHECKS ----- */
-        validateNotNull(config, "discord.token", DiscordUtil.LOG_INVALID_TOKEN);
+        validateNotNull(config, "snowflake.token", DiscordUtil.LOG_INVALID_TOKEN);
     }
 
     private static void validateVersion(@NotNull FileConfiguration config) throws InvalidConfigurationException {

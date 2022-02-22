@@ -30,6 +30,11 @@ public class DiscordSync extends JavaPlugin {
         }
     }
 
+    /**
+     * Initialization steps before checking (e.g. for completeness of data).
+     * @see DiscordSync#checks()
+     * @see DiscordSync#init()
+     */
     private void prepare() throws Exception {
         // retrieve version from description and parse it
         this.version = Version.parse(this.getDescription().getVersion());
@@ -38,10 +43,20 @@ public class DiscordSync extends JavaPlugin {
         ConfigUtil.applyDefaults(getConfig(), "config.yml");
     }
 
+    /**
+     * Checks if the plugin can run in its current state.
+     * @see DiscordSync#prepare()
+     * @see DiscordSync#init()
+     */
     private void checks() throws Exception {
         ConfigUtil.validatePluginConfig();
     }
 
+    /**
+     * Final initialization that mostly relies on other initialization succeeding.
+     * @see DiscordSync#prepare()
+     * @see DiscordSync#checks()
+     */
     private void init() throws Exception {
 
     }

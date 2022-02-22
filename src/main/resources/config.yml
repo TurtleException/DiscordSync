@@ -1,4 +1,6 @@
 # DO NOT CHANGE THIS
 configVersion: 2
 
+language: "en_US"
+
 discord.token: null
