@@ -1,8 +1,19 @@
 package de.eldritch.spigot.discord_sync;
 
+import de.eldritch.spigot.discord_sync.discord.DiscordService;
+import de.eldritch.spigot.discord_sync.sync.Dispatcher;
+import de.eldritch.spigot.discord_sync.user.avatar.AvatarHandler;
+import de.eldritch.spigot.discord_sync.sync.SynchronizationService;
+import de.eldritch.spigot.discord_sync.sync.listener.MinecraftChatListener;
+import de.eldritch.spigot.discord_sync.sync.listener.MinecraftEventListener;
+import de.eldritch.spigot.discord_sync.sync.listener.MinecraftJoinListener;
+import de.eldritch.spigot.discord_sync.text.TextUtil;
+import de.eldritch.spigot.discord_sync.user.UserService;
 import de.eldritch.spigot.discord_sync.util.ConfigUtil;
 import de.eldritch.spigot.discord_sync.util.version.Version;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.logging.Level;
 
 /**
  * The plugin main class.
@@ -13,6 +24,12 @@ public class DiscordSync extends JavaPlugin {
 
     private Version version;
 
+    private Dispatcher             dispatcher;
+    private UserService            userService;
+    private SynchronizationService synchronizationService;
+    private DiscordService         discordService;
+    private AvatarHandler          avatarHandler;
+
     @Override
     public void onEnable() {
         singleton = this;
@@ -21,11 +38,11 @@ public class DiscordSync extends JavaPlugin {
             this.prepare();
             this.checks();
             this.init();
-        } catch (Exception exc) {
-            if (exc instanceof RuntimeException) {
-                throw (RuntimeException) exc;
+        } catch (Exception e) {
+            if (e instanceof RuntimeException exc) {
+                throw exc;
             } else {
-                throw new RuntimeException(exc);
+                throw new RuntimeException(e);
             }
         }
     }
@@ -41,6 +58,8 @@ public class DiscordSync extends JavaPlugin {
 
         // apply defaults manually because bukkit will only do that if the file does not exist
         ConfigUtil.applyDefaults(getConfig(), "config.yml");
+
+        TextUtil.init();
     }
 
     /**
@@ -58,6 +77,42 @@ public class DiscordSync extends JavaPlugin {
      * @see DiscordSync#checks()
      */
     private void init() throws Exception {
+        getLogger().log(Level.FINE, "Initializing Dispatcher.");
+        dispatcher = new Dispatcher();
 
+        getLogger().log(Level.FINE, "Initializing UserService.");
+        userService = new UserService();
+
+        getLogger().log(Level.FINE, "Initializing SynchronizationService.");
+        synchronizationService = new SynchronizationService();
+
+        getLogger().log(Level.FINE, "Initializing DiscordService.");
+        discordService = new DiscordService();
+
+        getLogger().log(Level.FINE, "Initializing EmoteHandler.");
+        avatarHandler = new AvatarHandler();
     }
+
+    private void registerListeners() {
+        getServer().getPluginManager().registerEvents(new MinecraftChatListener(), this);
+        getServer().getPluginManager().registerEvents(new MinecraftEventListener(), this);
+        getServer().getPluginManager().registerEvents(new MinecraftJoinListener(), this);
+    }
+
+    /* ----- ----- ----- */
+
+    @Override
+    public void onDisable() {
+        discordService.shutdown();
+        discordService = null;
+    }
+
+    /* ----- ----- ----- */
+
+    public Version                getVersion()                { return version; }
+    public Dispatcher             getDispatcher()             { return dispatcher; }
+    public UserService            getUserService()            { return userService; }
+    public SynchronizationService getSynchronizationService() { return synchronizationService; }
+    public DiscordService         getDiscordService()         { return discordService; }
+    public AvatarHandler          getAvatarHandler()          { return avatarHandler; }
 }

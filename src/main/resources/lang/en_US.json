@@ -1,4 +1,25 @@
 {
-  "chat.synchronize.success": "Discord chat synchronized.",
-  "chat.synchronize.failure": "Discord chat could not be synchronized."
+  "general.prefix": "§8[§6DiscordSync§8] §r",
+  "general.prefix.verbose": "§6DiscordSync\n§o§7§bv{0}",
+  "general.synchronize.success": "Discord chat synchronized.",
+  "general.synchronize.failure": "Discord chat could not be synchronized.",
+  "chat.prefix.minecraft": "§6{0}§8:",
+  "chat.prefix.discord": "§9{0}§8:",
+  "chat.message.content": "  §7{1}",
+  "chat.message.reply": " §8[REPLY]",
+  "chat.reference.container": "§6Replied to {0}§r:\n§o§8@{1}\n\n{2}",
+  "chat.reference.howto": "§7§oClick to reply",
+  "channel.message": "{0} **__{1}__:**  {2}",
+  "user.info": "§6{0}\nMinecraft: {1}\nDiscord:   {2}",
+  "user.info.unknown": "{0} §8(not verified)",
+  "events.advancement.field.description": "Description",
+  "events.join.description": "{0} joined the game.",
+  "events.join.field.lastOnline": "Last online",
+  "events.quit.description": "{0} left the game.",
+  "misc.lastOnline.never": "{0} is here for the first time",
+  "misc.lastOnline.immediate": "Less than a minute ago",
+  "misc.lastOnline.minute": "One minute ago",
+  "misc.lastOnline.minutes": "{0} minutes ago",
+  "misc.lastOnline.hours": "{0} hours ago",
+  "misc.lastOnline.days": "{0} days ago"
 }

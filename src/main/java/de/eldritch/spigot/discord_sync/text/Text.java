@@ -1,4 +1,4 @@
-package de.eldritch.spigot.discord_sync.util.text;
+package de.eldritch.spigot.discord_sync.text;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -13,6 +13,11 @@ public record Text(@NotNull String content) {
         return new TextComponent(TextComponent.fromLegacyText(content, defaultColor));
     }
 
+    @Override
+    public String toString() {
+        return content;
+    }
+
     /* ------------------------- */
 
     /**
@@ -21,9 +26,12 @@ public record Text(@NotNull String content) {
      * @param format Arguments to use as replacement for the format specified in the String.
      * @return Formatted {@link Text} from the specified language and its key.
      * @throws NullPointerException if the key does not point to a valid String.
-     * @see TextUtil#load(String)
      */
     public static @NotNull Text of(@NotNull String key, String... format) throws NullPointerException {
-        return TextUtil.get(key, format);
+        return TextUtil.getFromPlugin(key, format);
+    }
+
+    public static @NotNull Text ofGame(@NotNull String key, String... format) throws NullPointerException {
+        return TextUtil.getFromGame(key, format);
     }
 }

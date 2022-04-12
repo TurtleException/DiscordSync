@@ -1,37 +1,47 @@
 package de.eldritch.spigot.discord_sync.user;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 final class UserMap {
+    private final Object lock = new Object();
+
+    private final HashMap<Long, User> turtleIndex    = new HashMap<>();
     private final HashMap<UUID, User> uuidIndex      = new HashMap<>();
     private final HashMap<Long, User> snowflakeIndex = new HashMap<>();
 
     /* ------------------------- */
 
-    public User get(@NotNull UUID uuid) {
-        return uuidIndex.get(uuid);
+    public User get(long turtle) {
+        synchronized (lock) {
+            return turtleIndex.get(turtle);
+        }
     }
 
-    public User get(long snowflake) {
-        return snowflakeIndex.get(snowflake);
+    public User getByUUID(@NotNull UUID uuid) {
+        synchronized (lock) {
+            return uuidIndex.get(uuid);
+        }
+    }
+
+    public User getBySnowflake(long snowflake) {
+        synchronized (lock) {
+            return snowflakeIndex.get(snowflake);
+        }
     }
 
     public void remove(@NotNull User user) {
-        uuidIndex.remove(user.uuid());
-        snowflakeIndex.remove(user.snowflake());
-    }
+        synchronized (lock) {
+            turtleIndex.remove(user.getID());
 
-    public void remove(@NotNull UUID uuid) {
-        User user = uuidIndex.remove(uuid);
-        if (user != null)
-            snowflakeIndex.remove(user.snowflake());
+            if (user.minecraft() != null)
+                uuidIndex.remove(user.minecraft().getUniqueId());
+            if (user.discord() != null)
+                snowflakeIndex.remove(user.discord().getIdLong());
+        }
     }
 
     /* ------------------------- */
@@ -42,14 +52,21 @@ final class UserMap {
      * @return true if the User's UUID is new to this map.
      */
     public boolean put(@NotNull User user) {
-        if (user.isDiscordConnected())
-            snowflakeIndex.put(user.snowflake(), user);
-        return uuidIndex.put(user.uuid(), user) != null;
+        synchronized (lock) {
+            if (user.minecraft() != null)
+                uuidIndex.put(user.minecraft().getUniqueId(), user);
+            if (user.discord() != null)
+                snowflakeIndex.put(user.discord().getIdLong(), user);
+
+            return turtleIndex.put(user.getID(), user) != null;
+        }
     }
 
     /* ------------------------- */
 
     public Collection<User> getUserView() {
-        return uuidIndex.values();
+        synchronized (lock) {
+            return turtleIndex.values();
+        }
     }
 }
