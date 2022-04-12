@@ -1,5 +1,6 @@
 package de.eldritch.spigot.discord_sync.user;
 
+import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.discord.DiscordUtil;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Turtle;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -52,8 +53,12 @@ public final class User implements Turtle {
     /* ----- ----- ----- */
 
     public EmbedBuilder newEmbed() {
+        final String thumbnail = minecraft() != null
+                ? DiscordSync.singleton.getAvatarHandler().getBustURL(minecraft().getUniqueId())
+                : null;
+
         return new EmbedBuilder()
-                .setThumbnail("")
+                .setThumbnail(thumbnail)
                 .setFooter(DiscordUtil.FOOTER_TEXT, DiscordUtil.getAvatarURL())
                 .setColor(DiscordUtil.COLOR_NEUTRAL);
     }
