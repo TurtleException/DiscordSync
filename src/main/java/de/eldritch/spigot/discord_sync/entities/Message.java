@@ -32,11 +32,11 @@ public abstract class Message implements Turtle, Referencable, Synchronizable {
     /**
      * The referenced message this message is a reply to.
      */
-    protected final @Nullable Message reference;
+    protected final @Nullable Referencable reference;
 
     protected String refNum;
 
-    protected Message(long turtle, @NotNull User author, long timestamp, String content, @Nullable Message reference) {
+    protected Message(long turtle, @NotNull User author, long timestamp, String content, @Nullable Referencable reference) {
         this.turtle = turtle;
         this.author = author;
         this.timestamp = timestamp;

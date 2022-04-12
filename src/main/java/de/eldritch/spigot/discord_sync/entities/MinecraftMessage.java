@@ -3,6 +3,7 @@ package de.eldritch.spigot.discord_sync.entities;
 import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.discord.Accessor;
 import de.eldritch.spigot.discord_sync.entities.interfaces.DiscordSynchronizable;
+import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
 import de.eldritch.spigot.discord_sync.text.Text;
 import de.eldritch.spigot.discord_sync.user.User;
 import de.eldritch.spigot.discord_sync.util.markdown.MarkdownTranslator;
@@ -15,7 +16,7 @@ public class MinecraftMessage extends MinecraftSyncMessage implements DiscordSyn
 
     private String format;
 
-    protected MinecraftMessage(long turtle, @NotNull User author, long timestamp, String content, @Nullable Message reference) {
+    protected MinecraftMessage(long turtle, @NotNull User author, long timestamp, String content, @Nullable Referencable reference) {
         super(turtle, author, timestamp, content, reference);
     }
 

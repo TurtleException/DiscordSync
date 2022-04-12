@@ -4,6 +4,7 @@ import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.entities.*;
 import de.eldritch.spigot.discord_sync.entities.interfaces.DiscordSynchronizable;
 import de.eldritch.spigot.discord_sync.entities.interfaces.MinecraftSynchronizable;
+import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Synchronizable;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +16,7 @@ import java.util.Random;
 public class SynchronizationService {
     /**
      * Maximum capacity of the message cache.
-     * @see SynchronizationService#messageCache
+     * @see SynchronizationService#referencableCache
      */
     private static final int CACHE_CAPACITY = 256;
     /**
@@ -24,9 +25,9 @@ public class SynchronizationService {
      * digits used to easily reference these messages and reply to them. The reference numbers are stored as a String to
      * prevent trimming of leading zeros and to allow possible extra reference Strings that contain letters.
      */
-    private final LinkedHashMap<String, Message> messageCache = new LinkedHashMap<>(CACHE_CAPACITY) {
+    private final LinkedHashMap<String, Referencable> referencableCache = new LinkedHashMap<>(CACHE_CAPACITY) {
         @Override
-        protected boolean removeEldestEntry(Map.Entry<String, Message> eldest) {
+        protected boolean removeEldestEntry(Map.Entry<String, Referencable> eldest) {
             return size() >= CACHE_CAPACITY;
         }
     };
@@ -60,10 +61,10 @@ public class SynchronizationService {
     }
 
     public void handle0(Synchronizable obj) {
-        if (obj instanceof Message msg) {
+        if (obj instanceof Referencable ref) {
             final String refNum = newRefNum();
-            messageCache.put(refNum, msg);
-            msg.setRefNum(refNum);
+            referencableCache.put(refNum, ref);
+            ref.setRefNum(refNum);
         }
 
         if (obj instanceof MinecraftSynchronizable mSync)
@@ -85,28 +86,28 @@ public class SynchronizationService {
         return new DecimalFormat(String.valueOf(QUICK_REFERENCE_NUMBER_BOUND).substring(1)).format(refNum);
     }
 
-    public @Nullable Message getCachedMessageByReferenceNumber(String refNumber) {
-        return messageCache.get(refNumber);
+    public @Nullable Referencable getCachedReferencable(String refNumber) {
+        return referencableCache.get(refNumber);
     }
 
     /**
-     * Provides a cached {@link Message} that either originated from Discord or is a {@link DiscordSynchronizable} with
-     * its Discord message representation matching the given snowflake ID or <code>null</code> if no such message could
-     * be found in the cache.
+     * Provides a cached {@link Referencable} that either originated from Discord or is a {@link DiscordSynchronizable}
+     * with its Discord message representation matching the given snowflake ID or <code>null</code> if no such message
+     * could be found in the cache.
      * @param snowflake Snowflake ID of the Discord message representation.
      * @return Message or <code>null</code>.
      */
-    public @Nullable Message getCachedMessageBySnowflake(long snowflake) {
-        for (Message cachedMsg : messageCache.values()) {
-            if (cachedMsg instanceof DiscordMessage dMsg) {
+    public @Nullable Referencable getCachedReferencableBySnowflake(long snowflake) {
+        for (Referencable cachedReferencable : referencableCache.values()) {
+            if (cachedReferencable instanceof DiscordMessage dMsg) {
                 if (dMsg.getSnowflake() == snowflake)
                     return dMsg;
             }
 
-            if (cachedMsg instanceof DiscordSynchronizable dSync) {
+            if (cachedReferencable instanceof DiscordSynchronizable dSync) {
                 try {
                     if (dSync.getSnowflake() == snowflake)
-                        return cachedMsg;
+                        return cachedReferencable;
                 } catch (IllegalStateException ignored) { }
             }
         }
@@ -114,13 +115,13 @@ public class SynchronizationService {
     }
 
     /**
-     * Provides a cached {@link Message} that matches the given TurtleID or <code>null</code> if no such message could
-     * be found in the cache.
+     * Provides a cached {@link Referencable} that matches the given TurtleID or <code>null</code> if no such message
+     * could be found in the cache.
      * @param turtle ID of the message.
      * @return Message or <code>null</code>.
      */
-    public @Nullable Message getCachedMessageByTurtle(long turtle) {
-        for (Message cachedMsg : messageCache.values())
+    public @Nullable Referencable getCachedReferencableByTurtle(long turtle) {
+        for (Referencable cachedMsg : referencableCache.values())
             if (cachedMsg.getID() == turtle)
                 return cachedMsg;
         return null;

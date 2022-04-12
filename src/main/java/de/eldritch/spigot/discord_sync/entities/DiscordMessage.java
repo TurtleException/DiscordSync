@@ -1,5 +1,6 @@
 package de.eldritch.spigot.discord_sync.entities;
 
+import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
 import de.eldritch.spigot.discord_sync.user.User;
 import de.eldritch.spigot.discord_sync.util.markdown.MarkdownTranslator;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +21,7 @@ public class DiscordMessage extends MinecraftSyncMessage {
                    long sfChannel,
                    long sfMessage,
                    String content,
-                   @Nullable Message reference) {
+                   @Nullable Referencable reference) {
         super(turtle, author, timestamp, content, reference);
 
         this.sfGuild = sfGuild;

@@ -2,6 +2,7 @@ package de.eldritch.spigot.discord_sync.entities;
 
 import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.entities.interfaces.MinecraftSynchronizable;
+import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
 import de.eldritch.spigot.discord_sync.text.Text;
 import de.eldritch.spigot.discord_sync.user.User;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 abstract class MinecraftSyncMessage extends Message implements MinecraftSynchronizable {
-    protected MinecraftSyncMessage(long turtle, @NotNull User author, long timestamp, String content, @Nullable Message reference) {
+    protected MinecraftSyncMessage(long turtle, @NotNull User author, long timestamp, String content, @Nullable Referencable reference) {
         super(turtle, author, timestamp, content, reference);
     }
 

@@ -2,12 +2,13 @@ package de.eldritch.spigot.discord_sync.sync;
 
 import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.entities.Message;
+import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.logging.Level;
 
 public class ReferenceHelper {
-    public static @Nullable Message getReference(net.dv8tion.jda.api.entities.Message message) {
+    public static @Nullable Referencable getReference(net.dv8tion.jda.api.entities.Message message) {
         if (message.getMessageReference() == null)
             return null;
 
@@ -16,10 +17,10 @@ public class ReferenceHelper {
         if (reference == null)
             reference = message.getMessageReference().resolve().complete();
 
-        return DiscordSync.singleton.getSynchronizationService().getCachedMessageBySnowflake(reference.getIdLong());
+        return DiscordSync.singleton.getSynchronizationService().getCachedReferencableBySnowflake(reference.getIdLong());
     }
 
-    public static @Nullable Message getReference(String rawMinecraftMessage) {
+    public static @Nullable Referencable getReference(String rawMinecraftMessage) {
         String reference = parseReference(rawMinecraftMessage);
 
         // guard: no reference
@@ -30,7 +31,7 @@ public class ReferenceHelper {
         if (reference.startsWith("@T")) {
             try {
                 long snowflake = Long.parseLong(reference.substring(2));
-                return service.getCachedMessageByTurtle(snowflake);
+                return service.getCachedReferencableByTurtle(snowflake);
             } catch (NumberFormatException | NullPointerException e) {
                 DiscordSync.singleton.getLogger().log(Level.WARNING, "\"" + reference + "\" is not a valid turtle reference.");
                 return null;
@@ -40,14 +41,14 @@ public class ReferenceHelper {
         if (reference.startsWith("@D")) {
             try {
                 long snowflake = Long.parseLong(reference.substring(2));
-                return service.getCachedMessageBySnowflake(snowflake);
+                return service.getCachedReferencableBySnowflake(snowflake);
             } catch (NumberFormatException | NullPointerException e) {
                 DiscordSync.singleton.getLogger().log(Level.WARNING, "\"" + reference + "\" is not a valid snowflake reference.");
                 return null;
             }
         }
 
-        return service.getCachedMessageByReferenceNumber(reference);
+        return service.getCachedReferencable(reference);
     }
 
     private static @Nullable String parseReference(String message) {
