@@ -3,28 +3,22 @@ package de.eldritch.spigot.discord_sync.entities;
 import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.discord.Accessor;
 import de.eldritch.spigot.discord_sync.user.User;
+import net.dv8tion.jda.api.EmbedBuilder;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
 public class MinecraftDeathEvent extends MinecraftEvent {
-    private final String message;
-
     public MinecraftDeathEvent(long timestamp, @NotNull User user, String message, Collection<? extends Player> onlinePlayers) {
-        super(timestamp, Accessor.Channel.DEATH, user);
-
-        this.message = formatMessage(message, onlinePlayers);
-
-        this.initBuilder();
+        super(timestamp, Accessor.Channel.DEATH, user, initBuilder(user, formatMessage(message, onlinePlayers)));
     }
 
-    @Override
-    protected void initBuilder() {
-        builder = user.newEmbed().setDescription(message);
+    private static EmbedBuilder initBuilder(User user, String message) {
+        return user.newEmbed().setDescription(message);
     }
 
-    private String formatMessage(String msg, Collection<? extends Player> onlinePlayers) {
+    private static String formatMessage(String msg, Collection<? extends Player> onlinePlayers) {
         String newMsg = msg;
         for (Player player : onlinePlayers) {
             if (newMsg.contains(player.getName())) {

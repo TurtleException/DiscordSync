@@ -53,14 +53,6 @@ public class TextUtil {
 
     /* ------------------------- */
 
-    static @NotNull Text get(@NotNull String key, String... format) throws NullPointerException {
-        try {
-            return getFromPlugin(key, format);
-        } catch (NullPointerException ignored) {
-            return getFromGame(key, format);
-        }
-    }
-
     static @NotNull Text getFromPlugin(@NotNull String key, String... format) throws NullPointerException {
         checkSingleton();
         return singleton.textService_plugin.get(key, format);

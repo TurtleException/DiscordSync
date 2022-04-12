@@ -7,19 +7,15 @@ import net.dv8tion.jda.api.entities.Icon;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 public class AvatarHandler {
     // TODO: use internal webserver to avoid dependency on third-party API
     private static final String MINECRAFT_AVATAR_BUST = "https://mc-heads.net/avatar/%s";
     private static final String MINECRAFT_AVATAR_HEAD = "https://minotar.net/helm/%s/256";
-
-    private final ConcurrentHashMap<UUID, BufferedImage> skins = new ConcurrentHashMap<>();
 
     public void loadEmote(@NotNull OfflinePlayer player) {
         if (player.getName() == null) return;

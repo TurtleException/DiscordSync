@@ -19,8 +19,6 @@ public class EntityBuilder {
                 TurtleBuilder.newID(),
                 getUser(message.getAuthor().getIdLong()),
                 getTimestamp(message),
-                message.getGuild().getIdLong(),
-                message.getChannel().getIdLong(),
                 message.getIdLong(),
                 message.getContentRaw(),
                 ReferenceHelper.getReference(message)

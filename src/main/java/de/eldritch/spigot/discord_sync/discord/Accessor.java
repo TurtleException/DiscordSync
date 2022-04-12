@@ -9,8 +9,6 @@ import org.bukkit.advancement.Advancement;
 import org.jetbrains.annotations.NotNull;
 
 public class Accessor {
-    private final DiscordService service;
-
     /**
      * The guild that is synchronized with the Minecraft server.
      */
@@ -34,8 +32,6 @@ public class Accessor {
     TextChannel deathChannel;
 
     Accessor(DiscordService service) throws NumberFormatException, NullPointerException {
-        this.service = service;
-
         guild = service.getJDA().getGuildById(getID("guild"));
 
         if (guild == null)

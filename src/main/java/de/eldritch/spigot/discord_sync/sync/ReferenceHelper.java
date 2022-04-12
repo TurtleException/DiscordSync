@@ -1,7 +1,6 @@
 package de.eldritch.spigot.discord_sync.sync;
 
 import de.eldritch.spigot.discord_sync.DiscordSync;
-import de.eldritch.spigot.discord_sync.entities.Message;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
 import org.jetbrains.annotations.Nullable;
 

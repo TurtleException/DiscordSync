@@ -9,10 +9,6 @@ public record Text(@NotNull String content) {
         return new TextComponent(TextComponent.fromLegacyText(content));
     }
 
-    public TextComponent toBaseComponent(ChatColor defaultColor) {
-        return new TextComponent(TextComponent.fromLegacyText(content, defaultColor));
-    }
-
     @Override
     public String toString() {
         return content;

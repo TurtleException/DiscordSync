@@ -24,7 +24,6 @@ public class DiscordSync extends JavaPlugin {
 
     private Version version;
 
-    private Dispatcher             dispatcher;
     private UserService            userService;
     private SynchronizationService synchronizationService;
     private DiscordService         discordService;
@@ -77,9 +76,6 @@ public class DiscordSync extends JavaPlugin {
      * @see DiscordSync#checks()
      */
     private void init() throws Exception {
-        getLogger().log(Level.FINE, "Initializing Dispatcher.");
-        dispatcher = new Dispatcher();
-
         getLogger().log(Level.FINE, "Initializing UserService.");
         userService = new UserService();
 
@@ -109,10 +105,22 @@ public class DiscordSync extends JavaPlugin {
 
     /* ----- ----- ----- */
 
-    public Version                getVersion()                { return version; }
-    public Dispatcher             getDispatcher()             { return dispatcher; }
-    public UserService            getUserService()            { return userService; }
-    public SynchronizationService getSynchronizationService() { return synchronizationService; }
-    public DiscordService         getDiscordService()         { return discordService; }
-    public AvatarHandler          getAvatarHandler()          { return avatarHandler; }
+    public Version getVersion() {
+        return version;
+    }
+
+    public UserService getUserService() {
+        return userService;
+    }
+
+    public SynchronizationService getSynchronizationService() {
+        return synchronizationService; }
+
+    public DiscordService getDiscordService() {
+        return discordService;
+    }
+
+    public AvatarHandler getAvatarHandler() {
+        return avatarHandler;
+    }
 }

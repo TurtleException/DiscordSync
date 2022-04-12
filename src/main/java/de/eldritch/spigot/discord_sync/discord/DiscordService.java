@@ -90,6 +90,11 @@ public class DiscordService {
         }
     }
 
-    public Accessor getAccessor() { return accessor; }
-    public JDA      getJDA()      { return jda; }
+    public Accessor getAccessor() {
+        return accessor;
+    }
+
+    public JDA getJDA() {
+        return jda;
+    }
 }

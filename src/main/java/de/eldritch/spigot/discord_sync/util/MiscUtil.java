@@ -14,6 +14,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
 
 public class MiscUtil {
+    @SuppressWarnings("BusyWait")
     public static void await(@NotNull BooleanSupplier condition, int timeout, @NotNull TimeUnit unit) throws TimeoutException, InterruptedException {
         final long timeoutMillis = System.currentTimeMillis() + unit.toMillis(timeout);
 
@@ -28,7 +29,7 @@ public class MiscUtil {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try (InputStream in = url.openStream()) {
-            int n = 0;
+            int n;
             byte[] buffer = new byte[1024];
 
             while (-1 != (n = in.read(buffer))) {

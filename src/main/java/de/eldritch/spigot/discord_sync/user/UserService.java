@@ -11,7 +11,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;

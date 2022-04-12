@@ -7,26 +7,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class DiscordMessage extends MinecraftSyncMessage {
-    /* SNOWFLAKE IDS */
-    private final long sfGuild;
-    private final long sfChannel;
-    private final long sfMessage;
+    private final long snowflake;
 
     private String format;
 
     DiscordMessage(long turtle,
                    @NotNull User author,
                    long timestamp,
-                   long sfGuild,
-                   long sfChannel,
-                   long sfMessage,
+                   long snowflake,
                    String content,
                    @Nullable Referencable reference) {
         super(turtle, author, timestamp, content, reference);
 
-        this.sfGuild = sfGuild;
-        this.sfChannel = sfChannel;
-        this.sfMessage = sfMessage;
+        this.snowflake = snowflake;
     }
 
     @Override
@@ -44,6 +37,6 @@ public class DiscordMessage extends MinecraftSyncMessage {
     }
 
     public long getSnowflake() {
-        return sfMessage;
+        return snowflake;
     }
 }
