@@ -1,8 +1,7 @@
 package de.eldritch.spigot.discord_sync;
 
 import de.eldritch.spigot.discord_sync.discord.DiscordService;
-import de.eldritch.spigot.discord_sync.sync.Dispatcher;
-import de.eldritch.spigot.discord_sync.user.avatar.AvatarHandler;
+import de.eldritch.spigot.discord_sync.user.AvatarHandler;
 import de.eldritch.spigot.discord_sync.sync.SynchronizationService;
 import de.eldritch.spigot.discord_sync.sync.listener.MinecraftChatListener;
 import de.eldritch.spigot.discord_sync.sync.listener.MinecraftEventListener;

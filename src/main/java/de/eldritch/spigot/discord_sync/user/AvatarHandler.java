@@ -1,4 +1,4 @@
-package de.eldritch.spigot.discord_sync.user.avatar;
+package de.eldritch.spigot.discord_sync.user;
 
 import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.util.MiscUtil;
