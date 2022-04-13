@@ -27,4 +27,18 @@ public class DiscordUtil {
     public static @Nullable String getAvatarURL() {
         return DiscordSync.singleton.getDiscordService().getJDA().getSelfUser().getAvatarUrl();
     }
+
+    public static long parseSnowflake(String input) throws NullPointerException, NumberFormatException {
+        if (input == null)
+            throw new NullPointerException("Input may not be null.");
+        if (input.equals(""))
+            throw new NullPointerException("Input may not be empty String.");
+
+        long snowflake = Long.parseLong(input);
+
+        if (snowflake < 0)
+            throw new NumberFormatException("Snowflake may not be negative number.");
+
+        return snowflake;
+    }
 }

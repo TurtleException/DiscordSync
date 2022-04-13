@@ -8,3 +8,8 @@ description: Synchronize Minecraft's ingame chat with a Discord channel, check t
 
 author: TurtleException
 website: https://github.com/TurtleException/DiscordSync
+
+commands:
+  verify:
+    usage: "/verify <discord-name>"
+    description: "Connects your Discord account to synchronize your name and allow @mentions in event messages."

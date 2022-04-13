@@ -1,6 +1,7 @@
 package de.eldritch.spigot.discord_sync;
 
 import de.eldritch.spigot.discord_sync.discord.DiscordService;
+import de.eldritch.spigot.discord_sync.text.Text;
 import de.eldritch.spigot.discord_sync.user.AvatarHandler;
 import de.eldritch.spigot.discord_sync.sync.SynchronizationService;
 import de.eldritch.spigot.discord_sync.sync.listener.MinecraftChatListener;
@@ -8,8 +9,11 @@ import de.eldritch.spigot.discord_sync.sync.listener.MinecraftEventListener;
 import de.eldritch.spigot.discord_sync.sync.listener.MinecraftJoinListener;
 import de.eldritch.spigot.discord_sync.text.TextUtil;
 import de.eldritch.spigot.discord_sync.user.UserService;
+import de.eldritch.spigot.discord_sync.user.verification.VerificationService;
 import de.eldritch.spigot.discord_sync.util.ConfigUtil;
 import de.eldritch.spigot.discord_sync.util.version.Version;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
@@ -21,9 +25,12 @@ import java.util.logging.Level;
 public class DiscordSync extends JavaPlugin {
     public static DiscordSync singleton;
 
+    private static TextComponent chatPrefix;
+
     private Version version;
 
     private UserService            userService;
+    private VerificationService    verificationService;
     private SynchronizationService synchronizationService;
     private DiscordService         discordService;
     private AvatarHandler          avatarHandler;
@@ -78,6 +85,9 @@ public class DiscordSync extends JavaPlugin {
         getLogger().log(Level.FINE, "Initializing UserService.");
         userService = new UserService();
 
+        getLogger().log(Level.FINE, "Initializing VerificationService.");
+        verificationService = new VerificationService();
+
         getLogger().log(Level.FINE, "Initializing SynchronizationService.");
         synchronizationService = new SynchronizationService();
 
@@ -100,6 +110,24 @@ public class DiscordSync extends JavaPlugin {
     public void onDisable() {
         discordService.shutdown();
         discordService = null;
+    }
+
+    /* ----- ----- ----- */
+
+    public static TextComponent getChatPrefix() {
+        if (chatPrefix == null) {
+            chatPrefix = Text.of("general.prefix").toBaseComponent();
+
+            chatPrefix.setHoverEvent(new HoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    new net.md_5.bungee.api.chat.hover.content.Text(Text.of(
+                            "general.prefix.verbose",
+                            singleton.getVersion().toString()
+                    ).content())
+            ));
+        }
+
+        return chatPrefix;
     }
 
     /* ----- ----- ----- */
