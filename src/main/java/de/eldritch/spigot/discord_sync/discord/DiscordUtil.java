@@ -1,7 +1,12 @@
 package de.eldritch.spigot.discord_sync.discord;
 
 import de.eldritch.spigot.discord_sync.DiscordSync;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.utils.TimeUtil;
 import org.jetbrains.annotations.Nullable;
+
+import java.time.Instant;
 
 public class DiscordUtil {
     public static final String LOG_INVALID_TOKEN = "It looks like your token is missing or invalid. Please provide your"
@@ -21,12 +26,11 @@ public class DiscordUtil {
      */
     public static final int COLOR_NEUTRAL = 0x2F3136;
 
-    /**
-     * Provide the current avatar URL of the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.
-     */
-    public static @Nullable String getAvatarURL() {
-        return DiscordSync.singleton.getDiscordService().getJDA().getSelfUser().getAvatarUrl();
-    }
+    public static final MessageEmbed DEFAULT_EMBED = new EmbedBuilder()
+            .setFooter(FOOTER_TEXT, getAvatarURL())
+            .setTimestamp(Instant.now())
+            .setColor(COLOR_NEUTRAL)
+            .build();
 
     public static long parseSnowflake(String input) throws NullPointerException, NumberFormatException {
         if (input == null)
@@ -40,5 +44,12 @@ public class DiscordUtil {
             throw new NumberFormatException("Snowflake may not be negative number.");
 
         return snowflake;
+    }
+
+    /**
+     * Provide the current avatar URL of the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.
+     */
+    public static @Nullable String getAvatarURL() {
+        return DiscordSync.singleton.getDiscordService().getJDA().getSelfUser().getAvatarUrl();
     }
 }

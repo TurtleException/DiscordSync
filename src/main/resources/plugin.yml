@@ -13,3 +13,6 @@ commands:
   verify:
     usage: "/verify <discord-name>"
     description: "Connects your Discord account to synchronize your name and allow @mentions in event messages."
+  verify-confirm:
+    usage: "/verify-confirm"
+    description: "Confirms that an existing connection should be overwritten. Using this command without using /verify first will remove your current connection!"

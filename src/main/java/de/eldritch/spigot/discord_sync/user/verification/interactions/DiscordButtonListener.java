@@ -16,5 +16,7 @@ public class DiscordButtonListener extends ListenerAdapter {
         if (!(buttonId.equals(BUTTON_ID_BLOCK_PLAYER) || buttonId.equals(BUTTON_ID_BLOCK_ALL))) return;
 
         // TODO: handle block interaction
+
+
     }
 }

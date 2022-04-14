@@ -52,9 +52,19 @@ public final class User implements Turtle {
 
     /* ----- ----- ----- */
 
+    void setMinecraft(OfflinePlayer player) {
+        this.player = player;
+    }
+
+    void setDiscord(Member member) {
+        this.member = member;
+    }
+
+    /* ----- ----- ----- */
+
     public EmbedBuilder newEmbed() {
         final String thumbnail = minecraft() != null
-                ? DiscordSync.singleton.getAvatarHandler().getBustURL(minecraft().getUniqueId())
+                ? AvatarHandler.getBustURL(minecraft())
                 : null;
 
         return new EmbedBuilder()

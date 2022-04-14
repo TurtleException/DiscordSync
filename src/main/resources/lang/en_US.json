@@ -27,8 +27,15 @@
   "verify.error.timedOut": "§eYour verification request to §6{0} §ehas timed out!",
   "verify.error.denied": "§6{0} §ehas denied your verification request.",
   "verify.success": "§eYou are now verified as §6{0}§e.",
+  "verify.discord.embed.title": "Verify your Minecraft account",
+  "verify.discord.embed.description": "Please verify that this is your Minecraft Account.\nIf this isn't you, you can either deny the request or block requests from this player. To avoid **any** more requests you can also block this guild entirely.\n*[What is this?]({0})*",
+  "verify.discord.embed.field.player": "Player",
+  "verify.discord.embed.field.guild": "Server",
+  "verify.discord.embed.field.timeout": "Timeout",
   "verify.discord.button.accept": "Accept",
   "verify.discord.button.deny": "Deny",
   "verify.discord.button.blockPlayer": "Block player",
-  "verify.discord.button.blockAll": "Block all requests"
+  "verify.discord.button.blockAll": "Block all requests",
+  "verify.confirm.message": "§eExecuting this command will cancel your connection with §6{0}§e.\n",
+  "verify.confirm.button": " §8[§l§aConfirm§r§8]"
 }

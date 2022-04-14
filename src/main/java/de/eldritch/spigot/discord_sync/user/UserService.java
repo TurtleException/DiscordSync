@@ -9,6 +9,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Set;
@@ -122,5 +123,25 @@ public class UserService {
         }
 
         return user;
+    }
+
+    /* ----- ----- ----- */
+
+    public void register(@NotNull User user, Member member) {
+        final User oldUser = getUserBySnowflake(member.getIdLong());
+
+        if (oldUser.discord() != null)
+            userMap.remove(oldUser);
+
+        user.setDiscord(member);
+    }
+
+    public void register(@NotNull User user, OfflinePlayer player) {
+        final User oldUser = getUserByUUID(player.getUniqueId());
+
+        if (oldUser.minecraft() != null)
+            userMap.remove(oldUser);
+
+        user.setMinecraft(player);
     }
 }

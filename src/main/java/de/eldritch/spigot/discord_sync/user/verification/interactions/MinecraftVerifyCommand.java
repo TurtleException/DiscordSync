@@ -1,9 +1,12 @@
 package de.eldritch.spigot.discord_sync.user.verification.interactions;
 
 import de.eldritch.spigot.discord_sync.DiscordSync;
+import de.eldritch.spigot.discord_sync.discord.DiscordUtil;
 import de.eldritch.spigot.discord_sync.text.Text;
+import de.eldritch.spigot.discord_sync.user.AvatarHandler;
 import de.eldritch.spigot.discord_sync.user.User;
 import de.eldritch.spigot.discord_sync.user.verification.VerificationUtil;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -13,6 +16,9 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.utils.TimeFormat;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,6 +29,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 public class MinecraftVerifyCommand implements CommandExecutor {
+    private static final String HELP_URL = ""; // TODO
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
@@ -41,29 +49,83 @@ public class MinecraftVerifyCommand implements CommandExecutor {
         // so IntelliJ doesn't complain -> member is NEVER null at this point
         assert member != null;
 
-        DiscordSync.singleton.getServer().getScheduler().runTaskAsynchronously(
-                DiscordSync.singleton,
-                () -> openBlockingDiscordInteraction(player, member)
-        );
+
+        // check if the old connection will be overwritten
+        final User user = DiscordSync.singleton.getUserService().getUserByUUID(player.getUniqueId());
+
+        if (user.discord() != null) {
+            confirmInteraction(player, member, user.discord());
+        } else {
+            openInteraction(player, member);
+        }
 
         return true;
     }
 
+    private void confirmInteraction(@NotNull Player player, @NotNull Member member, @NotNull Member oldMember) {
+        final TextComponent message = Text.of("verify.confirm.message", oldMember.getUser().getAsTag()).toBaseComponent();
+        final TextComponent button  = Text.of("verify.confirm.button").toBaseComponent();
+
+        MinecraftVerifyConfirmCommand.CONFIRMATION_QUEUE.put(player.getUniqueId(), member);
+        button.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "verify-confirm"));
+
+        player.spigot().sendMessage(
+                DiscordSync.getChatPrefix(),
+                message,
+                button
+        );
+    }
+
+    static void openInteraction(@NotNull Player player, @NotNull Member member) {
+        DiscordSync.singleton.getServer().getScheduler().runTaskAsynchronously(
+                DiscordSync.singleton,
+                () -> openBlockingDiscordInteraction(player, member)
+        );
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
-    private void openBlockingDiscordInteraction(@NotNull Player player, @NotNull Member member) {
-        // TODO: maybe check if the old connection will be overwritten
+    private static void openBlockingDiscordInteraction(@NotNull Player player, @NotNull Member member) {
         final User user = DiscordSync.singleton.getUserService().getUserByUUID(player.getUniqueId());
 
         final PrivateChannel channel = member.getUser().openPrivateChannel().complete();
 
-        final Button buttonAccept      = Button.of(ButtonStyle.SUCCESS  , "accept", "ACCEPT");
-        final Button buttonDeny        = Button.of(ButtonStyle.DANGER   , "deny"  , "DENY"  );
-        final Button buttonBlockPlayer = Button.of(ButtonStyle.SECONDARY, DiscordButtonListener.BUTTON_ID_BLOCK_PLAYER, "BLOCK PLAYER");
-        final Button buttonBlockAll    = Button.of(ButtonStyle.SECONDARY, DiscordButtonListener.BUTTON_ID_BLOCK_ALL   , "BLOCK ALL"   );
+        // interaction timeout
+        final long timeout = Instant.now().plus(10L, ChronoUnit.MINUTES).toEpochMilli();
 
-        // TODO: complete builder
+        final String textAccept      = Text.of("verify.discord.button.accept").content();
+        final String textDeny        = Text.of("verify.discord.button.deny"  ).content();
+        final String textBlockPlayer = Text.of("verify.discord.button.blockPlayer").content();
+        final String textBlockAll    = Text.of("verify.discord.button.blockAll"   ).content();
+
+        final Button buttonAccept      = Button.of(ButtonStyle.SUCCESS  , "accept", textAccept);
+        final Button buttonDeny        = Button.of(ButtonStyle.DANGER   , "deny"  , textDeny  );
+        final Button buttonBlockPlayer = Button.of(ButtonStyle.SECONDARY, DiscordButtonListener.BUTTON_ID_BLOCK_PLAYER, textBlockPlayer);
+        final Button buttonBlockAll    = Button.of(ButtonStyle.SECONDARY, DiscordButtonListener.BUTTON_ID_BLOCK_ALL   , textBlockAll   );
+
         final MessageBuilder builder = new MessageBuilder()
-                .setActionRows(ActionRow.of(buttonAccept, buttonDeny, buttonBlockPlayer, buttonBlockAll));
+                .setActionRows(ActionRow.of(buttonAccept, buttonDeny, buttonBlockPlayer, buttonBlockAll))
+                .setEmbeds(
+                        new EmbedBuilder(DiscordUtil.DEFAULT_EMBED)
+                                .setDescription(Text.of("verify.discord.embed.description", HELP_URL).content())
+                                .setTitle(Text.of("verify.discord.embed.title").content())
+                                .setThumbnail(AvatarHandler.getBodyURL(player))
+                                .addField(
+                                        Text.of("verify.discord.embed.field.player").content(),
+                                        player.getName(),
+                                        true
+                                )
+                                .addField(
+                                        Text.of("verify.discord.embed.field.guild").content(),
+                                        member.getGuild().getName() + " (" + member.getAsMention() + ")",
+                                        true
+                                )
+                                .addField(
+                                        Text.of("verify.discord.embed.field.timeout").content(),
+                                        TimeFormat.RELATIVE.format(timeout),
+                                        false
+                                )
+                                .build()
+                );
 
         final Message message = channel.sendMessage(builder.build()).complete();
 
@@ -97,7 +159,6 @@ public class MinecraftVerifyCommand implements CommandExecutor {
         member.getJDA().getEventManager().register(buttonListener);
 
         // interaction timeout after 10 minutes
-        final long timeout = Instant.now().plus(10L, ChronoUnit.MINUTES).toEpochMilli();
         while (System.currentTimeMillis() < timeout && !result[0]) { }
 
         message.editMessage(builder
@@ -117,23 +178,20 @@ public class MinecraftVerifyCommand implements CommandExecutor {
 
         // notify player
         if (!result[0]) {
-            // timed out
             player.spigot().sendMessage(
                     DiscordSync.getChatPrefix(),
                     Text.of("verify.error.timedOut", member.getUser().getAsTag()).toBaseComponent()
             );
         } else {
             if (result[1]) {
-                // request accepted
-                // TODO: update user object
-                // TODO: possibly merge user objects
+                // merge user object
+                DiscordSync.singleton.getUserService().register(user, member);
 
                 player.spigot().sendMessage(
                         DiscordSync.getChatPrefix(),
                         Text.of("verify.success", member.getUser().getAsTag()).toBaseComponent()
                 );
             } else {
-                // request denied
                 player.spigot().sendMessage(
                         DiscordSync.getChatPrefix(),
                         Text.of("verify.error.denied", member.getUser().getAsTag()).toBaseComponent()

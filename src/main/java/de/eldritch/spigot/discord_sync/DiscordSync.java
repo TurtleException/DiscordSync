@@ -9,7 +9,7 @@ import de.eldritch.spigot.discord_sync.sync.listener.MinecraftEventListener;
 import de.eldritch.spigot.discord_sync.sync.listener.MinecraftJoinListener;
 import de.eldritch.spigot.discord_sync.text.TextUtil;
 import de.eldritch.spigot.discord_sync.user.UserService;
-import de.eldritch.spigot.discord_sync.user.verification.VerificationService;
+import de.eldritch.spigot.discord_sync.user.verification.VerificationUtil;
 import de.eldritch.spigot.discord_sync.util.ConfigUtil;
 import de.eldritch.spigot.discord_sync.util.version.Version;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -30,7 +30,6 @@ public class DiscordSync extends JavaPlugin {
     private Version version;
 
     private UserService            userService;
-    private VerificationService    verificationService;
     private SynchronizationService synchronizationService;
     private DiscordService         discordService;
     private AvatarHandler          avatarHandler;
@@ -85,9 +84,6 @@ public class DiscordSync extends JavaPlugin {
         getLogger().log(Level.FINE, "Initializing UserService.");
         userService = new UserService();
 
-        getLogger().log(Level.FINE, "Initializing VerificationService.");
-        verificationService = new VerificationService();
-
         getLogger().log(Level.FINE, "Initializing SynchronizationService.");
         synchronizationService = new SynchronizationService();
 
@@ -96,6 +92,10 @@ public class DiscordSync extends JavaPlugin {
 
         getLogger().log(Level.FINE, "Initializing EmoteHandler.");
         avatarHandler = new AvatarHandler();
+
+        getLogger().log(Level.FINE, "Initializing verification.");
+        VerificationUtil.initCommands();
+        VerificationUtil.initListener();
     }
 
     private void registerListeners() {

@@ -13,9 +13,12 @@ public class MinecraftVerifyTabCompleter implements TabCompleter {
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        // TODO: dynamic filtering
+        if (args.length != 1) return null;
+
         return DiscordSync.singleton.getDiscordService().getAccessor().getGuild().getMembers().stream()
-                .filter(member -> DiscordSync.singleton.getUserService().getUserBySnowflake(member.getIdLong()).minecraft() != null)
+                .filter(member ->
+                        member.getUser().getAsTag().toLowerCase().startsWith(args[0].toLowerCase())
+                     && member.getEffectiveName().toLowerCase().startsWith(args[0].toLowerCase()))
                 .map(member -> member.getUser().getAsTag())
                 .toList();
     }

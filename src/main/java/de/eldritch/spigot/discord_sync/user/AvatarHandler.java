@@ -15,6 +15,7 @@ import java.util.logging.Level;
 public class AvatarHandler {
     // TODO: use internal webserver to avoid dependency on third-party API
     private static final String MINECRAFT_AVATAR_BUST = "https://mc-heads.net/avatar/%s";
+    private static final String MINECRAFT_AVATAR_BODY = "https://mc-heads.net/body/%s";
     private static final String MINECRAFT_AVATAR_HEAD = "https://minotar.net/helm/%s/256";
 
     public void loadEmote(@NotNull OfflinePlayer player) {
@@ -58,7 +59,11 @@ public class AvatarHandler {
         });
     }
 
-    public String getBustURL(UUID uuid) {
-        return MINECRAFT_AVATAR_BUST.formatted(uuid.toString());
+    public static String getBodyURL(OfflinePlayer player) {
+        return MINECRAFT_AVATAR_BODY.formatted(player.getUniqueId().toString());
+    }
+
+    public static String getBustURL(OfflinePlayer player) {
+        return MINECRAFT_AVATAR_BUST.formatted(player.getUniqueId().toString());
     }
 }
