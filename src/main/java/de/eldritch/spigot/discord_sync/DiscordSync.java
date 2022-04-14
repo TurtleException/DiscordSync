@@ -16,6 +16,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.logging.Level;
 
 /**
@@ -108,6 +109,13 @@ public class DiscordSync extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        getLogger().log(Level.FINE, "Shutting down UserService.");
+        userService.saveUsers();
+        userService.saveConfig();
+
+        getLogger().log(Level.FINE, "Saving config.");
+        saveConfig();
+
         discordService.shutdown();
         discordService = null;
     }

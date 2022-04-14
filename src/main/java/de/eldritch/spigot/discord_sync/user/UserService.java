@@ -88,6 +88,26 @@ public class UserService {
         ));
     }
 
+    public void saveUsers() {
+        for (User user : userMap.getUserView()) {
+            OfflinePlayer player = user.minecraft();
+            Member        member = user.discord();
+
+            userConfiguration.set(user.getID() + ".uuid"     , player != null ? player.getUniqueId() : null);
+            userConfiguration.set(user.getID() + ".snowflake", member != null ? member.getId()       : null);
+        }
+    }
+
+    public void saveConfig() {
+        try {
+            ConfigUtil.saveConfig(userConfiguration, "users");
+        } catch (IOException e) {
+            DiscordSync.singleton.getLogger().log(Level.WARNING, "Encountered an unexpected exception while saving user config.", e);
+        }
+    }
+
+    /* ----- ----- ----- */
+
     public User getUser(long turtle) {
         User user = userMap.get(turtle);
 

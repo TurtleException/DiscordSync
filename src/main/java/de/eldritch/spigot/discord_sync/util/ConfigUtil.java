@@ -30,8 +30,26 @@ public class ConfigUtil {
      * @throws InvalidConfigurationException if the configuration fails to load or an exception occurs while applying
      *                                       the default values.
      */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static YamlConfiguration getConfig(@NotNull String path, @Nullable String resource) throws IOException, InvalidConfigurationException {
+        File file = getFile(path);
+
+        YamlConfiguration configuration = new YamlConfiguration();
+        configuration.load(file);
+
+        if (resource != null)
+            applyDefaults(configuration, resource);
+
+        return configuration;
+    }
+
+    public static void saveConfig(@NotNull FileConfiguration config, @NotNull String path) throws IOException {
+        File file = getFile(path);
+
+        config.save(file);
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private static @NotNull File getFile(@NotNull String path) throws IOException {
         File file = new File(DiscordSync.singleton.getDataFolder(), path + ".yml");
 
         if (file.exists()) {
@@ -42,13 +60,7 @@ public class ConfigUtil {
             file.createNewFile();
         }
 
-        YamlConfiguration configuration = new YamlConfiguration();
-        configuration.load(file);
-
-        if (resource != null)
-            applyDefaults(configuration, resource);
-
-        return configuration;
+        return file;
     }
 
     /**
