@@ -34,7 +34,7 @@
   "verify.discord.embed.field.player": "Player",
   "verify.discord.embed.field.timeout": "Timeout",
   "verify.discord.embed.title": "Verify your Minecraft account",
-  "verify.error.blocked": "$6{0} §edoes not accept requests.",
+  "verify.error.blocked": "§6{0} §edoes not accept requests.",
   "verify.error.denied": "§6{0} §ehas denied your verification request.",
   "verify.error.snowflake": "§eThat ID does not seem to be valid.",
   "verify.error.timedOut": "§eYour verification request to §6{0} §ehas timed out!",

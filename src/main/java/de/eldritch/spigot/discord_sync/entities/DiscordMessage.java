@@ -6,6 +6,7 @@ import de.eldritch.spigot.discord_sync.util.markdown.MarkdownTranslator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+// TODO: Attachments
 public class DiscordMessage extends MinecraftSyncMessage {
     private final long snowflake;
 
