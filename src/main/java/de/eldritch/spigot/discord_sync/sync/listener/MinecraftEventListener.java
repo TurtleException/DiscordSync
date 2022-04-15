@@ -25,6 +25,9 @@ public class MinecraftEventListener implements Listener {
         SynchronizationService.handle(syncEvent);
     }
 
+    /**
+     * Note: I hate spigot for not providing a namespace key here :c
+     */
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         final long timestamp = System.currentTimeMillis();

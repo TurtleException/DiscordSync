@@ -117,6 +117,10 @@ public class DiscordSync extends JavaPlugin {
 
         discordService.shutdown();
         discordService = null;
+
+        synchronizationService = null;
+        userService            = null;
+        avatarHandler          = null;
     }
 
     /* ----- ----- ----- */
@@ -148,7 +152,8 @@ public class DiscordSync extends JavaPlugin {
     }
 
     public SynchronizationService getSynchronizationService() {
-        return synchronizationService; }
+        return synchronizationService;
+    }
 
     public DiscordService getDiscordService() {
         return discordService;
