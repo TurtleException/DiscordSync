@@ -26,6 +26,7 @@ public class EntityBuilder {
                 getTimestamp(message),
                 message.getIdLong(),
                 message.getContentRaw(),
+                message.getAttachments(),
                 ReferenceHelper.getReference(message)
         );
     }

@@ -67,4 +67,8 @@ public abstract class Message implements Turtle, Referencable, Synchronizable {
     }
 
     public abstract @NotNull String getFormat();
+
+    public String getContent() {
+        return content;
+    }
 }

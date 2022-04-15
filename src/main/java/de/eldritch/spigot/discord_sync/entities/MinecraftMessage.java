@@ -6,7 +6,7 @@ import de.eldritch.spigot.discord_sync.entities.interfaces.DiscordSynchronizable
 import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
 import de.eldritch.spigot.discord_sync.text.Text;
 import de.eldritch.spigot.discord_sync.user.User;
-import de.eldritch.spigot.discord_sync.util.markdown.MarkdownTranslator;
+import de.eldritch.spigot.discord_sync.util.format.MessageFormatter;
 import net.dv8tion.jda.api.MessageBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +49,7 @@ public class MinecraftMessage extends MinecraftSyncMessage implements DiscordSyn
 
     public @NotNull String getFormat() {
         if (format == null)
-            format = MarkdownTranslator.toMarkdown(content);
+            format = MessageFormatter.format(this);
         return format;
     }
 }
