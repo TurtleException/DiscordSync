@@ -22,11 +22,13 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 public class MinecraftVerifyCommand implements CommandExecutor {
     private static final String HELP_URL = ""; // TODO
@@ -50,9 +52,21 @@ public class MinecraftVerifyCommand implements CommandExecutor {
         assert member != null;
 
 
+        // check if the user has blocked requests
+        YamlConfiguration blocked = DiscordSync.singleton.getUserService().getBlockedUsers();
+        List<String> blockList = blocked.getStringList("discord." + member.getId());
+
+        if (blockList.contains(player.getUniqueId().toString()) || blockList.contains("*")) {
+            player.spigot().sendMessage(
+                    DiscordSync.getChatPrefix(),
+                    Text.of("verify.error.blocked", member.getUser().getAsTag()).toBaseComponent()
+            );
+            return true;
+        }
+
+
         // check if the old connection will be overwritten
         final User user = DiscordSync.singleton.getUserService().getUserByUUID(player.getUniqueId());
-
         if (user.discord() != null) {
             confirmInteraction(player, member, user.discord());
         } else {
@@ -118,6 +132,11 @@ public class MinecraftVerifyCommand implements CommandExecutor {
                                         Text.of("verify.discord.embed.field.guild").content(),
                                         member.getGuild().getName() + " (" + member.getAsMention() + ")",
                                         true
+                                )
+                                .addField(
+                                        "UUID",
+                                        player.getUniqueId().toString(),
+                                        false
                                 )
                                 .addField(
                                         Text.of("verify.discord.embed.field.timeout").content(),

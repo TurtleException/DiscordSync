@@ -1,4 +1,5 @@
 {
+  "error.internal": "An internal error occurred.",
   "general.prefix": "§8[§6DiscordSync§8] §r",
   "general.prefix.verbose": "§6DiscordSync\n§o§7§bv{0}",
   "general.synchronize.success": "§eDiscord chat synchronized.",
@@ -25,6 +26,7 @@
   "verify.error.snowflake": "§eThat ID does not seem to be valid.",
   "verify.error.unknownMember": "§eCould not find §6{0}§e.",
   "verify.error.timedOut": "§eYour verification request to §6{0} §ehas timed out!",
+  "verify.error.blocked": "$6{0} §edoes not accept requests.",
   "verify.error.denied": "§6{0} §ehas denied your verification request.",
   "verify.success": "§eYou are now verified as §6{0}§e.",
   "verify.discord.embed.title": "Verify your Minecraft account",

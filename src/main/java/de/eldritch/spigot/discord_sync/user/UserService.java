@@ -22,12 +22,14 @@ import java.util.stream.Collectors;
  */
 public class UserService {
     private final YamlConfiguration userConfiguration;
+    private final YamlConfiguration blockConfiguration;
 
     private final UserMap userMap = new UserMap();
 
     public UserService() throws IOException, InvalidConfigurationException {
         // initialize config
-        userConfiguration = ConfigUtil.getConfig("users", null);
+        userConfiguration  = ConfigUtil.getConfig("users", null);
+        blockConfiguration = ConfigUtil.getConfig("blocked", null);
 
         this.reloadUsers();
     }
@@ -104,6 +106,12 @@ public class UserService {
         } catch (IOException e) {
             DiscordSync.singleton.getLogger().log(Level.WARNING, "Encountered an unexpected exception while saving user config.", e);
         }
+
+        try {
+            ConfigUtil.saveConfig(blockConfiguration, "blocked");
+        } catch (IOException e) {
+            DiscordSync.singleton.getLogger().log(Level.WARNING, "Encountered an unexpected exception while saving block config.", e);
+        }
     }
 
     /* ----- ----- ----- */
@@ -163,5 +171,11 @@ public class UserService {
             userMap.remove(oldUser);
 
         user.setMinecraft(player);
+    }
+
+    /* ----- ----- ----- */
+
+    public @NotNull YamlConfiguration getBlockedUsers() {
+        return blockConfiguration;
     }
 }
