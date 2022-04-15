@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.UUID;
 import java.util.logging.Level;
 
 public class AvatarHandler {

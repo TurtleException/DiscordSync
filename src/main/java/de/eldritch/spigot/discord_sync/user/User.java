@@ -1,6 +1,5 @@
 package de.eldritch.spigot.discord_sync.user;
 
-import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.discord.DiscordUtil;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Turtle;
 import net.dv8tion.jda.api.EmbedBuilder;

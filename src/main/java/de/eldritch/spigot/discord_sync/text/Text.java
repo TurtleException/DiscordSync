@@ -1,6 +1,5 @@
 package de.eldritch.spigot.discord_sync.text;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 

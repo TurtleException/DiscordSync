@@ -3,7 +3,6 @@ package de.eldritch.spigot.discord_sync.discord;
 import de.eldritch.spigot.discord_sync.DiscordSync;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.utils.TimeUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
