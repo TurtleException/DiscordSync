@@ -21,6 +21,16 @@ public class MinecraftMessage extends MinecraftSyncMessage implements DiscordSyn
     }
 
     @Override
+    public String getLogMessage() {
+        final String name = author.getName() != null
+                ? author.getName()
+                : author.minecraft() != null
+                    ? author.minecraft().getName()
+                    : String.valueOf(author);
+        return "[MINECRAFT] <%s> %s".formatted(name, content);
+    }
+
+    @Override
     public void sendToDiscord() {
         DiscordSync.singleton.getDiscordService().getAccessor().send(
                 Accessor.Channel.MESSAGE,

@@ -44,6 +44,8 @@ public abstract class Message implements Turtle, Referencable, Synchronizable {
         this.reference = reference;
     }
 
+    public abstract String getLogMessage();
+
     @Override
     public final long getID() {
         return turtle;

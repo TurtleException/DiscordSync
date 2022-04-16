@@ -1,7 +1,8 @@
 package de.eldritch.spigot.discord_sync.sync;
 
 import de.eldritch.spigot.discord_sync.DiscordSync;
-import de.eldritch.spigot.discord_sync.entities.*;
+import de.eldritch.spigot.discord_sync.entities.DiscordMessage;
+import de.eldritch.spigot.discord_sync.entities.Message;
 import de.eldritch.spigot.discord_sync.entities.interfaces.DiscordSynchronizable;
 import de.eldritch.spigot.discord_sync.entities.interfaces.MinecraftSynchronizable;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
@@ -12,6 +13,7 @@ import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
 
 public class SynchronizationService {
     /**
@@ -61,6 +63,9 @@ public class SynchronizationService {
     }
 
     public void handle0(Synchronizable obj) {
+        if (obj instanceof Message msg)
+            DiscordSync.singleton.getServer().getLogger().log(Level.INFO, msg.getLogMessage());
+
         if (obj instanceof Referencable ref) {
             final String refNum = newRefNum();
             referencableCache.put(refNum, ref);

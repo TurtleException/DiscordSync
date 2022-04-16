@@ -41,10 +41,9 @@ public class DiscordService {
      */
     private final Accessor accessor;
 
-
     public DiscordService() throws LoginException, InterruptedException, NumberFormatException, NullPointerException {
         jda = BUILDER
-                .setToken(DiscordSync.singleton.getConfig().getString("snowflake.token"))
+                .setToken(DiscordSync.singleton.getConfig().getString("discord.token"))
                 .build();
 
         DiscordSync.singleton.getLogger().log(Level.INFO, "Awaiting JDA availability...");

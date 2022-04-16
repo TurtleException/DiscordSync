@@ -1,13 +1,15 @@
 package de.eldritch.spigot.discord_sync;
 
 import de.eldritch.spigot.discord_sync.discord.DiscordService;
-import de.eldritch.spigot.discord_sync.text.Text;
-import de.eldritch.spigot.discord_sync.user.AvatarHandler;
+import de.eldritch.spigot.discord_sync.discord.PresenceHandler;
+import de.eldritch.spigot.discord_sync.discord.PresenceRelevantListener;
 import de.eldritch.spigot.discord_sync.sync.SynchronizationService;
 import de.eldritch.spigot.discord_sync.sync.listener.MinecraftChatListener;
 import de.eldritch.spigot.discord_sync.sync.listener.MinecraftEventListener;
 import de.eldritch.spigot.discord_sync.sync.listener.MinecraftJoinListener;
+import de.eldritch.spigot.discord_sync.text.Text;
 import de.eldritch.spigot.discord_sync.text.TextUtil;
+import de.eldritch.spigot.discord_sync.user.AvatarHandler;
 import de.eldritch.spigot.discord_sync.user.UserService;
 import de.eldritch.spigot.discord_sync.user.verification.VerificationUtil;
 import de.eldritch.spigot.discord_sync.util.ConfigUtil;
@@ -38,10 +40,16 @@ public class DiscordSync extends JavaPlugin {
     public void onEnable() {
         singleton = this;
 
+        // TODO: remove (debug)
+        getServer().getLogger().setLevel(Level.ALL);
+        getLogger().setLevel(Level.ALL);
+
         try {
             this.prepare();
             this.checks();
             this.init();
+
+            this.registerListeners();
         } catch (Exception e) {
             if (e instanceof RuntimeException exc) {
                 throw exc;
@@ -62,6 +70,7 @@ public class DiscordSync extends JavaPlugin {
 
         // apply defaults manually because bukkit will only do that if the file does not exist
         ConfigUtil.applyDefaults(getConfig(), "config.yml");
+        ConfigUtil.saveConfig(getConfig(), "config");
 
         TextUtil.init();
     }
@@ -81,14 +90,14 @@ public class DiscordSync extends JavaPlugin {
      * @see DiscordSync#checks()
      */
     private void init() throws Exception {
+        getLogger().log(Level.FINE, "Initializing DiscordService.");
+        discordService = new DiscordService();
+
         getLogger().log(Level.FINE, "Initializing UserService.");
         userService = new UserService();
 
         getLogger().log(Level.FINE, "Initializing SynchronizationService.");
         synchronizationService = new SynchronizationService();
-
-        getLogger().log(Level.FINE, "Initializing DiscordService.");
-        discordService = new DiscordService();
 
         getLogger().log(Level.FINE, "Initializing EmoteHandler.");
         avatarHandler = new AvatarHandler();
@@ -96,18 +105,37 @@ public class DiscordSync extends JavaPlugin {
         getLogger().log(Level.FINE, "Initializing verification.");
         VerificationUtil.initCommands();
         VerificationUtil.initListener();
+
+        PresenceHandler.update();
     }
 
     private void registerListeners() {
         getServer().getPluginManager().registerEvents(new MinecraftChatListener(), this);
         getServer().getPluginManager().registerEvents(new MinecraftEventListener(), this);
         getServer().getPluginManager().registerEvents(new MinecraftJoinListener(), this);
+
+        getServer().getPluginManager().registerEvents(new PresenceRelevantListener(), this);
     }
 
     /* ----- ----- ----- */
 
     @Override
     public void onDisable() {
+        try {
+            this.shutdown();
+        } catch (Exception e) {
+            if (e instanceof RuntimeException exc) {
+                throw exc;
+            } else {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void shutdown() throws Exception {
+        // save to prevent data loss in case shutdown fails
+        ConfigUtil.saveConfig(getConfig(), "config");
+
         getLogger().log(Level.FINE, "Shutting down UserService.");
         userService.saveUsers();
         userService.saveConfig();
@@ -121,6 +149,9 @@ public class DiscordSync extends JavaPlugin {
         synchronizationService = null;
         userService            = null;
         avatarHandler          = null;
+
+        // save again for possible changes while shutting down
+        ConfigUtil.saveConfig(getConfig(), "config");
     }
 
     /* ----- ----- ----- */

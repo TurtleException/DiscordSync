@@ -4,11 +4,12 @@ import de.eldritch.spigot.discord_sync.entities.EntityBuilder;
 import de.eldritch.spigot.discord_sync.entities.MinecraftMessage;
 import de.eldritch.spigot.discord_sync.sync.SynchronizationService;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class MinecraftChatListener implements Listener {
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onChatEvent(AsyncPlayerChatEvent event) {
         final long timestamp = System.currentTimeMillis();
 

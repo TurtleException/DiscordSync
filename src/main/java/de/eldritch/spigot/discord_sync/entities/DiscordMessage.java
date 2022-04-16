@@ -30,6 +30,16 @@ public class DiscordMessage extends MinecraftSyncMessage {
     }
 
     @Override
+    public String getLogMessage() {
+        final String name = author.getName() != null
+                ? author.getName()
+                : author.discord() != null
+                    ? author.discord().getEffectiveName()
+                    : String.valueOf(author);
+        return "[DISCORD] <%s> %s".formatted(name, content);
+    }
+
+    @Override
     public void sendToMinecraft() {
         sendToMinecraft("discord");
     }

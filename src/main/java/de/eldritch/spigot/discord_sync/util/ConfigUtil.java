@@ -9,10 +9,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.util.Set;
 import java.util.logging.Level;
 
 public class ConfigUtil {
@@ -50,13 +48,19 @@ public class ConfigUtil {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static @NotNull File getFile(@NotNull String path) throws IOException {
-        File file = new File(DiscordSync.singleton.getDataFolder(), path + ".yml");
+        final String suffixPath = path + ".yml";
+
+        try {
+            DiscordSync.singleton.saveResource(suffixPath, false);
+        } catch (Exception ignored) { }
+
+        File file = new File(DiscordSync.singleton.getDataFolder(), suffixPath);
 
         if (file.exists()) {
             if (!file.isFile())
                 throw new IOException(file + " is not a file");
         } else {
-            file.mkdirs();
+            file.getParentFile().mkdirs();
             file.createNewFile();
         }
 
@@ -79,7 +83,13 @@ public class ConfigUtil {
             throw new NullPointerException("Resource InputStream turned out to be null");
 
         defaults.load(new InputStreamReader(resourceStream));
-        config.setDefaults(defaults);
+
+        // apply defaults manually (defaults are a bit weird)
+        Set<String> keys = config.getKeys(true);
+        for (String key : defaults.getKeys(true)) {
+            if (keys.contains(key)) continue;
+            config.set(key, defaults.get(key));
+        }
     }
 
     /**
@@ -96,7 +106,7 @@ public class ConfigUtil {
         validateVersion(config);
 
         /* ----- MANUAL CHECKS ----- */
-        validateNotNull(config, "snowflake.token", DiscordUtil.LOG_INVALID_TOKEN);
+        validateNotNull(config, "discord.token", DiscordUtil.LOG_INVALID_TOKEN);
     }
 
     private static void validateVersion(@NotNull FileConfiguration config) throws InvalidConfigurationException {
@@ -119,9 +129,9 @@ public class ConfigUtil {
 
         // compare versions
         if (required == -1)
-            throw new InvalidConfigurationException("Unable to validate config version");
+            throw new InvalidConfigurationException("Unable to validate config version.");
         if (version != required)
-            throw new InvalidConfigurationException("Config version does not match required version");
+            throw new InvalidConfigurationException("Config version (%s) does not match required version (%s).".formatted(version, required));
     }
 
     private static void validatePresent(@NotNull FileConfiguration config, @NotNull String key, String... logNotes) throws InvalidConfigurationException {
