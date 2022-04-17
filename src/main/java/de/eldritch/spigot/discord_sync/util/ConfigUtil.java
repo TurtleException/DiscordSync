@@ -29,7 +29,7 @@ public class ConfigUtil {
      *                                       the default values.
      */
     public static YamlConfiguration getConfig(@NotNull String path, @Nullable String resource) throws IOException, InvalidConfigurationException {
-        File file = getFile(path);
+        File file = IOUtil.getFile(path + ".yml");
 
         YamlConfiguration configuration = new YamlConfiguration();
         configuration.load(file);
@@ -41,30 +41,9 @@ public class ConfigUtil {
     }
 
     public static void saveConfig(@NotNull FileConfiguration config, @NotNull String path) throws IOException {
-        File file = getFile(path);
+        File file = IOUtil.getFile(path + ".yml");
 
         config.save(file);
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static @NotNull File getFile(@NotNull String path) throws IOException {
-        final String suffixPath = path + ".yml";
-
-        try {
-            DiscordSync.singleton.saveResource(suffixPath, false);
-        } catch (Exception ignored) { }
-
-        File file = new File(DiscordSync.singleton.getDataFolder(), suffixPath);
-
-        if (file.exists()) {
-            if (!file.isFile())
-                throw new IOException(file + " is not a file");
-        } else {
-            file.getParentFile().mkdirs();
-            file.createNewFile();
-        }
-
-        return file;
     }
 
     /**

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 
+// TODO: rewrite this mess
 final class UserMap {
     private final Object lock = new Object();
 
@@ -47,9 +48,9 @@ final class UserMap {
     /* ------------------------- */
 
     /**
-     * Puts the {@link User} into this UserMap. If a user with the same {@link UUID} already exists it will be replaced.
+     * Puts the {@link User} into this UserMap. If a user with the same ID already exists it will be replaced.
      * @param user User to store in this map.
-     * @return true if the User's UUID is new to this map.
+     * @return true if the User's ID is new to this map.
      */
     public boolean put(@NotNull User user) {
         synchronized (lock) {
@@ -60,6 +61,16 @@ final class UserMap {
 
             return turtleIndex.put(user.getID(), user) != null;
         }
+    }
+
+    /* ------------------------- */
+
+    void registerIndex(UUID uuid, User user) {
+        uuidIndex.put(uuid, user);
+    }
+
+    void registerIndex(Long snowflake, User user) {
+        snowflakeIndex.put(snowflake, user);
     }
 
     /* ------------------------- */

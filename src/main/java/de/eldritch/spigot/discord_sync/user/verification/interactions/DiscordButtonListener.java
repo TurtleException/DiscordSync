@@ -25,7 +25,7 @@ public class DiscordButtonListener extends ListenerAdapter {
         if (buttonId == null) return;
         if (!(buttonId.equals(BUTTON_ID_BLOCK_PLAYER) || buttonId.equals(BUTTON_ID_BLOCK_ALL))) return;
 
-        event.deferEdit().queue();
+        event.deferReply().queue();
 
         try {
             final YamlConfiguration config = DiscordSync.singleton.getUserService().getBlockedUsers();
@@ -44,6 +44,11 @@ public class DiscordButtonListener extends ListenerAdapter {
 
             // update config
             config.set(key, blockedNew);
+
+            event.getHook().sendMessage(Text.of(buttonId.equals(BUTTON_ID_BLOCK_ALL)
+                    ? "verify.blocked.blockAll"
+                    : "verify.blocked.blockPlayer"
+            ).content()).queue();
         } catch (Exception e) {
             DiscordSync.singleton.getLogger().log(Level.FINE, "An unexpected exception occurred when attempting to handle blocking interaction.", e);
             event.getHook().sendMessage(Text.of("error.internal").content()).queue();

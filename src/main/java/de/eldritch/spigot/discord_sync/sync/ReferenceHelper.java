@@ -51,9 +51,8 @@ public class ReferenceHelper {
     }
 
     private static @Nullable String parseReference(String message) {
-        if (message == null)         return null;
-        if (message.startsWith("@")) return null;
-        if (message.length() < 5)    return null;
+        if (message == null)          return null;
+        if (!message.startsWith("@")) return null;
 
         // check for direct turtle reference
         if (message.startsWith("@T")) {
@@ -66,6 +65,6 @@ public class ReferenceHelper {
         }
 
         // otherwise: parse quick reference number
-        return message.substring(1, 5);
+        return message.substring(1, message.indexOf(" "));
     }
 }

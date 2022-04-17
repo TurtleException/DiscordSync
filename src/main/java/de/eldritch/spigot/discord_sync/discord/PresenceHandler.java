@@ -18,7 +18,7 @@ public class PresenceHandler {
                 : OnlineStatus.IDLE;
         final Activity     activity     = players > 0
                 ? Activity.playing("Minecraft (%s)".formatted(players))
-                : null;
+                : Activity.playing("Minecraft");
 
         discordService.getJDA().getPresence().setPresence(onlineStatus, activity);
     }

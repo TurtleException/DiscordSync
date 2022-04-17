@@ -23,12 +23,12 @@ class AttachmentParser {
         }
 
         if (image)
-            builder.append(" [IMG]");
+            builder.append(" &8[IMG]");
         if (video)
-            builder.append(" [VID]");
+            builder.append(" &8[VID]");
         if (file)
-            builder.append(" [FILE]");
+            builder.append(" &8[FILE]");
 
-        return builder.toString();
+        return ColorParser.format(builder.toString());
     }
 }

@@ -14,11 +14,11 @@ public class MinecraftJoinEvent extends MinecraftEvent {
 
     private static EmbedBuilder initBuilder(User user, long timestamp, long last) {
         Text lastOnline = timestamp < last
-                ? Text.of("misc.lastOnline.never", user.getName())
+                ? Text.of("misc.lastOnline.never", user.getMention())
                 : MiscUtil.formatDuration(last, timestamp);
 
         return user.newEmbed()
-                .setDescription(Text.ofGame("multiplayer.player.joined", user.getName()).content())
+                .setDescription(Text.ofGame("multiplayer.player.joined", user.getMention()).content())
                 .addField(
                         Text.of("events.join.field.lastOnline").content(),
                         lastOnline.content(),

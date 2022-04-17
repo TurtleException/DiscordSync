@@ -18,7 +18,7 @@ public class MinecraftVerifyTabCompleter implements TabCompleter {
         return DiscordSync.singleton.getDiscordService().getAccessor().getGuild().getMembers().stream()
                 .filter(member ->
                         member.getUser().getAsTag().toLowerCase().startsWith(args[0].toLowerCase())
-                     && member.getEffectiveName().toLowerCase().startsWith(args[0].toLowerCase()))
+                     || member.getEffectiveName().toLowerCase().startsWith(args[0].toLowerCase()))
                 .map(member -> member.getUser().getAsTag())
                 .toList();
     }

@@ -27,10 +27,10 @@ public class MinecraftAdvancementEvent extends MinecraftEvent {
     }
 
     private static String getProperty(Advancement advancement, String property) {
-        return Text.ofGame(parseName(advancement) + "." + property).content();
+        return parseName(advancement) + "." + property;
     }
 
     private static String parseName(Advancement advancement) {
-        return "advancement." + advancement.getKey().getKey().replace("/", ".");
+        return "advancements." + advancement.getKey().getKey().replace("/", ".");
     }
 }

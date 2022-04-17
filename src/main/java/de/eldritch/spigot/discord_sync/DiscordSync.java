@@ -19,6 +19,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.StreamHandler;
 
 /**
  * The plugin main class.
@@ -40,9 +42,19 @@ public class DiscordSync extends JavaPlugin {
     public void onEnable() {
         singleton = this;
 
-        // TODO: remove (debug)
-        getServer().getLogger().setLevel(Level.ALL);
+        // TODO: remove
         getLogger().setLevel(Level.ALL);
+        getLogger().addHandler(new StreamHandler() {
+            @Override
+            public synchronized void publish(LogRecord record) {
+                if (record.getLevel().intValue() < Level.INFO.intValue()) {
+                    record.setMessage("[DEBUG HANDLER | " + record.getLevel() + "]  " + record.getMessage());
+                    record.setLevel(Level.INFO);
+
+                    getLogger().log(record);
+                }
+            }
+        });
 
         try {
             this.prepare();

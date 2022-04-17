@@ -12,6 +12,6 @@ public class MinecraftQuitEvent extends MinecraftEvent {
     }
 
     private static EmbedBuilder initBuilder(User user) {
-        return user.newEmbed().setDescription(Text.ofGame("multiplayer.player.left", user.getName()).content());
+        return user.newEmbed().setDescription(Text.ofGame("multiplayer.player.left", user.getMention()).content());
     }
 }

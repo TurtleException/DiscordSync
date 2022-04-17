@@ -4,10 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import de.eldritch.spigot.discord_sync.DiscordSync;
+import de.eldritch.spigot.discord_sync.util.IOUtil;
+import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
@@ -33,8 +35,11 @@ public class TextService {
      */
     private final Object lock = new Object();
 
-    public TextService(@NotNull String path) throws FileNotFoundException, NullPointerException, JsonIOException, JsonSyntaxException {
+    private final boolean messageFormat;
+
+    public TextService(@NotNull String path, boolean messageFormat) throws JsonIOException, JsonSyntaxException, IOException {
         this.path = path;
+        this.messageFormat = messageFormat;
 
         this.load(DEFAULT_LANGUAGE);
     }
@@ -46,41 +51,29 @@ public class TextService {
             String str = langMap.get(key);
             if (str == null)
                 throw new NullPointerException("Key has no value: " + key);
-            return new Text(MessageFormat.format(str, (Object[]) format));
+
+            // Determine whether to look for "{0}" or "%s"
+            String content = messageFormat
+                    ? MessageFormat.format(str, (Object[]) format)
+                    : str.formatted((Object[]) format);
+
+            // translate color codes
+            content = ChatColor.translateAlternateColorCodes('&', content);
+
+            return new Text(content);
         }
     }
 
-    public void load(String language) throws FileNotFoundException, NullPointerException, JsonIOException, JsonSyntaxException {
-        String filename = language + ".json";
+    public void load(String language) throws JsonIOException, JsonSyntaxException, IOException {
         Gson gson = new Gson();
 
         synchronized (lock) {
-            // try to load from external file
-            File file = new File(new File(DiscordSync.singleton.getDataFolder(), path), filename);
-            if (file.exists() && file.isFile()) {
-                langMap = gson.fromJson(
-                        new FileReader(file),
-                        new TypeToken<HashMap<String, String>>() {
-                        }.getType()
-                );
-                this.language = language;
-                return;
-            }
-
-            // try to load from resource
-            InputStream resourceStream = DiscordSync.singleton.getResource(path + File.separator + filename);
-            if (resourceStream != null) {
-                langMap = gson.fromJson(
-                        new InputStreamReader(resourceStream),
-                        new TypeToken<HashMap<String, String>>() {
-                        }.getType()
-                );
-                this.language = language;
-                return;
-            }
+            langMap = gson.fromJson(
+                    new FileReader(IOUtil.getFile(path + "/" + language + ".json")),
+                    new TypeToken<HashMap<String, String>>() {
+                    }.getType()
+            );
+            this.language = language;
         }
-
-        // not found
-        throw new NullPointerException(String.format("Could not find '%s'", filename));
     }
 }

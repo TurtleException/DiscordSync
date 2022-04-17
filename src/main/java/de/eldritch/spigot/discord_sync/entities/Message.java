@@ -5,6 +5,7 @@ import de.eldritch.spigot.discord_sync.entities.interfaces.Synchronizable;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Turtle;
 import de.eldritch.spigot.discord_sync.text.Text;
 import de.eldritch.spigot.discord_sync.user.User;
+import de.eldritch.spigot.discord_sync.util.format.MessageFormatter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,14 +64,11 @@ public abstract class Message implements Turtle, Referencable, Synchronizable {
         return refNum;
     }
 
-    @Override
-    public @NotNull Text getContainerText() {
-        return Text.of("chat.reference.container", author.getName(), String.valueOf(getID()), getFormat());
-    }
-
-    public abstract @NotNull String getFormat();
-
     public String getContent() {
         return content;
+    }
+
+    public @Nullable Referencable getReference() {
+        return reference;
     }
 }

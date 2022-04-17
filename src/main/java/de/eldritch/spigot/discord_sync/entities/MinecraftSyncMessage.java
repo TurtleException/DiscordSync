@@ -5,24 +5,25 @@ import de.eldritch.spigot.discord_sync.entities.interfaces.MinecraftSynchronizab
 import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
 import de.eldritch.spigot.discord_sync.text.Text;
 import de.eldritch.spigot.discord_sync.user.User;
+import de.eldritch.spigot.discord_sync.util.format.MessageFormatter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-abstract class MinecraftSyncMessage extends Message implements MinecraftSynchronizable {
+public abstract class MinecraftSyncMessage extends Message implements MinecraftSynchronizable {
     protected MinecraftSyncMessage(long turtle, @NotNull User author, long timestamp, String content, @Nullable Referencable reference) {
         super(turtle, author, timestamp, content, reference);
     }
 
     protected void sendToMinecraft(@NotNull String key) {
-        final TextComponent prefix = Text.of("chat.message." + key, author.getName()).toBaseComponent();
-        final TextComponent text   = Text.of("chat.message.content", getFormat()).toBaseComponent();
+        final TextComponent prefix = Text.of("chat.prefix." + key, author.getEffectiveName()).toBaseComponent();
+        final TextComponent text   = Text.of("chat.message.content", MessageFormatter.formatMinecraft(this)).toBaseComponent();
 
         text.setHoverEvent(new HoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
-                new net.md_5.bungee.api.chat.hover.content.Text(Text.of("chat.reference.howto").content())
+                new net.md_5.bungee.api.chat.hover.content.Text(Text.of("chat.reference.howto", String.valueOf(this.getID())).content())
         ));
         text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "@" + getRefNum() + " "));
 

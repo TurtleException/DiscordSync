@@ -63,14 +63,14 @@ public class SynchronizationService {
     }
 
     public void handle0(Synchronizable obj) {
-        if (obj instanceof Message msg)
-            DiscordSync.singleton.getServer().getLogger().log(Level.INFO, msg.getLogMessage());
-
         if (obj instanceof Referencable ref) {
             final String refNum = newRefNum();
             referencableCache.put(refNum, ref);
             ref.setRefNum(refNum);
         }
+
+        if (obj instanceof Message msg)
+            DiscordSync.singleton.getLogger().logrb(Level.INFO, null, msg.getLogMessage());
 
         if (obj instanceof MinecraftSynchronizable mSync)
             mSync.sendToMinecraft();

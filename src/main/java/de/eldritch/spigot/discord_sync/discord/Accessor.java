@@ -74,4 +74,8 @@ public class Accessor {
     public Guild getGuild() {
         return guild;
     }
+
+    public TextChannel getMessageChannel() {
+        return messageChannel;
+    }
 }
