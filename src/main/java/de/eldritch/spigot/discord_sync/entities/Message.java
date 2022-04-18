@@ -3,9 +3,7 @@ package de.eldritch.spigot.discord_sync.entities;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Synchronizable;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Turtle;
-import de.eldritch.spigot.discord_sync.text.Text;
-import de.eldritch.spigot.discord_sync.user.User;
-import de.eldritch.spigot.discord_sync.util.format.MessageFormatter;
+import de.eldritch.spigot.discord_sync.user.LegacyUser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +16,7 @@ public abstract class Message implements Turtle, Referencable, Synchronizable {
     /**
      * Synchronized author object.
      */
-    protected final User author;
+    protected final LegacyUser author;
 
     /**
      * UNIX timestamp
@@ -37,7 +35,7 @@ public abstract class Message implements Turtle, Referencable, Synchronizable {
 
     protected String refNum;
 
-    protected Message(long turtle, @NotNull User author, long timestamp, String content, @Nullable Referencable reference) {
+    protected Message(long turtle, @NotNull LegacyUser author, long timestamp, String content, @Nullable Referencable reference) {
         this.turtle = turtle;
         this.author = author;
         this.timestamp = timestamp;

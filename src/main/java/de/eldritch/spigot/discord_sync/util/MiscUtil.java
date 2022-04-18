@@ -1,5 +1,6 @@
 package de.eldritch.spigot.discord_sync.util;
 
+import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.text.Text;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,6 +13,7 @@ import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
+import java.util.logging.Level;
 
 public class MiscUtil {
     @SuppressWarnings("BusyWait")
@@ -54,5 +56,9 @@ public class MiscUtil {
         if (duration.toMillis() < Duration.ZERO.plusDays(2).toMillis())
             return Text.of("misc.lastOnline.hours", String.valueOf(duration.toHours()));
         return Text.of("misc.lastOnline.days", String.valueOf(duration.toDays()));
+    }
+
+    public static void logUnexpectedException(Level level, String msgSuffix, Throwable t) {
+        DiscordSync.singleton.getLogger().log(level, "Encountered an unexpected exception " + msgSuffix, t);
     }
 }

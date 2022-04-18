@@ -25,6 +25,7 @@
   "user.info.unknown": "{0} &8(not verified)",
   "verify.blocked.blockAll": "You will no longer receive requests from this guild.",
   "verify.blocked.blockPlayer": "You will no longer receive requests from this player.",
+  "verify.blocked.alreadyVerified": "You cannot block yourself! (*Already verified*)",
   "verify.confirm.button": " &8[&l&aCONFIRM&r&8]",
   "verify.confirm.message": "&7Executing this command will cancel your connection with &e{0}&7.\n",
   "verify.discord.button.accept": "Accept",

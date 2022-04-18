@@ -10,7 +10,7 @@ import de.eldritch.spigot.discord_sync.sync.listener.MinecraftJoinListener;
 import de.eldritch.spigot.discord_sync.text.Text;
 import de.eldritch.spigot.discord_sync.text.TextUtil;
 import de.eldritch.spigot.discord_sync.user.AvatarHandler;
-import de.eldritch.spigot.discord_sync.user.UserService;
+import de.eldritch.spigot.discord_sync.user.LegacyUserService;
 import de.eldritch.spigot.discord_sync.user.verification.VerificationUtil;
 import de.eldritch.spigot.discord_sync.util.ConfigUtil;
 import de.eldritch.spigot.discord_sync.util.version.Version;
@@ -33,7 +33,7 @@ public class DiscordSync extends JavaPlugin {
 
     private Version version;
 
-    private UserService            userService;
+    private LegacyUserService userService;
     private SynchronizationService synchronizationService;
     private DiscordService         discordService;
     private AvatarHandler          avatarHandler;
@@ -106,7 +106,7 @@ public class DiscordSync extends JavaPlugin {
         discordService = new DiscordService();
 
         getLogger().log(Level.FINE, "Initializing UserService.");
-        userService = new UserService();
+        userService = new LegacyUserService();
 
         getLogger().log(Level.FINE, "Initializing SynchronizationService.");
         synchronizationService = new SynchronizationService();
@@ -190,7 +190,7 @@ public class DiscordSync extends JavaPlugin {
         return version;
     }
 
-    public UserService getUserService() {
+    public LegacyUserService getUserService() {
         return userService;
     }
 

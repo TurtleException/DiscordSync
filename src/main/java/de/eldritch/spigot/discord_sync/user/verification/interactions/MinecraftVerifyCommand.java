@@ -4,7 +4,7 @@ import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.discord.DiscordUtil;
 import de.eldritch.spigot.discord_sync.text.Text;
 import de.eldritch.spigot.discord_sync.user.AvatarHandler;
-import de.eldritch.spigot.discord_sync.user.User;
+import de.eldritch.spigot.discord_sync.user.LegacyUser;
 import de.eldritch.spigot.discord_sync.user.verification.VerificationUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -71,7 +71,7 @@ public class MinecraftVerifyCommand implements CommandExecutor {
 
 
         // check if the old connection will be overwritten
-        final User user = DiscordSync.singleton.getUserService().getUserByUUID(player.getUniqueId());
+        final LegacyUser user = DiscordSync.singleton.getUserService().getUserByUUID(player.getUniqueId());
         if (user.discord() != null) {
             confirmInteraction(player, member, user.discord());
         } else {
@@ -104,7 +104,7 @@ public class MinecraftVerifyCommand implements CommandExecutor {
 
     @SuppressWarnings("StatementWithEmptyBody")
     private static void openBlockingDiscordInteraction(@NotNull Player player, @NotNull Member member) {
-        final User user = DiscordSync.singleton.getUserService().getUserByUUID(player.getUniqueId());
+        final LegacyUser user = DiscordSync.singleton.getUserService().getUserByUUID(player.getUniqueId());
 
         final PrivateChannel channel = member.getUser().openPrivateChannel().complete();
 
@@ -222,8 +222,8 @@ public class MinecraftVerifyCommand implements CommandExecutor {
                         buttonAccept.asDisabled(),
                         buttonDeny.asDisabled(),
                         // disable block buttons if the player accepted the request
-                        result[2].get() ? buttonBlockPlayer : buttonBlockPlayer.asDisabled(),
-                        result[2].get() ? buttonBlockAll : buttonBlockAll.asDisabled()
+                        result[1].get() && result[2].get() ? buttonBlockPlayer : buttonBlockPlayer.asDisabled(),
+                        result[1].get() && result[2].get() ? buttonBlockAll : buttonBlockAll.asDisabled()
                 ))
                 .build()
         ).complete();

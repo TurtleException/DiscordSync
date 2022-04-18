@@ -2,7 +2,7 @@ package de.eldritch.spigot.discord_sync.entities;
 
 import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.sync.ReferenceHelper;
-import de.eldritch.spigot.discord_sync.user.User;
+import de.eldritch.spigot.discord_sync.user.LegacyUser;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import org.bukkit.advancement.Advancement;
@@ -15,7 +15,7 @@ import java.util.UUID;
 public class EntityBuilder {
     /**
      * Constructs a new {@link DiscordMessage} from a {@link net.dv8tion.jda.api.entities.Message Message}. The TurtleID
-     * will be newly created and the {@link User} association will be managed automatically.
+     * will be newly created and the {@link LegacyUser} association will be managed automatically.
      * @param message The Discord message.
      * @return A new {@link DiscordMessage} object.
      */
@@ -33,7 +33,7 @@ public class EntityBuilder {
 
     /**
      * Constructs a new {@link MinecraftMessage} from a chat message on the server. The TurtleID will be newly created
-     * and the {@link User} association will be managed automatically.
+     * and the {@link LegacyUser} association will be managed automatically.
      * @param author UUID of the player that sent the message.
      * @param content The legacy text content of the message.
      * @param timestamp The exact time the message has been received by the EventHandler.
@@ -51,7 +51,7 @@ public class EntityBuilder {
 
     /**
      * Constructs a new {@link MinecraftAdvancementEvent} from an {@link Advancement}. The TurtleID will be newly
-     * created and the {@link User} association will be managed automatically.
+     * created and the {@link LegacyUser} association will be managed automatically.
      * @param player UUID of the player that achieved the advancement.
      * @param advancement The advancement that the player achieved.
      * @param timestamp The exact time the event has been received by the EventHandler.
@@ -67,7 +67,7 @@ public class EntityBuilder {
 
     /**
      * Constructs a new {@link MinecraftDeathEvent} from a player death. The TurtleID will be newly created and the
-     * {@link User} association will be managed automatically.
+     * {@link LegacyUser} association will be managed automatically.
      * @param player UUID of the player that died.
      * @param timestamp The exact time the event has been received by the EventHandler.
      * @param message The death message
@@ -85,7 +85,7 @@ public class EntityBuilder {
 
     /**
      * Constructs a new {@link MinecraftJoinEvent} from a player join. The TurtleID will be newly created and the
-     * {@link User} association will be managed automatically.
+     * {@link LegacyUser} association will be managed automatically.
      * @param player UUID of the player that joined.
      * @param timestamp The exact time the event has been received by the EventHandler.
      * @param last UNIX time of the last time the player was online.
@@ -101,7 +101,7 @@ public class EntityBuilder {
 
     /**
      * Constructs a new {@link MinecraftQuitEvent} from a player quit. The TurtleID will be newly created and the
-     * {@link User} association will be managed automatically.
+     * {@link LegacyUser} association will be managed automatically.
      * @param player UUID of the player that quit.
      * @param timestamp The exact time the event has been received by the EventHandler.
      * @return A new {@link MinecraftQuitEvent} object.
@@ -133,11 +133,11 @@ public class EntityBuilder {
         }
     }
 
-    public static @NotNull User getUser(long snowflake) {
+    public static @NotNull LegacyUser getUser(long snowflake) {
         return DiscordSync.singleton.getUserService().getUserBySnowflake(snowflake);
     }
 
-    public static @NotNull User getUser(@NotNull UUID uuid) {
+    public static @NotNull LegacyUser getUser(@NotNull UUID uuid) {
         return DiscordSync.singleton.getUserService().getUserByUUID(uuid);
     }
 
