@@ -6,7 +6,7 @@ import de.eldritch.spigot.discord_sync.entities.interfaces.DiscordRepresentable;
 import de.eldritch.spigot.discord_sync.entities.interfaces.DiscordSynchronizable;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
 import de.eldritch.spigot.discord_sync.text.Text;
-import de.eldritch.spigot.discord_sync.user.LegacyUser;
+import de.eldritch.spigot.discord_sync.user.User;
 import de.eldritch.spigot.discord_sync.util.format.MessageFormatter;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 public class MinecraftMessage extends MinecraftSyncMessage implements DiscordSynchronizable {
     private long snowflake = -1;
 
-    protected MinecraftMessage(long turtle, @NotNull LegacyUser author, long timestamp, String content, @Nullable Referencable reference) {
+    protected MinecraftMessage(long turtle, @NotNull User author, long timestamp, String content, @Nullable Referencable reference) {
         super(turtle, author, timestamp, content, reference);
     }
 

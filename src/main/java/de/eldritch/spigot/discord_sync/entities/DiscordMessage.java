@@ -3,7 +3,7 @@ package de.eldritch.spigot.discord_sync.entities;
 import de.eldritch.spigot.discord_sync.entities.interfaces.DiscordRepresentable;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
 import de.eldritch.spigot.discord_sync.text.Text;
-import de.eldritch.spigot.discord_sync.user.LegacyUser;
+import de.eldritch.spigot.discord_sync.user.User;
 import de.eldritch.spigot.discord_sync.util.format.MessageFormatter;
 import net.dv8tion.jda.api.entities.Message;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ public class DiscordMessage extends MinecraftSyncMessage implements DiscordRepre
     private final List<Message.Attachment> attachments;
 
     DiscordMessage(long turtle,
-                   @NotNull LegacyUser author,
+                   @NotNull User author,
                    long timestamp,
                    long snowflake,
                    String content,

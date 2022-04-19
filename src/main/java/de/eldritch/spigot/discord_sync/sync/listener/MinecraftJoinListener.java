@@ -1,7 +1,7 @@
 package de.eldritch.spigot.discord_sync.sync.listener;
 
 import de.eldritch.spigot.discord_sync.DiscordSync;
-import de.eldritch.spigot.discord_sync.user.LegacyUser;
+import de.eldritch.spigot.discord_sync.user.User;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -15,7 +15,7 @@ public class MinecraftJoinListener implements Listener {
         if (event == null) return;
 
         // user will be created if it does not exist yet
-        LegacyUser user = DiscordSync.singleton.getUserService().getUserByUUID(event.getPlayer().getUniqueId());
+        User user = DiscordSync.singleton.getUserService().getByUUID(event.getPlayer().getUniqueId());
 
         DiscordSync.singleton.getLogger().log(Level.INFO, "Turtle ID of player " + event.getPlayer().getName() + " is " + user.getID());
 

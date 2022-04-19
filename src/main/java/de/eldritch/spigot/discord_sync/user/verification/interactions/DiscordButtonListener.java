@@ -5,11 +5,8 @@ import de.eldritch.spigot.discord_sync.text.Text;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.apache.commons.collections4.ListUtils;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -28,22 +25,12 @@ public class DiscordButtonListener extends ListenerAdapter {
         event.deferReply().queue();
 
         try {
-            final YamlConfiguration config = DiscordSync.singleton.getUserService().getBlockedUsers();
-
-            // either player block or global block
-            final String block = buttonId.equals(BUTTON_ID_BLOCK_PLAYER)
-                    ? this.handlePlayer(event)
-                    : "*";
-
-            // key to the blocking list
-            final String key = "discord." + event.getUser().getId();
-
-            // update blocking list for snowflake
-            final List<String> blockedOld = config.getStringList(key);
-            final List<String> blockedNew = ListUtils.union(blockedOld, List.of(block));
-
-            // update config
-            config.set(key, blockedNew);
+            DiscordSync.singleton.getUserService().addBlock(
+                    "discord." + event.getUser().getId(),
+                    buttonId.equals(BUTTON_ID_BLOCK_PLAYER)
+                            ? this.handlePlayer(event)
+                            : "*"
+            );
 
             event.getHook().sendMessage(Text.of(buttonId.equals(BUTTON_ID_BLOCK_ALL)
                     ? "verify.blocked.blockAll"
@@ -55,7 +42,7 @@ public class DiscordButtonListener extends ListenerAdapter {
         }
     }
 
-    private String handlePlayer(ButtonInteractionEvent event) throws Exception {
+    private String handlePlayer(ButtonInteractionEvent event) {
         final Optional<MessageEmbed.Field> field = event.getMessage()
                 .getEmbeds().get(0)
                 .getFields().stream()

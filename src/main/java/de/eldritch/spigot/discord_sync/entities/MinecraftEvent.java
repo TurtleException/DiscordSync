@@ -3,7 +3,7 @@ package de.eldritch.spigot.discord_sync.entities;
 import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.discord.Accessor;
 import de.eldritch.spigot.discord_sync.entities.interfaces.DiscordSynchronizable;
-import de.eldritch.spigot.discord_sync.user.LegacyUser;
+import de.eldritch.spigot.discord_sync.user.User;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -11,14 +11,14 @@ import org.jetbrains.annotations.NotNull;
 public abstract class MinecraftEvent implements DiscordSynchronizable {
     protected final long timestamp;
 
-    protected final LegacyUser user;
+    protected final User user;
 
     protected final Accessor.Channel channel;
     protected EmbedBuilder builder;
 
     private long snowflake = -1;
 
-    public MinecraftEvent(long timestamp, Accessor.Channel channel, @NotNull LegacyUser user, EmbedBuilder builder) {
+    public MinecraftEvent(long timestamp, Accessor.Channel channel, @NotNull User user, EmbedBuilder builder) {
         this.timestamp = timestamp;
         this.channel = channel;
         this.builder = builder;

@@ -5,12 +5,14 @@ import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.entities.EntityBuilder;
 import de.eldritch.spigot.discord_sync.util.ConfigUtil;
 import net.dv8tion.jda.api.entities.Member;
+import org.apache.commons.collections4.ListUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -92,6 +94,14 @@ public class UserService {
             userConfiguration.set(user.getID() + ".uuid"     , player != null ? player.getUniqueId().toString() : null);
             userConfiguration.set(user.getID() + ".snowflake", member != null ? member.getId()                  : null);
         }
+
+        /* ----- ----- ----- */
+
+        for (String key : blockConfiguration.getKeys(true)) {
+            blockConfiguration.set(key, null);
+        }
+
+
     }
 
     public void saveConfig() {
@@ -100,6 +110,8 @@ public class UserService {
         } catch (IOException e) {
             DiscordSync.singleton.getLogger().log(Level.WARNING, "Encountered an unexpected exception while saving user config.", e);
         }
+
+        /* ----- ----- ----- */
 
         try {
             ConfigUtil.saveConfig(blockConfiguration, CONFIG_NAME_BLOCKED);
@@ -141,6 +153,56 @@ public class UserService {
                     .setPlayer(UserUtil.getPlayer(uuid, null))
                     .setUserService(this)
                     .build();
+    }
+
+    /* ----- ----- ----- */
+
+    private final Object LOCK = new Object();
+
+    /**
+     * Handles a blocking interaction.
+     * @param key Key to the blocking user.
+     * @param value The blocked user or "*" for a global block.
+     */
+    public void addBlock(@NotNull String key, @NotNull String value) {
+        synchronized (LOCK) {
+            // update blocking list
+            final List<String> blockedOld = blockConfiguration.getStringList(key);
+            final List<String> blockedNew = ListUtils.union(blockedOld, List.of(value));
+
+            // update config
+            blockConfiguration.set(key, blockedNew);
+        }
+    }
+
+    /**
+     * Removes a blocking interaction.
+     * @param key Key to the blocking user.
+     * @param value The blocked user or "*" for a global block.
+     */
+    public void removeBlock(@NotNull String key, @NotNull String value) {
+        synchronized (LOCK) {
+            // update blocking list
+            final List<String> blockedOld = blockConfiguration.getStringList(key);
+            final List<String> blockedNew = ListUtils.subtract(blockedOld, List.of(value));
+
+            // update config
+            blockConfiguration.set(key, blockedNew);
+        }
+    }
+
+    /**
+     * Indicates whether a user is blocked by another server.
+     * @param key Key to the blocking user.
+     * @param value The blocked user or "*" for a global block.
+     * @param checkGlobal Whether to also check for a global block.
+     * @return <code>true</code> if the provided user is blocked or a global blocking interaction is in place and
+     *         checkGlobal is also <code>true</code>.
+     */
+    public boolean isBlocked(@NotNull String key, @NotNull String value, boolean checkGlobal) {
+        final List<String> blocked = blockConfiguration.getStringList(key);
+
+        return blocked.contains(value) || (blocked.contains("*") && !checkGlobal);
     }
 
     /* ----- ----- ----- */

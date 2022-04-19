@@ -2,17 +2,17 @@ package de.eldritch.spigot.discord_sync.entities;
 
 import de.eldritch.spigot.discord_sync.discord.Accessor;
 import de.eldritch.spigot.discord_sync.text.Text;
-import de.eldritch.spigot.discord_sync.user.LegacyUser;
+import de.eldritch.spigot.discord_sync.user.User;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.bukkit.advancement.Advancement;
 import org.jetbrains.annotations.NotNull;
 
 public class MinecraftAdvancementEvent extends MinecraftEvent {
-    public MinecraftAdvancementEvent(long timestamp, @NotNull LegacyUser user, Advancement advancement) {
+    public MinecraftAdvancementEvent(long timestamp, @NotNull User user, Advancement advancement) {
         super(timestamp, Accessor.Channel.ADVANCEMENT, user, initBuilder(user, advancement));
     }
 
-    private static EmbedBuilder initBuilder(LegacyUser user, Advancement advancement) {
+    private static EmbedBuilder initBuilder(User user, Advancement advancement) {
         return user.newEmbed()
                 .setDescription(Text.ofGame(
                         "chat.type.advancement.task",

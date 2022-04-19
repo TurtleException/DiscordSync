@@ -4,7 +4,7 @@ import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.entities.interfaces.MinecraftSynchronizable;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
 import de.eldritch.spigot.discord_sync.text.Text;
-import de.eldritch.spigot.discord_sync.user.LegacyUser;
+import de.eldritch.spigot.discord_sync.user.User;
 import de.eldritch.spigot.discord_sync.util.format.MessageFormatter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class MinecraftSyncMessage extends Message implements MinecraftSynchronizable {
-    protected MinecraftSyncMessage(long turtle, @NotNull LegacyUser author, long timestamp, String content, @Nullable Referencable reference) {
+    protected MinecraftSyncMessage(long turtle, @NotNull User author, long timestamp, String content, @Nullable Referencable reference) {
         super(turtle, author, timestamp, content, reference);
     }
 

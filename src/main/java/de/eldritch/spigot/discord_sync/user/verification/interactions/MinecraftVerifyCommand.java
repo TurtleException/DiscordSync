@@ -4,7 +4,7 @@ import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.discord.DiscordUtil;
 import de.eldritch.spigot.discord_sync.text.Text;
 import de.eldritch.spigot.discord_sync.user.AvatarHandler;
-import de.eldritch.spigot.discord_sync.user.LegacyUser;
+import de.eldritch.spigot.discord_sync.user.User;
 import de.eldritch.spigot.discord_sync.user.verification.VerificationUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -22,14 +22,12 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MinecraftVerifyCommand implements CommandExecutor {
@@ -58,10 +56,10 @@ public class MinecraftVerifyCommand implements CommandExecutor {
 
 
         // check if the user has blocked requests
-        YamlConfiguration blocked = DiscordSync.singleton.getUserService().getBlockedUsers();
-        List<String> blockList = blocked.getStringList("discord." + member.getId());
+        final String memberKey = member.getId();
+        final String   userKey = player.getUniqueId().toString();
 
-        if (blockList.contains(player.getUniqueId().toString()) || blockList.contains("*")) {
+        if (DiscordSync.singleton.getUserService().isBlocked(memberKey, userKey, true)) {
             player.spigot().sendMessage(
                     DiscordSync.getChatPrefix(),
                     Text.of("verify.error.blocked", member.getUser().getAsTag()).toBaseComponent()
@@ -71,7 +69,7 @@ public class MinecraftVerifyCommand implements CommandExecutor {
 
 
         // check if the old connection will be overwritten
-        final LegacyUser user = DiscordSync.singleton.getUserService().getUserByUUID(player.getUniqueId());
+        final User user = DiscordSync.singleton.getUserService().getByUUID(player.getUniqueId());
         if (user.discord() != null) {
             confirmInteraction(player, member, user.discord());
         } else {
@@ -104,7 +102,7 @@ public class MinecraftVerifyCommand implements CommandExecutor {
 
     @SuppressWarnings("StatementWithEmptyBody")
     private static void openBlockingDiscordInteraction(@NotNull Player player, @NotNull Member member) {
-        final LegacyUser user = DiscordSync.singleton.getUserService().getUserByUUID(player.getUniqueId());
+        final User user = DiscordSync.singleton.getUserService().getByUUID(player.getUniqueId());
 
         final PrivateChannel channel = member.getUser().openPrivateChannel().complete();
 
@@ -242,7 +240,7 @@ public class MinecraftVerifyCommand implements CommandExecutor {
         } else {
             if (result[1].get() && result[2].get()) {
                 // merge user object
-                DiscordSync.singleton.getUserService().register(user, member);
+                user.setMember(member);
 
                 player.spigot().sendMessage(
                         DiscordSync.getChatPrefix(),
