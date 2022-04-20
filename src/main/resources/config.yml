@@ -1,0 +1,16 @@
+# DO NOT CHANGE THIS
+configVersion: 2
+
+language: "en_US"
+
+discord:
+  # IDs for channels (Duplicates allowed)
+  channel:
+    advancement: ""
+    death: ""
+    joinLeave: ""
+    message: ""
+  # Your guild ID
+  guild: ""
+  # Your bots' token
+  token: ""

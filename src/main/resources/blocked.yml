@@ -1,0 +1,12 @@
+# # # # # # # # # # # # # # # # # # # # # # # # #
+# This file contains lists of blocked verification requests for every user.
+#
+# You can safely ignore this file unless you want to manually add, delete or modify blocking interactions.
+#
+#
+# Changes to this file will only take effect when the server is stopped! The plugin will overwrite this file while being
+# disabled.
+#
+# Please note that changing this file without knowing what you're doing could lead to the plugin crashing! Please only
+# remove entries if you are sure about what that means or have a backup of this file ready.
+# # # # # # # # # # # # # # # # # # # # # # # # #

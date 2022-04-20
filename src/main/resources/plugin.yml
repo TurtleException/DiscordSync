@@ -1,0 +1,18 @@
+name: DiscordSync
+main: de.eldritch.spigot.discord_sync.DiscordSync
+version: ${project.version}
+
+api-version: 1.18
+
+description: Synchronize Minecraft's ingame chat with a Discord channel, check the server's status via Discord, link accounts and much more!
+
+author: TurtleException
+website: https://github.com/TurtleException/DiscordSync
+
+commands:
+  verify:
+    usage: "/verify <discord-name>"
+    description: "Connects your Discord account to synchronize your name and allow @mentions in event messages."
+  verify-confirm:
+    usage: "/verify-confirm"
+    description: "Confirms that an existing connection should be overwritten. Using this command without using /verify first will remove your current connection!"
