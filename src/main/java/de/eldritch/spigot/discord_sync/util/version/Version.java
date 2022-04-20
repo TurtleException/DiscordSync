@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 
+/**
+ * Representation of a version.
+ */
 public final record Version(byte major, byte minor, short build, String extra) {
     /**
      * Parses a Version object from a String.

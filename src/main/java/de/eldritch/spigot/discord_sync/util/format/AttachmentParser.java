@@ -1,13 +1,23 @@
 package de.eldritch.spigot.discord_sync.util.format;
 
+import de.eldritch.spigot.discord_sync.entities.DiscordMessage;
 import net.dv8tion.jda.api.entities.Message;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * Util to handle Discord Attachments and their respective display in Minecraft.
+ */
 class AttachmentParser {
+    /**
+     * Returns a formatted message suffix to append to a {@link DiscordMessage} in Minecraft containing information
+     * about {@link Message.Attachment Attachments}.
+     * @param attachments List of {@link Message.Attachment Attachments}
+     * @return Formatted message suffix.
+     */
     public static @NotNull String parseAttachments(List<Message.Attachment> attachments) {
-        StringBuilder builder = new StringBuilder("");
+        StringBuilder builder = new StringBuilder();
 
         boolean image = false;
         boolean video = false;

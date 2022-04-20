@@ -9,5 +9,9 @@ import org.jetbrains.annotations.NotNull;
  * @see HoverEvent
  */
 public interface ContainerTextObject {
+    /**
+     * Provides the text that should be shown in the container.
+     * @return Container text.
+     */
     @NotNull Text getContainerText();
 }
