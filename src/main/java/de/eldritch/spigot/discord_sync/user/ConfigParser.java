@@ -45,6 +45,7 @@ public class ConfigParser {
         for (long turtle : turtles) {
             try {
                 users.add(new UserBuilder()
+                        .setTurtle(turtle)
                         .setUserService(uService)
                         .setPlayer(UserUtil.getPlayer(config.getString(turtle + ".uuid"), server))
                         .setMember(UserUtil.getMember(config.getString(turtle + ".snowflake"), guild))

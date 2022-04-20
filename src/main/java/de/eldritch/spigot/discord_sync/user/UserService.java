@@ -139,6 +139,7 @@ public class UserService {
         return user != null
                 ? user
                 : new UserBuilder()
+                    .setTurtle(EntityBuilder.TurtleBuilder.newID())
                     .setMember(UserUtil.getMember(snowflake, null))
                     .setUserService(this)
                     .build();
@@ -150,6 +151,7 @@ public class UserService {
         return user != null
                 ? user
                 : new UserBuilder()
+                    .setTurtle(EntityBuilder.TurtleBuilder.newID())
                     .setPlayer(UserUtil.getPlayer(uuid, null))
                     .setUserService(this)
                     .build();
