@@ -14,7 +14,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 
 public class TextService {
-    private static final String DEFAULT_LANGUAGE = "en_US";
+    public static final String DEFAULT_LANGUAGE = "en_US";
 
     /**
      * The path this TextService will find lang files in.
