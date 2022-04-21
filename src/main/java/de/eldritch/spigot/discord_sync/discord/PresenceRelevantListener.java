@@ -1,5 +1,6 @@
 package de.eldritch.spigot.discord_sync.discord;
 
+import de.eldritch.spigot.discord_sync.DiscordSync;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -18,6 +19,6 @@ public class PresenceRelevantListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         if (event == null) return;
 
-        PresenceHandler.update();
+        DiscordSync.singleton.getServer().getScheduler().runTaskLater(DiscordSync.singleton, PresenceHandler::update, 5L);
     }
 }

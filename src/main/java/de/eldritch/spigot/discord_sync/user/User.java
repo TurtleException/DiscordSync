@@ -3,11 +3,15 @@ package de.eldritch.spigot.discord_sync.user;
 import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.discord.DiscordUtil;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Turtle;
+import de.eldritch.spigot.discord_sync.text.Text;
 import de.eldritch.spigot.discord_sync.util.MiscUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -151,22 +155,25 @@ public final class User implements Turtle {
 
         // set name on Discord
         if (member != null) {
-            member.modifyNickname(name).queue(null,
-                    // log in case the RestAction fails
-                    t -> MiscUtil.logUnexpectedException(Level.WARNING, "when attempting to modify nickname of " + member, t)
-            );
+            try {
+                member.modifyNickname(name).queue(null,
+                        // log in case the RestAction fails
+                        t -> MiscUtil.logUnexpectedException(Level.WARNING, "when attempting to modify nickname of " + member, t)
+                );
+            } catch (InsufficientPermissionException e) {
+                DiscordSync.singleton.getLogger().log(Level.INFO, "Unable to modify nickname of member " + member.getUser().getAsTag() + " due to insufficient permissions.");
+            } catch (HierarchyException e) {
+                DiscordSync.singleton.getLogger().log(Level.INFO, "Unable to modify nickname of member " + member.getUser().getAsTag() + " due to hierarchy.");
+            }
         }
 
         // set name in Minecraft
+        final Player player = this.minecraftOnline();
+        // name can only be changed when the player is online
         if (player != null) {
-            Player onlinePlayer = DiscordSync.singleton.getServer().getPlayer(player.getUniqueId());
-
-            // name can only be changed when the player is online
-            if (onlinePlayer != null) {
-                onlinePlayer.setCustomName(name);
-                onlinePlayer.setDisplayName(name);
-                onlinePlayer.setPlayerListName(name);
-            }
+            player.setCustomName(name);
+            player.setDisplayName(name);
+            player.setPlayerListName(name);
         }
     }
 
@@ -218,5 +225,16 @@ public final class User implements Turtle {
                 .setThumbnail(thumbnail)
                 .setFooter(DiscordUtil.FOOTER_TEXT, DiscordUtil.getAvatarURL())
                 .setColor(DiscordUtil.COLOR_NEUTRAL);
+    }
+
+    public HoverEvent newContainer() {
+        return new HoverEvent(
+                HoverEvent.Action.SHOW_TEXT,
+                new net.md_5.bungee.api.chat.hover.content.Text(
+                        player != null && member != null
+                                ? Text.of("user.info", getEffectiveName(), String.valueOf(getID()), player.getName(), member.getUser().getAsTag()).content()
+                                : Text.of("user.info.unknown", getEffectiveName(), String.valueOf(getID())).content()
+                )
+        );
     }
 }

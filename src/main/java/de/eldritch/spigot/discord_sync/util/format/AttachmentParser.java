@@ -2,6 +2,7 @@ package de.eldritch.spigot.discord_sync.util.format;
 
 import de.eldritch.spigot.discord_sync.entities.DiscordMessage;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -10,6 +11,16 @@ import java.util.List;
  * Util to handle Discord Attachments and their respective display in Minecraft.
  */
 class AttachmentParser {
+    public static @NotNull String parseEmbeds(List<MessageEmbed> embeds) {
+        StringBuilder builder = new StringBuilder();
+
+        for (MessageEmbed embed : embeds) {
+            builder.append(" &8[EMBED]");
+        }
+
+        return builder.toString();
+    }
+
     /**
      * Returns a formatted message suffix to append to a {@link DiscordMessage} in Minecraft containing information
      * about {@link Message.Attachment Attachments}.

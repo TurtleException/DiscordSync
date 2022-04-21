@@ -2,6 +2,7 @@ package de.eldritch.spigot.discord_sync.discord;
 
 import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.sync.listener.DiscordChatListener;
+import de.eldritch.spigot.discord_sync.user.listener.DiscordNameListener;
 import de.eldritch.spigot.discord_sync.util.MiscUtil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -28,7 +29,8 @@ public class DiscordService {
             .setStatus(OnlineStatus.IDLE)
             .setActivity(Activity.playing("Minecraft"))
             .addEventListeners(
-                    new DiscordChatListener()
+                    new DiscordChatListener(),
+                    new DiscordNameListener()
             );
 
     /**

@@ -19,6 +19,7 @@ public class MessageFormatter {
         String str = message.getContent();
 
         str = MarkdownParser.toLegacyText(str);
+        str = str + AttachmentParser.parseEmbeds(message.getEmbeds());
         str = str + AttachmentParser.parseAttachments(message.getAttachments());
 
         return str;
@@ -39,6 +40,11 @@ public class MessageFormatter {
             str = str.substring(str.indexOf(" ") + 1);
 
         str = MarkdownParser.toLegacyText(str);
+
+        if (message instanceof DiscordMessage dMsg) {
+            str = str + AttachmentParser.parseEmbeds(dMsg.getEmbeds());
+            str = str + AttachmentParser.parseAttachments(dMsg.getAttachments());
+        }
 
         return str;
     }

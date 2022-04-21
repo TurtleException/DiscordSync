@@ -15,7 +15,7 @@ public class MinecraftJoinListener implements Listener {
         if (event == null) return;
 
         // user will be created if it does not exist yet
-        User user = DiscordSync.singleton.getUserService().getByUUID(event.getPlayer().getUniqueId());
+        User user = DiscordSync.singleton.getUserService().ofUUID(event.getPlayer().getUniqueId());
 
         DiscordSync.singleton.getLogger().log(Level.INFO, "Turtle ID of player " + event.getPlayer().getName() + " is " + user.getID());
 

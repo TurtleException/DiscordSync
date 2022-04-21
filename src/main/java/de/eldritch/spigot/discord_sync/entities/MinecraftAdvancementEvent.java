@@ -17,7 +17,7 @@ public class MinecraftAdvancementEvent extends MinecraftEvent {
                 .setDescription(Text.ofGame(
                         "chat.type.advancement.task",
                         user.getMention(),
-                        "*" + getProperty(advancement, "title") + "*"
+                        "*" + Text.ofGame(getProperty(advancement, "title")).content() + "*"
                 ).content())
                 .addField(
                         Text.of("events.advancement.field.description").content(),

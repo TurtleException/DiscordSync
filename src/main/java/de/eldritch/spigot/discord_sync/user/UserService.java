@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.List;
@@ -122,7 +123,7 @@ public class UserService {
 
     /* ----- ----- ----- */
 
-    public @NotNull User getByTurtle(long turtle) {
+    public @NotNull User ofTurtle(long turtle) {
         User user = userMap.getByTurtle(turtle);
 
         return user != null
@@ -133,7 +134,7 @@ public class UserService {
                     .build();
     }
 
-    public @NotNull User getBySnowflake(long snowflake) {
+    public @NotNull User ofSnowflake(long snowflake) {
         User user = userMap.getBySnowflake(snowflake);
 
         return user != null
@@ -145,7 +146,7 @@ public class UserService {
                     .build();
     }
 
-    public @NotNull User getByUUID(@NotNull UUID uuid) {
+    public @NotNull User ofUUID(@NotNull UUID uuid) {
         User user = userMap.getByUUID(uuid);
 
         return user != null
@@ -155,6 +156,20 @@ public class UserService {
                     .setPlayer(UserUtil.getPlayer(uuid, null))
                     .setUserService(this)
                     .build();
+    }
+
+    /* ----- ----- ----- */
+
+    public @Nullable User getByTurtle(long turtle) {
+        return userMap.getByTurtle(turtle);
+    }
+
+    public @Nullable User getBySnowflake(long snowflake) {
+        return userMap.getBySnowflake(snowflake);
+    }
+
+    public @Nullable User getByUUID(@NotNull UUID uuid) {
+        return userMap.getByUUID(uuid);
     }
 
     /* ----- ----- ----- */
