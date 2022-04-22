@@ -6,6 +6,7 @@
   - Maybe also implement repeating task (*every 10 seconds or so*)
 - [x] Parse embeds in minecraft
 - [x] Parse attachments in container text
+- [ ] Soft wrap long container messages
 - [ ] Implement automatic game lang file download
 - [ ] Allow language reloads while the plugin is running
 - [ ] (maybe) make the plugin reload-safe

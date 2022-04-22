@@ -5,13 +5,14 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.List;
 
 /**
  * Util to handle Discord Attachments and their respective display in Minecraft.
  */
 class AttachmentParser {
-    public static @NotNull String parseEmbeds(List<MessageEmbed> embeds) {
+    public static @NotNull TextComponent parseEmbeds(List<MessageEmbed> embeds) {
         StringBuilder builder = new StringBuilder();
 
         for (MessageEmbed embed : embeds) {
@@ -27,7 +28,7 @@ class AttachmentParser {
      * @param attachments List of {@link Message.Attachment Attachments}
      * @return Formatted message suffix.
      */
-    public static @NotNull String parseAttachments(List<Message.Attachment> attachments) {
+    public static @NotNull TextComponent parseAttachments(List<Message.Attachment> attachments) {
         StringBuilder builder = new StringBuilder();
 
         boolean image = false;

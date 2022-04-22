@@ -3,6 +3,7 @@ package de.eldritch.spigot.discord_sync.util.format;
 import de.eldritch.spigot.discord_sync.entities.DiscordMessage;
 import de.eldritch.spigot.discord_sync.entities.MinecraftMessage;
 import de.eldritch.spigot.discord_sync.entities.MinecraftSyncMessage;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,8 +16,12 @@ public class MessageFormatter {
      * @param message The DiscordMessage that should be formatted.
      * @return Formatted message for Minecraft.
      */
-    public static @NotNull String formatMinecraft(DiscordMessage message) {
+    public static @NotNull TextComponent formatMinecraft(DiscordMessage message) {
         String str = message.getContent();
+
+        TextComponent component = new TextComponent(message.getContent());
+
+        component = MarkdownParser.toComponent(component);
 
         str = MarkdownParser.toLegacyText(str);
         str = str + AttachmentParser.parseEmbeds(message.getEmbeds());
@@ -32,21 +37,23 @@ public class MessageFormatter {
      * @param message The {@link MinecraftSyncMessage} that should be formatted.
      * @return Formatted message for Minecraft.
      */
-    public static @NotNull String formatMinecraft(MinecraftSyncMessage message) {
+    public static @NotNull TextComponent formatMinecraft(MinecraftSyncMessage message) {
         String str = message.getContent();
 
         // remove reference prefix
         if (message.getReference() != null)
             str = str.substring(str.indexOf(" ") + 1);
 
-        str = MarkdownParser.toLegacyText(str);
+        TextComponent component = new TextComponent(str);
+
+        component = MarkdownComponentParser.parse(component);
 
         if (message instanceof DiscordMessage dMsg) {
-            str = str + AttachmentParser.parseEmbeds(dMsg.getEmbeds());
-            str = str + AttachmentParser.parseAttachments(dMsg.getAttachments());
+            component.addExtra(AttachmentParser.parseEmbeds(dMsg.getEmbeds()));
+            component.addExtra(AttachmentParser.parseAttachments(dMsg.getAttachments()));
         }
 
-        return str;
+        return component;
     }
 
     /**
