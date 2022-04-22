@@ -53,11 +53,6 @@ public class MinecraftMessage extends MinecraftSyncMessage implements DiscordSyn
     }
 
     @Override
-    public @NotNull Text getContainerText() {
-        return Text.of("chat.reference.container", author.getEffectiveName(), String.valueOf(getID()), MessageFormatter.formatMinecraft(this));
-    }
-
-    @Override
     public long getSnowflake() throws IllegalStateException {
         if (snowflake < 0)
             throw new IllegalStateException("Message has not been sent yet.");

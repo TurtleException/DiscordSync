@@ -2,9 +2,7 @@ package de.eldritch.spigot.discord_sync.entities;
 
 import de.eldritch.spigot.discord_sync.entities.interfaces.DiscordRepresentable;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
-import de.eldritch.spigot.discord_sync.text.Text;
 import de.eldritch.spigot.discord_sync.user.User;
-import de.eldritch.spigot.discord_sync.util.format.MessageFormatter;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
@@ -45,11 +43,6 @@ public class DiscordMessage extends MinecraftSyncMessage implements DiscordRepre
     @Override
     public void sendToMinecraft() {
         sendToMinecraft("discord");
-    }
-
-    @Override
-    public @NotNull Text getContainerText() {
-        return Text.of("chat.reference.container", author.getEffectiveName(), String.valueOf(getID()), MessageFormatter.formatMinecraft(this));
     }
 
     /* ----- ----- ----- */

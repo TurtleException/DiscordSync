@@ -4,6 +4,7 @@ import de.eldritch.spigot.discord_sync.entities.DiscordMessage;
 import de.eldritch.spigot.discord_sync.entities.MinecraftMessage;
 import de.eldritch.spigot.discord_sync.entities.MinecraftSyncMessage;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.apache.commons.lang.WordUtils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,43 +13,30 @@ import org.jetbrains.annotations.NotNull;
 public class MessageFormatter {
     /**
      * Provides a formatted representation of the raw message that should be displayed in Minecraft based on the
-     * original {@link DiscordMessage}.
-     * @param message The DiscordMessage that should be formatted.
-     * @return Formatted message for Minecraft.
-     */
-    public static @NotNull TextComponent formatMinecraft(DiscordMessage message) {
-        String str = message.getContent();
-
-        TextComponent component = new TextComponent(message.getContent());
-
-        component = MarkdownParser.toComponent(component);
-
-        str = MarkdownParser.toLegacyText(str);
-        str = str + AttachmentParser.parseEmbeds(message.getEmbeds());
-        str = str + AttachmentParser.parseAttachments(message.getAttachments());
-
-        return str;
-    }
-
-    /**
-     * Provides a formatted representation of the raw message that should be displayed in Minecraft based on the
      * original {@link MinecraftSyncMessage}. This is necessary since the plugin is also responsible for in-game
      * message formatting.
      * @param message The {@link MinecraftSyncMessage} that should be formatted.
      * @return Formatted message for Minecraft.
      */
-    public static @NotNull TextComponent formatMinecraft(MinecraftSyncMessage message) {
+    public static @NotNull TextComponent formatMinecraft(@NotNull MinecraftSyncMessage message, boolean wrapLine) {
         String str = message.getContent();
 
-        // remove reference prefix
-        if (message.getReference() != null)
-            str = str.substring(str.indexOf(" ") + 1);
+        if (message instanceof MinecraftMessage) {
+            // remove reference prefix
+            if (message.getReference() != null)
+                str = str.substring(str.indexOf(" ") + 1);
+        }
+
+        if (wrapLine) {
+            str = WordUtils.wrap(str, 75, "\n", true);
+        }
 
         TextComponent component = new TextComponent(str);
 
         component = MarkdownComponentParser.parse(component);
 
         if (message instanceof DiscordMessage dMsg) {
+            component.addExtra(wrapLine ? "\n" : " ");
             component.addExtra(AttachmentParser.parseEmbeds(dMsg.getEmbeds()));
             component.addExtra(AttachmentParser.parseAttachments(dMsg.getAttachments()));
         }
@@ -62,14 +50,12 @@ public class MessageFormatter {
      * @param message The MinecraftMessage that should be formatted.
      * @return Formatted message for Discord.
      */
-    public static @NotNull String formatDiscord(MinecraftMessage message) {
+    public static @NotNull String formatDiscord(@NotNull MinecraftMessage message) {
         String str = message.getContent();
 
         // remove reference prefix
         if (message.getReference() != null)
             str = str.substring(str.indexOf(" ") + 1);
-
-        str = MarkdownParser.toMarkdown(str);
 
         return str;
     }

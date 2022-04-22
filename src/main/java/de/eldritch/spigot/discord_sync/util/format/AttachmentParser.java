@@ -3,9 +3,10 @@ package de.eldritch.spigot.discord_sync.util.format;
 import de.eldritch.spigot.discord_sync.entities.DiscordMessage;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.util.List;
 
 /**
@@ -13,13 +14,15 @@ import java.util.List;
  */
 class AttachmentParser {
     public static @NotNull TextComponent parseEmbeds(List<MessageEmbed> embeds) {
-        StringBuilder builder = new StringBuilder();
+        if (embeds.size() < 1)
+            return new TextComponent();
 
-        for (MessageEmbed embed : embeds) {
-            builder.append(" &8[EMBED]");
-        }
+        TextComponent component = new TextComponent();
 
-        return builder.toString();
+        component.setText("[EMBED] ");
+        component.setColor(ChatColor.DARK_GRAY);
+
+        return component;
     }
 
     /**
@@ -45,12 +48,17 @@ class AttachmentParser {
         }
 
         if (image)
-            builder.append(" &8[IMG]");
+            builder.append("[IMG] ");
         if (video)
-            builder.append(" &8[VID]");
+            builder.append("[VID] ");
         if (file)
-            builder.append(" &8[FILE]");
+            builder.append("[FILE] ");
 
-        return ColorParser.format(builder.toString());
+        TextComponent component = new TextComponent();
+
+        component.setText(builder.toString());
+        component.setColor(ChatColor.DARK_GRAY);
+
+        return component;
     }
 }

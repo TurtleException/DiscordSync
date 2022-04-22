@@ -1,7 +1,7 @@
 package de.eldritch.spigot.discord_sync.entities.interfaces;
 
-import de.eldritch.spigot.discord_sync.text.Text;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -13,5 +13,5 @@ public interface ContainerTextObject {
      * Provides the text that should be shown in the container.
      * @return Container text.
      */
-    @NotNull Text getContainerText();
+    @NotNull TextComponent getContainerText();
 }

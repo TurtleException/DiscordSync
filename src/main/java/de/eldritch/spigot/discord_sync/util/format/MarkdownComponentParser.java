@@ -8,8 +8,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-// TODO: finish
-// TODO: Implement into MessageFormatter / replace MessageFormatter
 public class MarkdownComponentParser {
     private static class Node {
         /**
