@@ -91,9 +91,11 @@ public class UserService {
         for (User user : userMap.getView()) {
             final OfflinePlayer player = user.minecraftOffline();
             final Member        member = user.discord();
+            final String        name   = user.getName();
 
             userConfiguration.set(user.getID() + ".uuid"     , player != null ? player.getUniqueId().toString() : null);
             userConfiguration.set(user.getID() + ".snowflake", member != null ? member.getId()                  : null);
+            userConfiguration.set(user.getID() + ".name"     , name);
         }
 
         /* ----- ----- ----- */

@@ -124,6 +124,10 @@ public final class User implements Turtle {
 
     /* ----- ----- ----- */
 
+    public @Nullable String getName() {
+        return name;
+    }
+
     /**
      * Provides the effective name of this User. This means that this method will attempt to provide the first of the
      * following strings that is not null:
