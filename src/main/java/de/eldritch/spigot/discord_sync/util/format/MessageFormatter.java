@@ -3,6 +3,7 @@ package de.eldritch.spigot.discord_sync.util.format;
 import de.eldritch.spigot.discord_sync.entities.DiscordMessage;
 import de.eldritch.spigot.discord_sync.entities.MinecraftMessage;
 import de.eldritch.spigot.discord_sync.entities.MinecraftSyncMessage;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.WordUtils;
 import org.jetbrains.annotations.NotNull;
@@ -27,11 +28,17 @@ public class MessageFormatter {
                 str = str.substring(str.indexOf(" ") + 1);
         }
 
-        if (wrapLine) {
+        // wrap line if it's too long
+        if (wrapLine)
             str = WordUtils.wrap(str, 75, "\n", true);
-        }
+
+        // allow correct comment formatting in discord
+        if (str.stripLeading().startsWith("> "))
+            str = "\n" + str.stripLeading();
 
         TextComponent component = new TextComponent(str);
+
+        component.setColor(ChatColor.GRAY);
 
         component = MarkdownComponentParser.parse(component);
 
@@ -56,6 +63,10 @@ public class MessageFormatter {
         // remove reference prefix
         if (message.getReference() != null)
             str = str.substring(str.indexOf(" ") + 1);
+
+        // allow correct comment formatting in discord
+        if (str.stripLeading().startsWith("> "))
+            str = "\n" + str.stripLeading();
 
         return str;
     }
