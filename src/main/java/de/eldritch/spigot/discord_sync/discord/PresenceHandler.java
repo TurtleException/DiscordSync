@@ -1,6 +1,7 @@
 package de.eldritch.spigot.discord_sync.discord;
 
 import de.eldritch.spigot.discord_sync.DiscordSync;
+import de.eldritch.spigot.discord_sync.util.Status;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 
@@ -13,24 +14,26 @@ public class PresenceHandler {
 
         final int players = DiscordSync.singleton.getServer().getOnlinePlayers().size();
 
-        final OnlineStatus onlineStatus = players > 0
-                ? OnlineStatus.ONLINE
-                : OnlineStatus.IDLE;
-        final Activity     activity     = players > 0
-                ? Activity.playing("Minecraft (%s)".formatted(players))
-                : Activity.playing("Minecraft");
+        final OnlineStatus onlineStatus;
+        if (DiscordSync.singleton.getStatus().equals(Status.STOPPING)) {
+            onlineStatus = OnlineStatus.DO_NOT_DISTURB;
+        } else if (DiscordSync.singleton.getStatus().equals(Status.STOPPED)) {
+            onlineStatus = OnlineStatus.OFFLINE;
+        } else {
+            onlineStatus = players > 0
+                    ? OnlineStatus.ONLINE
+                    : OnlineStatus.IDLE;
+        }
 
-        discordService.getJDA().getPresence().setPresence(onlineStatus, activity);
-    }
+        final Activity activity;
+        if (DiscordSync.singleton.getStatus().equals(Status.RUNNING)) {
+            activity = players > 0
+                    ? Activity.playing("Minecraft (%s)".formatted(players))
+                    : Activity.playing("Minecraft");
+        } else {
+            activity = null;
+        }
 
-    public static void updateShutdown() {
-        DiscordService discordService = DiscordSync.singleton.getDiscordService();
-
-        if (discordService == null) return;
-
-
-        final OnlineStatus onlineStatus = OnlineStatus.DO_NOT_DISTURB;
-        final Activity     activity     = Activity.playing("Minecraft");
 
         discordService.getJDA().getPresence().setPresence(onlineStatus, activity);
     }
