@@ -3,6 +3,8 @@ package de.eldritch.spigot.discord_sync;
 import de.eldritch.spigot.discord_sync.discord.DiscordService;
 import de.eldritch.spigot.discord_sync.discord.PresenceHandler;
 import de.eldritch.spigot.discord_sync.discord.PresenceRelevantListener;
+import de.eldritch.spigot.discord_sync.entities.EntityBuilder;
+import de.eldritch.spigot.discord_sync.entities.MinecraftQuitEvent;
 import de.eldritch.spigot.discord_sync.sync.SynchronizationService;
 import de.eldritch.spigot.discord_sync.sync.listener.MinecraftChatListener;
 import de.eldritch.spigot.discord_sync.sync.listener.MinecraftEventListener;
@@ -16,6 +18,7 @@ import de.eldritch.spigot.discord_sync.util.ConfigUtil;
 import de.eldritch.spigot.discord_sync.util.version.Version;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
@@ -146,6 +149,13 @@ public class DiscordSync extends JavaPlugin {
 
     private void shutdown() throws Exception {
         PresenceHandler.updateShutdown();
+
+        getLogger().log(Level.FINE, "Sending quit messages...");
+        for (Player onlinePlayer : getServer().getOnlinePlayers()) {
+            final long timestamp = System.currentTimeMillis();
+            final MinecraftQuitEvent event = EntityBuilder.newMinecraftQuitEvent(onlinePlayer.getUniqueId(), timestamp);
+            SynchronizationService.handle(event);
+        }
 
         // save to prevent data loss in case shutdown fails
         ConfigUtil.saveConfig(getConfig(), "config");

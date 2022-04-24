@@ -12,8 +12,8 @@
 - [ ] (maybe) make the plugin reload-safe
 - [ ] Implement reload for (user / block) config from file to allow manual changes
 - [x] Prevent inner formatting for inline code & code blocks
-- [ ] Send quit messages when server stops
-- [ ] **_?_** Replace names in native event messages
+- [x] Send quit messages when server stops
+- [ ] Replace names in native event messages (in-game)
 - [x] Explicitly update Discord presence on shutdown
   - maybe use *do not disturb*
 - [ ] fix NPE when writing "*****"
