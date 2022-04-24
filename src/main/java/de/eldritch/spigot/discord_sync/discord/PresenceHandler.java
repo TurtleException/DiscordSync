@@ -22,4 +22,16 @@ public class PresenceHandler {
 
         discordService.getJDA().getPresence().setPresence(onlineStatus, activity);
     }
+
+    public static void updateShutdown() {
+        DiscordService discordService = DiscordSync.singleton.getDiscordService();
+
+        if (discordService == null) return;
+
+
+        final OnlineStatus onlineStatus = OnlineStatus.DO_NOT_DISTURB;
+        final Activity     activity     = Activity.playing("Minecraft");
+
+        discordService.getJDA().getPresence().setPresence(onlineStatus, activity);
+    }
 }

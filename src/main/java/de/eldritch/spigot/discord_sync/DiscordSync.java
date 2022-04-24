@@ -145,6 +145,8 @@ public class DiscordSync extends JavaPlugin {
     }
 
     private void shutdown() throws Exception {
+        PresenceHandler.updateShutdown();
+
         // save to prevent data loss in case shutdown fails
         ConfigUtil.saveConfig(getConfig(), "config");
 
