@@ -16,7 +16,7 @@
 - [ ] Replace names in native event messages (in-game)
 - [x] Explicitly update Discord presence on shutdown
   - maybe use *do not disturb*
-- [ ] fix NPE when writing "*****"
+- [x] fix NPE when writing "*****"
 - [ ] Implement more events
   - [ ] Special entity death (e.g. dogs)
 - [ ] Implement `/delete` command

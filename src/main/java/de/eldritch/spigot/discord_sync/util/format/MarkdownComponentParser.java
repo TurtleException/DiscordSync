@@ -265,7 +265,9 @@ public class MarkdownComponentParser {
     }
 
     private static void applyFormatSpecific(@NotNull TextComponent component, @NotNull String mdChar, @NotNull Consumer<TextComponent> modifier) {
-        if (component.getText().startsWith(mdChar) && component.getText().startsWith(mdChar)) {
+        if (component.getText().length() > mdChar.length() * 2
+                && component.getText().startsWith(mdChar)
+                && component.getText().endsWith(mdChar)) {
             component.setText(component.getText().substring(mdChar.length(), component.getText().length() - mdChar.length()));
 
             // modify component
