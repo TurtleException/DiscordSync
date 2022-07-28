@@ -12,8 +12,9 @@ import org.jetbrains.annotations.NotNull;
 public class DiscordChatListener extends ListenerAdapter {
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-        if (event.getAuthor().equals(event.getJDA().getSelfUser())) return;
-        if (!event.isFromGuild())                                   return;
+        if (event.getAuthor().getIdLong() == event.getJDA().getSelfUser().getIdLong()) return;
+
+        if (!event.isFromGuild()) return;
 
         Accessor discordAccessor = DiscordSync.singleton.getDiscordService().getAccessor();
         if (!event.getGuild().getId().equals(discordAccessor.getGuild().getId()))            return;

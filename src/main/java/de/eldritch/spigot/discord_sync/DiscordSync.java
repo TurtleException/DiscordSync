@@ -3,6 +3,8 @@ package de.eldritch.spigot.discord_sync;
 import de.eldritch.spigot.discord_sync.discord.DiscordService;
 import de.eldritch.spigot.discord_sync.discord.PresenceHandler;
 import de.eldritch.spigot.discord_sync.discord.PresenceRelevantListener;
+import de.eldritch.spigot.discord_sync.entities.EntityBuilder;
+import de.eldritch.spigot.discord_sync.entities.MinecraftQuitEvent;
 import de.eldritch.spigot.discord_sync.sync.SynchronizationService;
 import de.eldritch.spigot.discord_sync.sync.listener.MinecraftChatListener;
 import de.eldritch.spigot.discord_sync.sync.listener.MinecraftEventListener;
@@ -13,14 +15,14 @@ import de.eldritch.spigot.discord_sync.user.AvatarHandler;
 import de.eldritch.spigot.discord_sync.user.UserService;
 import de.eldritch.spigot.discord_sync.user.verification.VerificationUtil;
 import de.eldritch.spigot.discord_sync.util.ConfigUtil;
+import de.eldritch.spigot.discord_sync.util.Status;
 import de.eldritch.spigot.discord_sync.util.version.Version;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.StreamHandler;
 
 /**
  * The plugin main class.
@@ -32,6 +34,7 @@ public class DiscordSync extends JavaPlugin {
     private static TextComponent chatPrefix;
 
     private Version version;
+    private Status  status = Status.PRE_INIT;
 
     private UserService            userService;
     private SynchronizationService synchronizationService;
@@ -40,21 +43,9 @@ public class DiscordSync extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        status = Status.STARTING;
+
         singleton = this;
-
-        // TODO: remove
-        getLogger().setLevel(Level.ALL);
-        getLogger().addHandler(new StreamHandler() {
-            @Override
-            public synchronized void publish(LogRecord record) {
-                if (record.getLevel().intValue() < Level.INFO.intValue()) {
-                    record.setMessage("[DEBUG HANDLER | " + record.getLevel() + "]  " + record.getMessage());
-                    record.setLevel(Level.INFO);
-
-                    getLogger().log(record);
-                }
-            }
-        });
 
         try {
             this.prepare();
@@ -69,6 +60,8 @@ public class DiscordSync extends JavaPlugin {
                 throw new RuntimeException(e);
             }
         }
+
+        status = Status.RUNNING;
     }
 
     /**
@@ -133,6 +126,8 @@ public class DiscordSync extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        status = Status.STOPPING;
+
         try {
             this.shutdown();
         } catch (Exception e) {
@@ -142,9 +137,22 @@ public class DiscordSync extends JavaPlugin {
                 throw new RuntimeException(e);
             }
         }
+
+        status = Status.STOPPED;
     }
 
     private void shutdown() throws Exception {
+        PresenceHandler.update();
+
+        getLogger().log(Level.FINE, "Sending quit messages...");
+        for (Player onlinePlayer : getServer().getOnlinePlayers()) {
+            final long timestamp = System.currentTimeMillis();
+            final MinecraftQuitEvent event = EntityBuilder.newMinecraftQuitEvent(onlinePlayer.getUniqueId(), timestamp);
+            SynchronizationService.handle(event);
+        }
+
+        PresenceHandler.update();
+
         // save to prevent data loss in case shutdown fails
         ConfigUtil.saveConfig(getConfig(), "config");
 
@@ -154,6 +162,8 @@ public class DiscordSync extends JavaPlugin {
 
         getLogger().log(Level.FINE, "Saving config.");
         saveConfig();
+
+        PresenceHandler.update();
 
         discordService.shutdown();
         discordService = null;
@@ -188,6 +198,10 @@ public class DiscordSync extends JavaPlugin {
 
     public Version getVersion() {
         return version;
+    }
+
+    public Status getStatus() {
+        return status;
     }
 
     public UserService getUserService() {

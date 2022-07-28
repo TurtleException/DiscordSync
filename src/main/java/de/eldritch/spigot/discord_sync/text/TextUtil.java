@@ -18,6 +18,10 @@ public class TextUtil {
     private TextUtil() throws JsonIOException, JsonSyntaxException, IOException {
         textService_game = new TextService("lang/minecraft", false);
         textService_plugin = new TextService("lang/plugin", true);
+
+        final String language = DiscordSync.singleton.getConfig().getString("language", TextService.DEFAULT_LANGUAGE);
+        textService_game.load(language);
+        textService_plugin.load(language);
     }
 
     /**

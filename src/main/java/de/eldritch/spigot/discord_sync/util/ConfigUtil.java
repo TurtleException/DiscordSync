@@ -3,16 +3,23 @@ package de.eldritch.spigot.discord_sync.util;
 import de.eldritch.spigot.discord_sync.DiscordSync;
 import de.eldritch.spigot.discord_sync.discord.DiscordUtil;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Set;
 import java.util.logging.Level;
 
+/**
+ * A collection of utilities for YAML configurations.
+ */
 public class ConfigUtil {
     /**
      * Provides a {@link YamlConfiguration} linked with a {@link File} at the provided location. If a resource path is
@@ -40,6 +47,12 @@ public class ConfigUtil {
         return configuration;
     }
 
+    /**
+     * Saves a config to the provided path.
+     * @param config Config to save.
+     * @param path Path of the file (excluding the <code>.yml</code> suffix).
+     * @throws IOException if the file could not be handled or the config could not be saved.
+     */
     public static void saveConfig(@NotNull FileConfiguration config, @NotNull String path) throws IOException {
         File file = IOUtil.getFile(path + ".yml");
 
@@ -76,8 +89,7 @@ public class ConfigUtil {
      * some values manually.
      * @throws InvalidConfigurationException if the plugin configuration is invalid. More information will be provided
      *                                       in the exception message.
-     * @see ConfigUtil#validatePresent(FileConfiguration, String, String...)
-     * @see ConfigUtil#validateNotNull(FileConfiguration, String, String...)
+     * @see ConfigUtil#validatePresent(MemorySection, String, String...)
      */
     public static void validatePluginConfig() throws InvalidConfigurationException {
         FileConfiguration config = DiscordSync.singleton.getConfig();
@@ -85,9 +97,16 @@ public class ConfigUtil {
         validateVersion(config);
 
         /* ----- MANUAL CHECKS ----- */
-        validateNotNull(config, "discord.token", DiscordUtil.LOG_INVALID_TOKEN);
+        validatePresent(config, "discord.token", DiscordUtil.LOG_INVALID_TOKEN);
     }
 
+    /**
+     * Validates that the config version of the effectively loaded config matches that of the resource config to ensure
+     * compatibility. If the version does not match an {@link InvalidConfigurationException} will be thrown.
+     * @param config {@link FileConfiguration} to verify.
+     * @throws InvalidConfigurationException if the version does not match its resource config counterpart or if an
+     *                                       Exception occurs while attempting to validate the version.
+     */
     private static void validateVersion(@NotNull FileConfiguration config) throws InvalidConfigurationException {
         int version = config.getInt("configVersion", -1);
         int required;
@@ -113,23 +132,23 @@ public class ConfigUtil {
             throw new InvalidConfigurationException("Config version (%s) does not match required version (%s).".formatted(version, required));
     }
 
-    private static void validatePresent(@NotNull FileConfiguration config, @NotNull String key, String... logNotes) throws InvalidConfigurationException {
+    /**
+     * Validates that a provided key is present (i.e. holds a value that is not <code>null</code>) in a
+     * {@link MemorySection}. If the key is not present an {@link InvalidConfigurationException} will be thrown.
+     * @param config The MemorySection to check for the key.
+     * @param key The key that should hold a non-null value.
+     * @param logMessages Messages to log (with {@link Level#INFO}) in case the validation fails.
+     * @throws InvalidConfigurationException if the config does not contain the provided key.
+     */
+    private static void validatePresent(@NotNull MemorySection config, @NotNull String key, String... logMessages) throws InvalidConfigurationException {
         if (!config.contains(key)) {
-            log(logNotes);
+            log(logMessages);
             throw new InvalidConfigurationException("Missing " + key);
         }
     }
 
-    private static void validateNotNull(@NotNull FileConfiguration config, @NotNull String key, String... logNotes) throws InvalidConfigurationException {
-        validatePresent(config, key, logNotes);
-        if (config.get(key) == null) {
-            log(logNotes);
-            throw new InvalidConfigurationException("Illegal null value at " + key);
-        }
-    }
-
-    private static void log(String... logNotes) {
-        for (String logNote : logNotes) {
+    private static void log(String... logMessages) {
+        for (String logNote : logMessages) {
             DiscordSync.singleton.getLogger().log(Level.INFO, logNote);
         }
     }

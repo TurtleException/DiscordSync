@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.List;
@@ -90,9 +91,11 @@ public class UserService {
         for (User user : userMap.getView()) {
             final OfflinePlayer player = user.minecraftOffline();
             final Member        member = user.discord();
+            final String        name   = user.getName();
 
             userConfiguration.set(user.getID() + ".uuid"     , player != null ? player.getUniqueId().toString() : null);
             userConfiguration.set(user.getID() + ".snowflake", member != null ? member.getId()                  : null);
+            userConfiguration.set(user.getID() + ".name"     , name);
         }
 
         /* ----- ----- ----- */
@@ -122,7 +125,7 @@ public class UserService {
 
     /* ----- ----- ----- */
 
-    public @NotNull User getByTurtle(long turtle) {
+    public @NotNull User ofTurtle(long turtle) {
         User user = userMap.getByTurtle(turtle);
 
         return user != null
@@ -133,26 +136,42 @@ public class UserService {
                     .build();
     }
 
-    public @NotNull User getBySnowflake(long snowflake) {
+    public @NotNull User ofSnowflake(long snowflake) {
         User user = userMap.getBySnowflake(snowflake);
 
         return user != null
                 ? user
                 : new UserBuilder()
+                    .setTurtle(EntityBuilder.TurtleBuilder.newID())
                     .setMember(UserUtil.getMember(snowflake, null))
                     .setUserService(this)
                     .build();
     }
 
-    public @NotNull User getByUUID(@NotNull UUID uuid) {
+    public @NotNull User ofUUID(@NotNull UUID uuid) {
         User user = userMap.getByUUID(uuid);
 
         return user != null
                 ? user
                 : new UserBuilder()
+                    .setTurtle(EntityBuilder.TurtleBuilder.newID())
                     .setPlayer(UserUtil.getPlayer(uuid, null))
                     .setUserService(this)
                     .build();
+    }
+
+    /* ----- ----- ----- */
+
+    public @Nullable User getByTurtle(long turtle) {
+        return userMap.getByTurtle(turtle);
+    }
+
+    public @Nullable User getBySnowflake(long snowflake) {
+        return userMap.getBySnowflake(snowflake);
+    }
+
+    public @Nullable User getByUUID(@NotNull UUID uuid) {
+        return userMap.getByUUID(uuid);
     }
 
     /* ----- ----- ----- */

@@ -26,6 +26,7 @@ public class EntityBuilder {
                 getTimestamp(message),
                 message.getIdLong(),
                 message.getContentRaw(),
+                message.getEmbeds(),
                 message.getAttachments(),
                 ReferenceHelper.getReference(message)
         );
@@ -134,11 +135,11 @@ public class EntityBuilder {
     }
 
     public static @NotNull User getUser(long snowflake) {
-        return DiscordSync.singleton.getUserService().getBySnowflake(snowflake);
+        return DiscordSync.singleton.getUserService().ofSnowflake(snowflake);
     }
 
     public static @NotNull User getUser(@NotNull UUID uuid) {
-        return DiscordSync.singleton.getUserService().getByUUID(uuid);
+        return DiscordSync.singleton.getUserService().ofUUID(uuid);
     }
 
     public static long getTimestamp(long snowflake) {

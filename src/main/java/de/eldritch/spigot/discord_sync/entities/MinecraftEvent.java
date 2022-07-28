@@ -14,7 +14,7 @@ public abstract class MinecraftEvent implements DiscordSynchronizable {
     protected final User user;
 
     protected final Accessor.Channel channel;
-    protected EmbedBuilder builder;
+    protected final EmbedBuilder     builder;
 
     private long snowflake = -1;
 

@@ -5,7 +5,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import de.eldritch.spigot.discord_sync.util.IOUtil;
-import net.md_5.bungee.api.ChatColor;
+import de.eldritch.spigot.discord_sync.util.format.ColorParser;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileReader;
@@ -14,17 +14,13 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 
 public class TextService {
-    private static final String DEFAULT_LANGUAGE = "en_US";
+    public static final String DEFAULT_LANGUAGE = "en_US";
 
     /**
      * The path this TextService will find lang files in.
      */
     private final String path;
 
-    /**
-     * The currently set language.
-     */
-    private String language;
     /**
      * Map of all the keys and their content in the currently set language.
      */
@@ -58,7 +54,7 @@ public class TextService {
                     : str.formatted((Object[]) format);
 
             // translate color codes
-            content = ChatColor.translateAlternateColorCodes('&', content);
+            content = ColorParser.format(content);
 
             return new Text(content);
         }
@@ -73,7 +69,6 @@ public class TextService {
                     new TypeToken<HashMap<String, String>>() {
                     }.getType()
             );
-            this.language = language;
         }
     }
 }

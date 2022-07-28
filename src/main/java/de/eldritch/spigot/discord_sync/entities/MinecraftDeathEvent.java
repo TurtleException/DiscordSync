@@ -22,7 +22,7 @@ public class MinecraftDeathEvent extends MinecraftEvent {
         String newMsg = msg;
         for (Player player : onlinePlayers) {
             if (newMsg.contains(player.getName())) {
-                final User otherUser = DiscordSync.singleton.getUserService().getByUUID(player.getUniqueId());
+                final User otherUser = DiscordSync.singleton.getUserService().ofUUID(player.getUniqueId());
                 newMsg = newMsg.replaceAll(player.getName(), otherUser.getMention());
             }
         }

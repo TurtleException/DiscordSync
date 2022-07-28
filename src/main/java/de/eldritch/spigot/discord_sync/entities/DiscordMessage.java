@@ -2,10 +2,9 @@ package de.eldritch.spigot.discord_sync.entities;
 
 import de.eldritch.spigot.discord_sync.entities.interfaces.DiscordRepresentable;
 import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
-import de.eldritch.spigot.discord_sync.text.Text;
 import de.eldritch.spigot.discord_sync.user.User;
-import de.eldritch.spigot.discord_sync.util.format.MessageFormatter;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +12,7 @@ import java.util.List;
 
 public class DiscordMessage extends MinecraftSyncMessage implements DiscordRepresentable {
     private final long snowflake;
+    private final List<MessageEmbed> embeds;
     private final List<Message.Attachment> attachments;
 
     DiscordMessage(long turtle,
@@ -20,11 +20,14 @@ public class DiscordMessage extends MinecraftSyncMessage implements DiscordRepre
                    long timestamp,
                    long snowflake,
                    String content,
+                   List<MessageEmbed> embeds,
                    List<Message.Attachment> attachments,
                    @Nullable Referencable reference) {
         super(turtle, author, timestamp, content, reference);
 
         this.snowflake = snowflake;
+
+        this.embeds = embeds;
         this.attachments = attachments;
     }
 
@@ -42,11 +45,6 @@ public class DiscordMessage extends MinecraftSyncMessage implements DiscordRepre
         sendToMinecraft("discord");
     }
 
-    @Override
-    public @NotNull Text getContainerText() {
-        return Text.of("chat.reference.container", author.getEffectiveName(), String.valueOf(getID()), MessageFormatter.formatMinecraft(this));
-    }
-
     /* ----- ----- ----- */
 
     @Override
@@ -55,6 +53,10 @@ public class DiscordMessage extends MinecraftSyncMessage implements DiscordRepre
     }
 
     /* ----- ----- ----- */
+
+    public List<MessageEmbed> getEmbeds() {
+        return embeds;
+    }
 
     public List<Message.Attachment> getAttachments() {
         return attachments;

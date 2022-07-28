@@ -6,6 +6,7 @@ import de.eldritch.spigot.discord_sync.entities.interfaces.Referencable;
 import de.eldritch.spigot.discord_sync.text.Text;
 import de.eldritch.spigot.discord_sync.user.User;
 import de.eldritch.spigot.discord_sync.util.format.MessageFormatter;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -19,7 +20,9 @@ public abstract class MinecraftSyncMessage extends Message implements MinecraftS
 
     protected void sendToMinecraft(@NotNull String key) {
         final TextComponent prefix = Text.of("chat.prefix." + key, author.getEffectiveName()).toBaseComponent();
-        final TextComponent text   = Text.of("chat.message.content", MessageFormatter.formatMinecraft(this)).toBaseComponent();
+        final TextComponent text   = MessageFormatter.formatMinecraft(this, false);
+
+        prefix.setHoverEvent(author.newContainer());
 
         text.setHoverEvent(new HoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
@@ -27,14 +30,28 @@ public abstract class MinecraftSyncMessage extends Message implements MinecraftS
         ));
         text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "@" + getRefNum() + " "));
 
+
         if (reference == null) {
             DiscordSync.singleton.getServer().spigot().broadcast(prefix, text);
         } else {
             TextComponent reply = Text.of("chat.message.reply").toBaseComponent();
 
-            reply.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.hover.content.Text(reference.getContainerText().content())));
+            reply.setHoverEvent(new HoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    new net.md_5.bungee.api.chat.hover.content.Text(
+                            new BaseComponent[]{reference.getContainerText()}
+                    )
+            ));
 
             DiscordSync.singleton.getServer().spigot().broadcast(prefix, reply, text);
         }
+    }
+
+    @Override
+    public @NotNull TextComponent getContainerText() {
+        TextComponent headComponent = Text.of("chat.reference.container", author.getEffectiveName(), String.valueOf(getID())).toBaseComponent();
+        TextComponent  msgComponent = MessageFormatter.formatMinecraft(this, true);
+
+        return new TextComponent(headComponent, msgComponent);
     }
 }

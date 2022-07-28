@@ -23,7 +23,6 @@ public class UserUtil {
     public static @Nullable OfflinePlayer getPlayer(@Nullable String uuidStr, @Nullable Server server) {
         if (uuidStr == null) return null;
 
-        UUID uuid;
         try {
             return getPlayer(UUID.fromString(uuidStr), server);
         } catch (IllegalArgumentException e) {

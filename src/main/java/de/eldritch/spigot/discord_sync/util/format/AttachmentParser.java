@@ -1,13 +1,38 @@
 package de.eldritch.spigot.discord_sync.util.format;
 
+import de.eldritch.spigot.discord_sync.entities.DiscordMessage;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * Util to handle Discord Attachments and their respective display in Minecraft.
+ */
 class AttachmentParser {
-    public static @NotNull String parseAttachments(List<Message.Attachment> attachments) {
-        StringBuilder builder = new StringBuilder("");
+    public static @NotNull TextComponent parseEmbeds(List<MessageEmbed> embeds) {
+        if (embeds.size() < 1)
+            return new TextComponent();
+
+        TextComponent component = new TextComponent();
+
+        component.setText("[EMBED] ");
+        component.setColor(ChatColor.DARK_GRAY);
+
+        return component;
+    }
+
+    /**
+     * Returns a formatted message suffix to append to a {@link DiscordMessage} in Minecraft containing information
+     * about {@link Message.Attachment Attachments}.
+     * @param attachments List of {@link Message.Attachment Attachments}
+     * @return Formatted message suffix.
+     */
+    public static @NotNull TextComponent parseAttachments(List<Message.Attachment> attachments) {
+        StringBuilder builder = new StringBuilder();
 
         boolean image = false;
         boolean video = false;
@@ -23,12 +48,17 @@ class AttachmentParser {
         }
 
         if (image)
-            builder.append(" &8[IMG]");
+            builder.append("[IMG] ");
         if (video)
-            builder.append(" &8[VID]");
+            builder.append("[VID] ");
         if (file)
-            builder.append(" &8[FILE]");
+            builder.append("[FILE] ");
 
-        return ColorParser.format(builder.toString());
+        TextComponent component = new TextComponent();
+
+        component.setText(builder.toString());
+        component.setColor(ChatColor.DARK_GRAY);
+
+        return component;
     }
 }

@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 
+/**
+ * Responsible for synchronizing messages.
+ */
 public class SynchronizationService {
     /**
      * Maximum capacity of the message cache.
@@ -91,6 +94,12 @@ public class SynchronizationService {
         return new DecimalFormat(String.valueOf(QUICK_REFERENCE_NUMBER_BOUND).substring(1)).format(refNum);
     }
 
+    /**
+     * Provides a cached {@link Referencable} with its quick reference number matching the given reference number or
+     * <code>null</code> if no such Referencable could be found in the cache.
+     * @param refNumber Reference number of the Referencable.
+     * @return Message or <code>null</code>.
+     */
     public @Nullable Referencable getCachedReferencable(String refNumber) {
         return referencableCache.get(refNumber);
     }
