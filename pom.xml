@@ -4,9 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.eldritch.spigot</groupId>
+    <groupId>de.turtle-exception.spigot</groupId>
     <artifactId>DiscordSync</artifactId>
-    <version>01.01-001</version>
+    <version>03.01-001</version>
+
+    <!--
+         ,,
+        (_ \_- -_
+          \  EXC )
+            lU lU
+    -->
+
     <build>
         <plugins>
             <plugin>
@@ -20,22 +28,10 @@
         </plugins>
     </build>
 
-    <!--
-         ,,
-        (_ \_- -_
-          \  EXC )
-            lU lU
-    -->
-
     <repositories>
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>dv8tion</id>
-            <name>m2-dv8tion</name>
-            <url>https://m2.dv8tion.net/releases</url>
         </repository>
     </repositories>
 
@@ -43,14 +39,15 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.18-R0.1-SNAPSHOT</version>
+            <version>1.19-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.3.0_339</version>
+            <version>5.0.0-alpha.17</version>
             <exclusions>
+                <!-- exclude audio -->
                 <exclusion>
                     <groupId>club.minnced</groupId>
                     <artifactId>opus-java</artifactId>
