@@ -1,0 +1,10 @@
+name: DiscordSync
+main: de.turtle_exception.spigot.DiscordSync
+version: ${project.version}
+
+api-version: 1.19
+
+description: Synchronize Minecraft's ingame chat with a Discord channel, check the server's status via Discord, link accounts and much more!
+
+author: TurtleException
+website: https://github.com/TurtleException/DiscordSync
