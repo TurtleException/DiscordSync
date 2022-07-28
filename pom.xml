@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.turtle-exception.spigot</groupId>
+    <groupId>de.turtle_exception.spigot</groupId>
     <artifactId>DiscordSync</artifactId>
     <version>03.01-001</version>
 
