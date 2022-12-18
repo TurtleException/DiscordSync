@@ -65,7 +65,7 @@ public class Channel implements Entity {
     /* - - - */
 
     @Override
-    public long getId() {
+    public long id() {
         return this.id;
     }
 
@@ -98,7 +98,7 @@ public class Channel implements Entity {
     public void send(@NotNull SyncMessage message) {
         // TODO: quick response code as key
         messageCache.put("", message);
-        responseCodes.offer(message.getId(), null);
+        responseCodes.offer(message.id(), null);
 
 
         /* - MINECRAFT */
@@ -106,7 +106,7 @@ public class Channel implements Entity {
                 .filter(player -> getPlugin().getChannelMapper().get(player.getUniqueId()).equals(this))
                 .forEach(player -> {
                     // TODO: prefixes & events
-                    String content = message.getContent().toString(Format.MINECRAFT_LEGACY);
+                    String content = message.content().toString(Format.MINECRAFT_LEGACY);
 
                     // TODO: check if spigot is necessary here
                     player.spigot().sendMessage(TextComponent.fromLegacyText(content));
@@ -116,7 +116,7 @@ public class Channel implements Entity {
         /* - DISCORD */
         for (Long snowflake : this.snowflakes) {
             // ignore if the message came from this channel
-            if (Objects.equals(message.getSourceSnowflake(), snowflake)) return;
+            if (Objects.equals(message.sourceSnowflake(), snowflake)) return;
 
             TextChannel channel = getPlugin().getJDA().getTextChannelById(snowflake);
             if (channel == null) {
@@ -126,18 +126,18 @@ public class Channel implements Entity {
 
             MessageCreateAction action = channel.sendMessage(
                     new MessageCreateBuilder()
-                            .setContent(message.getContent().toString(Format.DISCORD))
+                            .setContent(message.content().toString(Format.DISCORD))
                             .build());
 
-            Long reference = responseCodes.get(message.getReference());
+            Long reference = responseCodes.get(message.reference());
             if (reference != null)
                 action.setMessageReference(reference);
 
             action.queue(success -> {
-                responseCodes.put(message.getId(), success.getIdLong());
+                responseCodes.put(message.id(), success.getIdLong());
             }, throwable -> {
-                getPlugin().getLogger().log(Level.WARNING, "Encountered an unexpected exception while attempting to send message " + message.getId(), throwable);
-                responseCodes.put(message.getId(), null);
+                getPlugin().getLogger().log(Level.WARNING, "Encountered an unexpected exception while attempting to send message " + message.id(), throwable);
+                responseCodes.put(message.id(), null);
             });
         }
     }

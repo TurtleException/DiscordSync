@@ -12,7 +12,7 @@ import java.util.function.Predicate;
  * A simple set containing Entities. The set is backed by a {@link ConcurrentHashMap} and values are mapped to their
  * unique id.
  * <p> This implementation should be thread-safe.
- * @see Entity#getId()
+ * @see Entity#id()
  */
 public class EntitySet<E extends Entity> implements Set<E> {
     private final Object lock = new Object();
@@ -51,7 +51,7 @@ public class EntitySet<E extends Entity> implements Set<E> {
     public boolean contains(Object o) {
         synchronized (lock) {
             if (o instanceof Entity entity) {
-                return content.get(entity.getId()) != null;
+                return content.get(entity.id()) != null;
             }
             return false;
         }
@@ -89,13 +89,13 @@ public class EntitySet<E extends Entity> implements Set<E> {
     public boolean add(E e) {
         synchronized (lock) {
             // comparing the old and new value is not necessary because the id should be unique to this object.
-            return content.put(e.getId(), e) == null;
+            return content.put(e.id(), e) == null;
         }
     }
 
     public @Nullable E put(@NotNull E e) {
         synchronized (lock) {
-            return content.put(e.getId(), e);
+            return content.put(e.id(), e);
         }
     }
 
@@ -161,7 +161,7 @@ public class EntitySet<E extends Entity> implements Set<E> {
             int i = 0;
             for (E value : content.values()) {
                 if (predicate.test(value)) {
-                    content.remove(value.getId(), value);
+                    content.remove(value.id(), value);
                     i++;
                 }
             }

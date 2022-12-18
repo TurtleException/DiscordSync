@@ -19,7 +19,7 @@ public class SyncUser implements Entity {
     }
 
     @Override
-    public long getId() {
+    public long id() {
         return this.id;
     }
 
