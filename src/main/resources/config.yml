@@ -1,0 +1,13 @@
+# The Discord bot token
+discordToken: "null"
+# The amount of messages that are kept in memory (important for replies,
+# should be at least 100 or unexpected behaviour may occur)
+messageBacklog: 1000
+# Allow the use of custom emojis as player name prefix
+useEmoji: true
+# Show Discord online status in-game
+useOnlineStatus: true
+# Allow users to use the bots' private chat
+directMessages: true
+# Show "XY is typing..." over the actionbar
+typingIndicator: false
