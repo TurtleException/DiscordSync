@@ -74,14 +74,26 @@ public class FixedBlockingQueueMap<K, V> implements Map<K, V> {
         }
     }
 
-    @Nullable
     @Override
-    public V put(K key, V value) {
+    public @Nullable V put(K key, V value) {
         synchronized (lock) {
             keys[cursor] = key;
             V val = values[cursor] = value;
             increment();
             return val;
+        }
+    }
+
+    public V offer(K key, V value) {
+        synchronized (lock) {
+            for (int i = 0; i < keys.length; i++) {
+                if (!Objects.equals(keys[i], key)) continue;
+
+                V old = values[i];
+                values[i] = value;
+                return old;
+            }
+            return null;
         }
     }
 
@@ -111,9 +123,8 @@ public class FixedBlockingQueueMap<K, V> implements Map<K, V> {
         }
     }
 
-    @NotNull
     @Override
-    public Set<K> keySet() {
+    public @NotNull Set<K> keySet() {
         ArrayList<K> list = new ArrayList<>(keys.length);
         synchronized (lock) {
             for (int i = 0; i < keys.length; i++)
@@ -122,9 +133,8 @@ public class FixedBlockingQueueMap<K, V> implements Map<K, V> {
         return Set.copyOf(list);
     }
 
-    @NotNull
     @Override
-    public Collection<V> values() {
+    public @NotNull Collection<V> values() {
         ArrayList<V> list = new ArrayList<>(keys.length);
         synchronized (lock) {
             for (int i = 0; i < keys.length; i++)
@@ -133,9 +143,8 @@ public class FixedBlockingQueueMap<K, V> implements Map<K, V> {
         return List.copyOf(list);
     }
 
-    @NotNull
     @Override
-    public Set<Entry<K, V>> entrySet() {
+    public @NotNull Set<Entry<K, V>> entrySet() {
         ArrayList<Entry<K, V>> list = new ArrayList<>(keys.length);
         synchronized (lock) {
             for (int i = 0; i < keys.length; i++)
