@@ -39,7 +39,7 @@ public class UserListener extends ListenerAdapter implements Listener {
         if (user != null) return;
 
         // register new user
-        plugin.putUser(event.getPlayer().getUniqueId());
+        plugin.putUser(event.getPlayer().getUniqueId(), event.getPlayer().getDisplayName());
     }
 
     // TODO: player ban (spigot doesn't support that :/)

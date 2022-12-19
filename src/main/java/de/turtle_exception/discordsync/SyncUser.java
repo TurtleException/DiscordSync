@@ -14,8 +14,9 @@ public class SyncUser implements Entity {
     private final ArrayList<UUID> minecraftIds;
     private final ArrayList<Long>   discordIds;
 
-    SyncUser(long id, List<UUID> minecraftIds, List<Long> discordIds) {
+    SyncUser(long id, String name, List<UUID> minecraftIds, List<Long> discordIds) {
         this.id = id;
+        this.name = name;
         this.minecraftIds = new ArrayList<>(minecraftIds);
         this.discordIds   = new ArrayList<>(discordIds);
     }
@@ -25,8 +26,12 @@ public class SyncUser implements Entity {
         return this.id;
     }
 
-    public String getName() {
+    public @NotNull String getName() {
         return name;
+    }
+
+    public void setName(@NotNull String name) {
+        this.name = name;
     }
 
     public @NotNull List<UUID> getMinecraftIds() {

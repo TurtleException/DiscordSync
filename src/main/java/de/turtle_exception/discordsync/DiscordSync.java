@@ -115,10 +115,11 @@ public class DiscordSync extends JavaPlugin {
         YamlConfiguration userYaml = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "users.yml"));
         for (String key : userYaml.getKeys(false)) {
             long         id        = Long.parseLong(key);
+            String       name      = userYaml.getString(key + ".name", "???");
             List<String> minecraft = userYaml.getStringList(key + ".minecraft");
             List<String> discord   = userYaml.getStringList(key + ".discord");
 
-            userCache.put(new SyncUser(id,
+            userCache.put(new SyncUser(id, name,
                     minecraft.stream().map(UUID::fromString).toList(),
                     discord.stream().map(Long::parseLong).toList()
             ));
@@ -213,18 +214,18 @@ public class DiscordSync extends JavaPlugin {
         return null;
     }
 
-    public @NotNull SyncUser putUser(@NotNull UUID uuid) {
+    public @NotNull SyncUser putUser(@NotNull UUID uuid, @NotNull String name) {
         if (getUser(uuid) != null)
             throw new IllegalStateException("May not overwrite user!");
-        SyncUser user = new SyncUser(TurtleUtil.newId(TurtleType.USER), List.of(uuid), List.of());
+        SyncUser user = new SyncUser(TurtleUtil.newId(TurtleType.USER), name, List.of(uuid), List.of());
         this.userCache.put(user);
         return user;
     }
 
-    public @NotNull SyncUser putUser(long snowflake) {
+    public @NotNull SyncUser putUser(long snowflake, @NotNull String name) {
         if (getUser(snowflake) != null)
             throw new IllegalStateException("May not overwrite user!");
-        SyncUser user = new SyncUser(TurtleUtil.newId(TurtleType.USER), List.of(), List.of(snowflake));
+        SyncUser user = new SyncUser(TurtleUtil.newId(TurtleType.USER), name, List.of(), List.of(snowflake));
         this.userCache.put(user);
         return user;
     }

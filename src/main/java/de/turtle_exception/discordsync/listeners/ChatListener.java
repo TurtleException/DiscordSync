@@ -35,9 +35,13 @@ public class ChatListener extends ListenerAdapter implements Listener {
         for (Channel channel : plugin.getChannelCache()) {
             if (!channel.getSnowflakes().contains(event.getChannel().getIdLong())) continue;
 
+            String name = event.getMember() != null
+                    ? event.getMember().getEffectiveName()
+                    : event.getAuthor().getName();
+
             SyncUser author = plugin.getUser(event.getAuthor().getIdLong());
             if (author == null)
-                author = plugin.putUser(event.getAuthor().getIdLong());
+                author = plugin.putUser(event.getAuthor().getIdLong(), name);
 
             // TODO: reference
 
@@ -63,7 +67,7 @@ public class ChatListener extends ListenerAdapter implements Listener {
 
         SyncUser author = plugin.getUser(uuid);
         if (author == null)
-            author = plugin.putUser(uuid);
+            author = plugin.putUser(uuid, event.getPlayer().getDisplayName());
 
         // TODO: reference
 
