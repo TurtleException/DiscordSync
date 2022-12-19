@@ -9,6 +9,8 @@ import java.util.UUID;
 public class SyncUser implements Entity {
     private final long id;
 
+    private String name;
+
     private final ArrayList<UUID> minecraftIds;
     private final ArrayList<Long>   discordIds;
 
@@ -21,6 +23,10 @@ public class SyncUser implements Entity {
     @Override
     public long id() {
         return this.id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public @NotNull List<UUID> getMinecraftIds() {

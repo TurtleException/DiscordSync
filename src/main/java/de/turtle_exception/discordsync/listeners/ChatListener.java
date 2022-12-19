@@ -1,6 +1,7 @@
 package de.turtle_exception.discordsync.listeners;
 
 import de.turtle_exception.discordsync.DiscordSync;
+import de.turtle_exception.discordsync.SourceInfo;
 import de.turtle_exception.discordsync.SyncMessage;
 import de.turtle_exception.discordsync.SyncUser;
 import de.turtle_exception.discordsync.channel.Channel;
@@ -8,6 +9,8 @@ import de.turtle_exception.discordsync.util.time.TurtleType;
 import de.turtle_exception.discordsync.util.time.TurtleUtil;
 import de.turtle_exception.fancyformat.Format;
 import de.turtle_exception.fancyformat.FormatText;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bukkit.event.EventHandler;
@@ -38,8 +41,12 @@ public class ChatListener extends ListenerAdapter implements Listener {
 
             // TODO: reference
 
+            Member member = event.getMember();
+            User   user   = event.getAuthor();
+
+            SourceInfo  source  = new SourceInfo(user, member, event.getChannel());
             FormatText  content = plugin.getFormatter().newText(event.getMessage().getContentRaw(), Format.DISCORD);
-            SyncMessage message = new SyncMessage(TurtleUtil.newId(TurtleType.MESSAGE), author, content, -1, event.getChannel().getIdLong());
+            SyncMessage message = new SyncMessage(TurtleUtil.newId(TurtleType.MESSAGE), author, content, -1, source);
 
             channel.send(message);
             return;
@@ -63,8 +70,9 @@ public class ChatListener extends ListenerAdapter implements Listener {
         // players use Discord markdown
         FormatText  content = plugin.getFormatter().newText(event.getMessage(), Format.DISCORD);
 
-        SyncMessage message = new SyncMessage(TurtleUtil.newId(TurtleType.MESSAGE), author, content, -1, null);
-        Channel     channel = plugin.getChannelMapper().get(uuid);
+        SourceInfo  source  = new SourceInfo(event.getPlayer(), event.getPlayer().getWorld());
+        SyncMessage message = new SyncMessage(TurtleUtil.newId(TurtleType.MESSAGE), author, content, -1, source);
+        Channel     channel = plugin.getChannelListeners().get(event.getPlayer());
 
         channel.send(message);
     }

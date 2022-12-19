@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -34,6 +33,7 @@ public class Channel implements Entity {
     /** List of Discord channels. */
     private @NotNull List<Long> snowflakes;
 
+
     public Channel(long id, @NotNull DiscordSync plugin, @NotNull String name, @NotNull List<String> worlds, @NotNull List<Long> snowflakes) {
         this.id = id;
         this.plugin = plugin;
@@ -43,8 +43,7 @@ public class Channel implements Entity {
         messageCache = new EntityMap<>(new String[backlog], new SyncMessage[backlog]);
         responseCodes = new FixedBlockingQueueMap<>(new Long[backlog], new Long[backlog]);
 
-        // TODO: register listeners
-        this.worlds = new ArrayList<>();
+        this.worlds    = new ArrayList<>();
         for (String world : worlds) {
             if (world.equals("*")) {
                 this.worlds = null;
@@ -52,8 +51,18 @@ public class Channel implements Entity {
             }
             this.worlds.add(UUID.fromString(world));
         }
+        this.registerListeners();
 
         this.snowflakes = snowflakes;
+    }
+
+    private void registerListeners() {
+        if (worlds == null) {
+            plugin.getChannelListeners().register(this);
+        } else {
+            for (UUID world : worlds)
+                plugin.getChannelListeners().register(world, this);
+        }
     }
 
     public static @NotNull Channel getNullChannel(@NotNull DiscordSync plugin) {
@@ -103,7 +112,7 @@ public class Channel implements Entity {
 
         /* - MINECRAFT */
         getPlugin().getServer().getOnlinePlayers().stream()
-                .filter(player -> getPlugin().getChannelMapper().get(player.getUniqueId()).equals(this))
+                .filter(player -> getPlugin().getChannelListeners().get(player.getUniqueId()).equals(this))
                 .forEach(player -> {
                     // TODO: prefixes & events
                     String content = message.content().toString(Format.MINECRAFT_LEGACY);
@@ -116,7 +125,7 @@ public class Channel implements Entity {
         /* - DISCORD */
         for (Long snowflake : this.snowflakes) {
             // ignore if the message came from this channel
-            if (Objects.equals(message.sourceSnowflake(), snowflake)) return;
+            if (message.sourceInfo().isFromChannel(snowflake)) return;
 
             TextChannel channel = getPlugin().getJDA().getTextChannelById(snowflake);
             if (channel == null) {

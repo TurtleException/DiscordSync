@@ -25,7 +25,7 @@ public class ChannelCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 0) {
             // TODO: do some fancy stuff
-            player.sendMessage("You current channel is " + plugin.getChannelMapper().get(player.getUniqueId()).getName());
+            player.sendMessage("You current channel is " + plugin.getChannelListeners().get(player.getUniqueId()).getName());
             return true;
         }
 

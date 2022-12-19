@@ -228,7 +228,7 @@ public class DiscordSync extends JavaPlugin {
         getServer().getPluginManager().callEvent(new SyncChannelDeleteEvent(channel));
     }
 
-    public @NotNull ChannelMapper getChannelMapper() {
+    public @NotNull ChannelMapper getChannelListeners() {
         return channelMapper;
     }
 

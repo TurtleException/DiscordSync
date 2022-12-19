@@ -1,10 +1,16 @@
 name: DiscordSync
 main: de.turtle_exception.discordsync.DiscordSync
+load: STARTUP
+
 version: ${project.version}
 
-api-version: 1.19.3
-
-description: Synchronize Minecraft's in-game chat with a Discord channel, check the server's status via Discord, link accounts and much more!
+api-version: 1.19
+description: ${project.description}
 
 author: TurtleException
 website: https://github.com/TurtleException/DiscordSync
+
+commands:
+  channel:
+    description: "General command to control channels" # TODO
+    usage: "/channel <info|switch|list|create|delete|mute>" # TODO

@@ -6,7 +6,11 @@
 
     <groupId>de.turtle-exception.discordsync</groupId>
     <artifactId>DiscordSync</artifactId>
-    <version>3.0.0-alpha.1</version>
+    <version>3.0.0-alpha.16</version>
+
+    <name>DiscordSync</name>
+    <description>Spigot plugin that mirrors Discord channels and Minecraft chats</description>
+    <url>https://github.com/TurtleException/DiscordSync</url>
 
     <!--
          ,,
@@ -14,6 +18,13 @@
           \  EXC )
             lU lU
     -->
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
 
     <build>
         <plugins>
@@ -25,7 +36,51 @@
                     <target>16</target>
                 </configuration>
             </plugin>
+
+            <!-- TODO: remove this prior to first release & replace it with the shade plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>
+                                de.turtle_exception.discordsync.DiscordSync
+                            </mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
         </plugins>
+        <resources>
+            <!-- Write version to resources -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 
     <repositories>
@@ -51,7 +106,6 @@
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
             <version>5.0.0-beta.2</version>
-            <scope>provided</scope>
             <exclusions>
                 <!-- exclude audio -->
                 <exclusion>
