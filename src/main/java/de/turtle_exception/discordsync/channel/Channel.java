@@ -5,10 +5,10 @@ import de.turtle_exception.discordsync.Entity;
 import de.turtle_exception.discordsync.SyncMessage;
 import de.turtle_exception.discordsync.util.EntityMap;
 import de.turtle_exception.discordsync.util.FixedBlockingQueueMap;
-import de.turtle_exception.fancyformat.Format;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +26,7 @@ public class Channel implements Entity {
     private @NotNull String name;
 
     private final EntityMap<String, SyncMessage> messageCache;
+    /** Discord response codes */
     private final FixedBlockingQueueMap<Long, Long> responseCodes;
 
     /** List of worlds. If this is {@code null} this Channel is server-wide. */
@@ -111,18 +112,15 @@ public class Channel implements Entity {
 
 
         /* - MINECRAFT */
+        String minecraftMsg = plugin.getFormatHandler().toMinecraft(message);
+        BaseComponent[] component = TextComponent.fromLegacyText(minecraftMsg);
         getPlugin().getServer().getOnlinePlayers().stream()
                 .filter(player -> getPlugin().getChannelListeners().get(player.getUniqueId()).equals(this))
-                .forEach(player -> {
-                    // TODO: prefixes & events
-                    String content = message.content().toString(Format.MINECRAFT_LEGACY);
-
-                    // TODO: check if spigot is necessary here
-                    player.spigot().sendMessage(TextComponent.fromLegacyText(content));
-                });
+                .forEach(player -> player.spigot().sendMessage(component));
 
 
         /* - DISCORD */
+        String discordMsg = plugin.getFormatHandler().toDiscord(message);
         for (Long snowflake : this.snowflakes) {
             // ignore if the message came from this channel
             if (message.sourceInfo().isFromChannel(snowflake)) return;
@@ -135,12 +133,14 @@ public class Channel implements Entity {
 
             MessageCreateAction action = channel.sendMessage(
                     new MessageCreateBuilder()
-                            .setContent(message.content().toString(Format.DISCORD))
+                            .setContent(discordMsg)
                             .build());
 
             Long reference = responseCodes.get(message.reference());
             if (reference != null)
                 action.setMessageReference(reference);
+
+            // TODO: this would not work with multiple Discord endpoints (response code will be overwritten)
 
             action.queue(success -> {
                 responseCodes.put(message.id(), success.getIdLong());

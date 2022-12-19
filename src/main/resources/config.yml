@@ -37,3 +37,8 @@ format:
     # TODO: docs
     # TODO: more options (name, effective name, tag, guild, channel, ...)
     discord: "%guild% **__%discord%__:** %content%"
+
+avatar:
+  bust: "https://mc-heads.net/avatar/%uuid%"
+  body: "https://mc-heads.net/body/%uuid%"
+  head: "https://minotar.net/helm/%uuid%/256"

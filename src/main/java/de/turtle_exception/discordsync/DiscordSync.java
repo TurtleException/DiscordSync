@@ -13,6 +13,7 @@ import de.turtle_exception.discordsync.listeners.UserListener;
 import de.turtle_exception.discordsync.util.EntitySet;
 import de.turtle_exception.discordsync.util.time.TurtleType;
 import de.turtle_exception.discordsync.util.time.TurtleUtil;
+import de.turtle_exception.discordsync.visual.AvatarHandler;
 import de.turtle_exception.fancyformat.FancyFormatter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -39,8 +40,11 @@ public class DiscordSync extends JavaPlugin {
     private ChannelMapper channelMapper;
     private final EntitySet<Channel> channelCache = new EntitySet<>();
 
+    private FormatHandler formatHandler;
     private FancyFormatter formatter;
     private JDA jda;
+
+    private AvatarHandler avatarHandler;
 
     public DiscordSync() { }
 
@@ -55,6 +59,7 @@ public class DiscordSync extends JavaPlugin {
         this.saveDefaultConfig();
         this.reloadConfig();
 
+        this.formatHandler = new FormatHandler(this);
         this.formatter = new FancyFormatter();
 
         // COMMANDS
@@ -77,6 +82,9 @@ public class DiscordSync extends JavaPlugin {
             getLogger().log(Level.SEVERE, "Invalid token! Please make sure to set your Bot token in the config.yml");
             throw e;
         }
+
+        // VISUALS
+        this.avatarHandler = new AvatarHandler(this);
 
         // USERS
         this.reloadUsers();
@@ -237,6 +245,14 @@ public class DiscordSync extends JavaPlugin {
     }
 
     /* - - - */
+
+    public @NotNull AvatarHandler getAvatarHandler() {
+        return avatarHandler;
+    }
+
+    public @NotNull FormatHandler getFormatHandler() {
+        return formatHandler;
+    }
 
     public @NotNull FancyFormatter getFormatter() {
         return formatter;

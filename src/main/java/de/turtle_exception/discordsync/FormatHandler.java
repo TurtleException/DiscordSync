@@ -29,7 +29,7 @@ public class FormatHandler {
     private final boolean disDisUser;
     private final boolean disDisDiscord;
     private final boolean disDisMention;
-    private final boolean disDisEmote;
+    private final boolean disDisGuild;
     private final boolean disDisMessage;
 
     public FormatHandler(@NotNull DiscordSync plugin) {
@@ -59,7 +59,7 @@ public class FormatHandler {
         this.disDisUser    = formatDisDis.contains("%user%");
         this.disDisDiscord = formatDisDis.contains("%discord%");
         this.disDisMention = formatMinDis.contains("%mention%");
-        this.disDisEmote   = formatDisDis.contains("%emote%");
+        this.disDisGuild   = formatDisDis.contains("%guild%");
         this.disDisMessage = formatDisDis.contains("%message%");
     }
 
@@ -112,7 +112,7 @@ public class FormatHandler {
 
             return format;
         } else {
-            String format = this.formatMinDis;
+            String format = this.formatDisDis;
 
             if (disDisUser)
                 format = format.replaceAll("%user%", message.author().getName());
@@ -120,8 +120,8 @@ public class FormatHandler {
                 format = format.replaceAll("%discord%", message.sourceInfo().getEffectiveDiscordName());
             if (disDisMention)
                 format = format.replaceAll("%mention%", message.sourceInfo().getUser().getAsMention());
-            if (disDisEmote)
-                format = format.replaceAll("%emote%", "EMOTE" /* TODO */);
+            if (disDisGuild)
+                format = format.replaceAll("%guild%", "guild" /* TODO */);
             if (disDisMessage)
                 format = format.replaceAll("%message%", content);
 
