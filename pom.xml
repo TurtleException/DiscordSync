@@ -6,7 +6,7 @@
 
     <groupId>de.turtle-exception.discordsync</groupId>
     <artifactId>DiscordSync</artifactId>
-    <version>3.0.0-alpha.16</version>
+    <version>3.0.0-alpha.18</version>
 
     <name>DiscordSync</name>
     <description>Spigot plugin that mirrors Discord channels and Minecraft chats</description>
@@ -77,7 +77,7 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>plugin.yml</include>
+                    <include>*</include>
                 </includes>
             </resource>
         </resources>

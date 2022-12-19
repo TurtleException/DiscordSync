@@ -14,6 +14,7 @@ import de.turtle_exception.discordsync.util.EntitySet;
 import de.turtle_exception.discordsync.util.time.TurtleType;
 import de.turtle_exception.discordsync.util.time.TurtleUtil;
 import de.turtle_exception.discordsync.visual.AvatarHandler;
+import de.turtle_exception.discordsync.visual.EmoteHandler;
 import de.turtle_exception.fancyformat.FancyFormatter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -45,6 +46,7 @@ public class DiscordSync extends JavaPlugin {
     private JDA jda;
 
     private AvatarHandler avatarHandler;
+    private EmoteHandler  emoteHandler;
 
     public DiscordSync() { }
 
@@ -85,6 +87,7 @@ public class DiscordSync extends JavaPlugin {
 
         // VISUALS
         this.avatarHandler = new AvatarHandler(this);
+        this.emoteHandler  = new EmoteHandler(this);
 
         // USERS
         this.reloadUsers();
@@ -98,6 +101,8 @@ public class DiscordSync extends JavaPlugin {
     public void onDisable() {
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
         jda.getPresence().setActivity(null);
+
+        jda.shutdown();
 
         this.saveConfig();
         this.saveUsers();
@@ -236,7 +241,7 @@ public class DiscordSync extends JavaPlugin {
         getServer().getPluginManager().callEvent(new SyncChannelDeleteEvent(channel));
     }
 
-    public @NotNull ChannelMapper getChannelListeners() {
+    public @NotNull ChannelMapper getChannelMapper() {
         return channelMapper;
     }
 
@@ -252,6 +257,10 @@ public class DiscordSync extends JavaPlugin {
 
     public @NotNull FormatHandler getFormatHandler() {
         return formatHandler;
+    }
+
+    public @NotNull EmoteHandler getEmoteHandler() {
+        return emoteHandler;
     }
 
     public @NotNull FancyFormatter getFormatter() {

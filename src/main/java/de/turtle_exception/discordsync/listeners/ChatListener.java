@@ -72,7 +72,7 @@ public class ChatListener extends ListenerAdapter implements Listener {
 
         SourceInfo  source  = new SourceInfo(event.getPlayer(), event.getPlayer().getWorld());
         SyncMessage message = new SyncMessage(TurtleUtil.newId(TurtleType.MESSAGE), author, content, -1, source);
-        Channel     channel = plugin.getChannelListeners().get(event.getPlayer());
+        Channel     channel = plugin.getChannelMapper().get(event.getPlayer());
 
         channel.send(message);
     }

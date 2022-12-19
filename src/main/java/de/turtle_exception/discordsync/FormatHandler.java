@@ -93,7 +93,7 @@ public class FormatHandler {
         }
     }
 
-    public @NotNull String toDiscord(@NotNull SyncMessage message) {
+    public @NotNull String toDiscord(@NotNull SyncMessage message, long target) {
         String content = message.content().toString(Format.DISCORD);
 
         // TODO: make emotes for discord guild logos for Discord -> Discord messages
@@ -106,7 +106,7 @@ public class FormatHandler {
             if (minDisPlayer)
                 format = format.replaceAll("%player%", message.sourceInfo().getPlayer().getDisplayName());
             if (minDisEmote)
-                format = format.replaceAll("%emote%", "EMOTE" /* TODO */);
+                format = format.replaceAll("%emote%", getEmote(message, target));
             if (minDisMessage)
                 format = format.replaceAll("%message%", content);
 
@@ -121,11 +121,18 @@ public class FormatHandler {
             if (disDisMention)
                 format = format.replaceAll("%mention%", message.sourceInfo().getUser().getAsMention());
             if (disDisGuild)
-                format = format.replaceAll("%guild%", "guild" /* TODO */);
+                format = format.replaceAll("%guild%", getEmote(message, target));
             if (disDisMessage)
                 format = format.replaceAll("%message%", content);
 
             return format;
         }
+    }
+
+    private @NotNull String getEmote(@NotNull SyncMessage message, long target) {
+        if (message.sourceInfo().isMinecraft())
+            return plugin.getEmoteHandler().getEmote(message.sourceInfo().getPlayer(), target);
+        else
+            return plugin.getEmoteHandler().getEmote(message.sourceInfo().getChannel());
     }
 }

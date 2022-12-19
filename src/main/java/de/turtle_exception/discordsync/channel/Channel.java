@@ -5,7 +5,8 @@ import de.turtle_exception.discordsync.Entity;
 import de.turtle_exception.discordsync.SyncMessage;
 import de.turtle_exception.discordsync.util.EntityMap;
 import de.turtle_exception.discordsync.util.FixedBlockingQueueMap;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -34,7 +35,6 @@ public class Channel implements Entity {
     /** List of Discord channels. */
     private @NotNull List<Long> snowflakes;
 
-
     public Channel(long id, @NotNull DiscordSync plugin, @NotNull String name, @NotNull List<String> worlds, @NotNull List<Long> snowflakes) {
         this.id = id;
         this.plugin = plugin;
@@ -55,14 +55,20 @@ public class Channel implements Entity {
         this.registerListeners();
 
         this.snowflakes = snowflakes;
+
+        for (Long snowflake : snowflakes) {
+            GuildChannel channel = plugin.getJDA().getChannelById(GuildChannel.class, snowflake);
+            if (channel == null) continue;
+            plugin.getEmoteHandler().register(channel.getGuild());
+        }
     }
 
     private void registerListeners() {
         if (worlds == null) {
-            plugin.getChannelListeners().register(this);
+            plugin.getChannelMapper().register(this);
         } else {
             for (UUID world : worlds)
-                plugin.getChannelListeners().register(world, this);
+                plugin.getChannelMapper().register(world, this);
         }
     }
 
@@ -115,21 +121,22 @@ public class Channel implements Entity {
         String minecraftMsg = plugin.getFormatHandler().toMinecraft(message);
         BaseComponent[] component = TextComponent.fromLegacyText(minecraftMsg);
         getPlugin().getServer().getOnlinePlayers().stream()
-                .filter(player -> getPlugin().getChannelListeners().get(player.getUniqueId()).equals(this))
+                .filter(player -> getPlugin().getChannelMapper().get(player.getUniqueId()).equals(this))
                 .forEach(player -> player.spigot().sendMessage(component));
 
 
         /* - DISCORD */
-        String discordMsg = plugin.getFormatHandler().toDiscord(message);
         for (Long snowflake : this.snowflakes) {
             // ignore if the message came from this channel
             if (message.sourceInfo().isFromChannel(snowflake)) return;
 
-            TextChannel channel = getPlugin().getJDA().getTextChannelById(snowflake);
+            MessageChannel channel = getPlugin().getJDA().getChannelById(MessageChannel.class, snowflake);
             if (channel == null) {
                 getPlugin().getLogger().log(Level.WARNING, "Missing channel " + snowflake);
                 return;
             }
+
+            String discordMsg = plugin.getFormatHandler().toDiscord(message, snowflake);
 
             MessageCreateAction action = channel.sendMessage(
                     new MessageCreateBuilder()
