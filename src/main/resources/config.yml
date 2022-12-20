@@ -12,33 +12,19 @@ directMessages: true
 # Show "XY is typing..." over the actionbar
 typingIndicator: false
 
-# TODO: move this to the wiki (maybe use a table to visualize which can use which)
 format:
-  # The in-game chat format. The following placeholders will be replaced by the plugin:
-  # %user%    - Universal username
-  # %player%  - Minecraft player name
-  # %discord% - Discord user name
-  # %message% - Content of the message
   minecraftChat:
-    # Minecraft -> Minecraft
     minecraft: "§6%user%§8:  §7%message%"
-    # Discord -> Minecraft
     discord: "§9%user%§8:  §7%message%"
-  # The Discord chat format. The following placeholders will be replaced by the plugin:
-  # %user%    - Universal username
-  # %player%  - Minecraft player name
-  # %mention% - Discord user as a @mention (Only recommended for embeds, as they don't ping the user)
-  # %message% - Content of the message
-  # %emote%   - The player emoji (Required useEmoji to be enabled)
   discordChat:
-    # Discord -> Minecraft
-    minecraft: "%emote% **__%player%__:**  %content%"
-    # Discord -> Discord
-    # TODO: docs
-    # TODO: more options (name, effective name, tag, guild, channel, ...)
-    discord: "%guild% **__%discord%__:** %content%"
+    minecraft: "%emote% **__%user%__:**  %message%"
+    discord: "%emote% **__%user%__:** %message%"
 
 avatar:
   bust: "https://mc-heads.net/avatar/%uuid%"
   body: "https://mc-heads.net/body/%uuid%"
   head: "https://minotar.net/helm/%uuid%/256"
+
+emote:
+  playerCircular: false
+  guildCircular: true

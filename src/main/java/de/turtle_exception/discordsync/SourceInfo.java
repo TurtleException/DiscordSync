@@ -27,7 +27,7 @@ public class SourceInfo {
     }
 
     public SourceInfo(@NotNull User user, @Nullable Member member, @NotNull MessageChannelUnion channel) {
-        this.user    = member == null ? user : null;
+        this.user    = user;
         this.member  = member;
         this.channel = channel;
         this.player  = null;
@@ -58,8 +58,8 @@ public class SourceInfo {
         return user;
     }
 
-    public @NotNull Member getMember() throws IllegalStateException {
-        if (member == null)
+    public @Nullable Member getMember() throws IllegalStateException {
+        if (user == null)
             throw new IllegalStateException("Not a Discord SourceInfo!");
         return member;
     }

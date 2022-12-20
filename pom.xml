@@ -6,7 +6,7 @@
 
     <groupId>de.turtle-exception.discordsync</groupId>
     <artifactId>DiscordSync</artifactId>
-    <version>3.0.0-alpha.46</version>
+    <version>3.0.0-alpha.52</version>
 
     <name>DiscordSync</name>
     <description>Spigot plugin that mirrors Discord channels and Minecraft chats</description>

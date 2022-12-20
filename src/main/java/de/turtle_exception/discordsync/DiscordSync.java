@@ -16,6 +16,7 @@ import de.turtle_exception.discordsync.util.time.TurtleType;
 import de.turtle_exception.discordsync.util.time.TurtleUtil;
 import de.turtle_exception.discordsync.visual.AvatarHandler;
 import de.turtle_exception.discordsync.visual.EmoteHandler;
+import de.turtle_exception.discordsync.visual.FormatHandler;
 import de.turtle_exception.fancyformat.FancyFormatter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
