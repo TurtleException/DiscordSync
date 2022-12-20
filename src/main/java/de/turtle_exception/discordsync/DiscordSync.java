@@ -11,6 +11,7 @@ import de.turtle_exception.discordsync.listeners.ChatListener;
 import de.turtle_exception.discordsync.listeners.PresenceListener;
 import de.turtle_exception.discordsync.listeners.UserListener;
 import de.turtle_exception.discordsync.util.EntitySet;
+import de.turtle_exception.discordsync.util.JDALogFilter;
 import de.turtle_exception.discordsync.util.time.TurtleType;
 import de.turtle_exception.discordsync.util.time.TurtleUtil;
 import de.turtle_exception.discordsync.visual.AvatarHandler;
@@ -43,6 +44,8 @@ public class DiscordSync extends JavaPlugin {
 
     private FormatHandler formatHandler;
     private FancyFormatter formatter;
+
+    private JDALogFilter jdaLogFilter;
     private JDA jda;
 
     private AvatarHandler avatarHandler;
@@ -79,6 +82,8 @@ public class DiscordSync extends JavaPlugin {
 
         // JDA
         try {
+            jdaLogFilter = new JDALogFilter(this);
+            jdaLogFilter.setLevel(Level.WARNING);
             jda = getJDABuilder().build();
         } catch (InvalidTokenException e) {
             getLogger().log(Level.SEVERE, "Invalid token! Please make sure to set your Bot token in the config.yml");
@@ -103,6 +108,9 @@ public class DiscordSync extends JavaPlugin {
         jda.getPresence().setActivity(null);
 
         jda.shutdown();
+
+        this.jdaLogFilter.stop();
+        this.jdaLogFilter = null;
 
         this.saveConfig();
         this.saveUsers();
