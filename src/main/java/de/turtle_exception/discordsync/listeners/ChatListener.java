@@ -32,6 +32,8 @@ public class ChatListener extends ListenerAdapter implements Listener {
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+        if (event.getAuthor().getIdLong() == plugin.getJDA().getSelfUser().getIdLong()) return;
+
         for (Channel channel : plugin.getChannelCache()) {
             if (!channel.getSnowflakes().contains(event.getChannel().getIdLong())) continue;
 
