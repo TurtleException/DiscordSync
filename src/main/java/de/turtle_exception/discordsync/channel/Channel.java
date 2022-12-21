@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 public class Channel implements Entity {
@@ -28,7 +29,8 @@ public class Channel implements Entity {
 
     private final EntityMap<String, SyncMessage> messageCache;
     /** Discord response codes */
-    private final FixedBlockingQueueMap<Long, Long> responseCodes;
+    // TODO: should this be locked?
+    private final ConcurrentHashMap<Long, FixedBlockingQueueMap<Long, Long>> responseCodes;
 
     /** List of worlds. If this is {@code null} this Channel is server-wide. */
     private @Nullable List<UUID> worlds;
@@ -42,7 +44,11 @@ public class Channel implements Entity {
 
         int backlog = plugin.getConfig().getInt("messageBacklog", 1000);
         messageCache = new EntityMap<>(new String[backlog], new SyncMessage[backlog]);
-        responseCodes = new FixedBlockingQueueMap<>(new Long[backlog], new Long[backlog]);
+        responseCodes = new ConcurrentHashMap<>(snowflakes.size());
+
+        // populate responseCode map
+        for (Long snowflake : snowflakes)
+            responseCodes.put(snowflake, new FixedBlockingQueueMap<>(new Long[backlog], new Long[backlog]));
 
         this.worlds    = new ArrayList<>();
         for (String world : worlds) {
@@ -114,7 +120,8 @@ public class Channel implements Entity {
     public void send(@NotNull SyncMessage message) {
         // TODO: quick response code as key
         messageCache.put("", message);
-        responseCodes.offer(message.id(), null);
+        // reserve space in message caches
+        responseCodes.forEach((channel, cache) -> cache.offer(message.id(), null));
 
 
         /* - MINECRAFT */
@@ -147,17 +154,15 @@ public class Channel implements Entity {
                             .setContent(discordMsg)
                             .build());
 
-            Long reference = responseCodes.get(message.reference());
+            // get the discord response code (id of referenced message) for this specific channel
+            Long reference = responseCodes.get(snowflake).get(message.reference());
             if (reference != null)
                 action.setMessageReference(reference);
 
-            // TODO: this would not work with multiple Discord endpoints (response code will be overwritten)
-
             action.queue(success -> {
-                responseCodes.put(message.id(), success.getIdLong());
+                responseCodes.get(snowflake).put(message.id(), success.getIdLong());
             }, throwable -> {
                 getPlugin().getLogger().log(Level.WARNING, "Encountered an unexpected exception while attempting to send message " + message.id(), throwable);
-                responseCodes.put(message.id(), null);
             });
         }
     }
