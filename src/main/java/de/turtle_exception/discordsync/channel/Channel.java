@@ -3,14 +3,15 @@ package de.turtle_exception.discordsync.channel;
 import de.turtle_exception.discordsync.DiscordSync;
 import de.turtle_exception.discordsync.Entity;
 import de.turtle_exception.discordsync.SyncMessage;
+import de.turtle_exception.discordsync.channel.endpoints.DiscordChannel;
+import de.turtle_exception.discordsync.channel.endpoints.MinecraftEndpoint;
+import de.turtle_exception.discordsync.channel.endpoints.MinecraftServer;
+import de.turtle_exception.discordsync.channel.endpoints.MinecraftWorld;
 import de.turtle_exception.discordsync.util.EntityMap;
+import de.turtle_exception.discordsync.util.EntitySet;
 import de.turtle_exception.discordsync.util.FixedBlockingQueueMap;
+import de.turtle_exception.fancyformat.Format;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,10 +33,7 @@ public class Channel implements Entity {
     // TODO: should this be locked?
     private final ConcurrentHashMap<Long, FixedBlockingQueueMap<Long, Long>> responseCodes;
 
-    /** List of worlds. If this is {@code null} this Channel is server-wide. */
-    private @Nullable List<UUID> worlds;
-    /** List of Discord channels. */
-    private @NotNull List<Long> snowflakes;
+    private final EntitySet<Endpoint> endpoints = new EntitySet<>();
 
     public Channel(long id, @NotNull DiscordSync plugin, @NotNull String name, @NotNull List<String> worlds, @NotNull List<Long> snowflakes) {
         this.id = id;
@@ -50,19 +48,19 @@ public class Channel implements Entity {
         for (Long snowflake : snowflakes)
             responseCodes.put(snowflake, new FixedBlockingQueueMap<>(new Long[backlog], new Long[backlog]));
 
-        this.worlds    = new ArrayList<>();
-        for (String world : worlds) {
-            if (world.equals("*")) {
-                this.worlds = null;
-                break;
-            }
-            this.worlds.add(UUID.fromString(world));
-        }
+        // MINECRAFT ENDPOINTS
+        if (worlds.contains("*"))
+            this.endpoints.add(new MinecraftServer(this));
+        else
+            for (String world : worlds)
+                this.endpoints.add(new MinecraftWorld(this, UUID.fromString(world)));
         this.registerListeners();
 
-        this.snowflakes = snowflakes;
-
+        // DISCORD ENDPOINTS
         for (Long snowflake : snowflakes) {
+            this.endpoints.add(new DiscordChannel(this, snowflake));
+
+            // register emotes
             GuildChannel channel = plugin.getJDA().getGuildChannelById(snowflake);
             if (channel == null) continue;
             plugin.getEmoteHandler().register(channel.getGuild());
@@ -70,12 +68,23 @@ public class Channel implements Entity {
     }
 
     private void registerListeners() {
-        if (worlds == null) {
-            plugin.getChannelMapper().register(this);
-        } else {
-            for (UUID world : worlds)
-                plugin.getChannelMapper().register(world, this);
+        ArrayList<MinecraftWorld> worldEndpoints = new ArrayList<>();
+
+        for (Endpoint endpoint : this.endpoints) {
+            if (!(endpoint instanceof MinecraftEndpoint)) continue;
+
+            if (endpoint instanceof MinecraftServer) {
+                plugin.getChannelMapper().register(this);
+                return;
+            }
+
+            if (endpoint instanceof MinecraftWorld mWorld)
+                worldEndpoints.add(mWorld);
         }
+
+        // make sure no server endpoint exists before registering worlds
+        for (MinecraftWorld world : worldEndpoints)
+            plugin.getChannelMapper().register(world.getUUID(), this);
     }
 
     public static @NotNull Channel getNullChannel(@NotNull DiscordSync plugin) {
@@ -103,16 +112,26 @@ public class Channel implements Entity {
         this.name = name;
     }
 
-    public boolean isServer() {
-        return worlds == null;
+    public @NotNull ConcurrentHashMap<Long, FixedBlockingQueueMap<Long, Long>> getResponseCodes() {
+        return responseCodes;
     }
 
     public @Nullable List<UUID> getWorlds() {
-        return worlds;
+        ArrayList<UUID> worlds = new ArrayList<>();
+        for (Endpoint endpoint : endpoints) {
+            if (endpoint instanceof MinecraftServer) return null;
+
+            if (endpoint instanceof MinecraftWorld mWorld)
+                worlds.add(mWorld.getUUID());
+        }
+        return List.copyOf(worlds);
     }
 
     public @NotNull List<Long> getSnowflakes() {
-        return snowflakes;
+        return endpoints.stream()
+                .filter(endpoint -> endpoint instanceof DiscordChannel)
+                .map(endpoint -> ((DiscordChannel) endpoint).getSnowflake())
+                .toList();
     }
 
     /* - - - */
@@ -123,47 +142,11 @@ public class Channel implements Entity {
         // reserve space in message caches
         responseCodes.forEach((channel, cache) -> cache.offer(message.id(), null));
 
+        // log chat message
+        plugin.getServer().getLogger().log(Level.INFO, "<" + name + "> " + message.author().getName() + ":  " + message.content().toString(Format.PLAINTEXT));
 
-        /* - MINECRAFT */
-        String minecraftMsg = plugin.getFormatHandler().toMinecraft(message);
-        BaseComponent[] component = TextComponent.fromLegacyText(minecraftMsg);
-        getPlugin().getServer().getOnlinePlayers().stream()
-                .filter(player -> getPlugin().getChannelMapper().get(player.getUniqueId()).equals(this))
-                .forEach(player -> player.spigot().sendMessage(component));
-
-
-        /* - DISCORD */
-        for (Long snowflake : this.snowflakes) {
-            // ignore if the message came from this channel
-            if (message.sourceInfo().isFromChannel(snowflake)) return;
-
-            MessageChannel channel = getPlugin().getJDA().getChannelById(MessageChannel.class, snowflake);
-            if (channel == null) {
-                getPlugin().getLogger().log(Level.WARNING, "Missing channel " + snowflake);
-                return;
-            }
-
-            long target = snowflake;
-            if (channel instanceof GuildChannel gChannel)
-                target = gChannel.getGuild().getIdLong();
-
-            String discordMsg = plugin.getFormatHandler().toDiscord(message, target);
-
-            MessageCreateAction action = channel.sendMessage(
-                    new MessageCreateBuilder()
-                            .setContent(discordMsg)
-                            .build());
-
-            // get the discord response code (id of referenced message) for this specific channel
-            Long reference = responseCodes.get(snowflake).get(message.reference());
-            if (reference != null)
-                action.setMessageReference(reference);
-
-            action.queue(success -> {
-                responseCodes.get(snowflake).put(message.id(), success.getIdLong());
-            }, throwable -> {
-                getPlugin().getLogger().log(Level.WARNING, "Encountered an unexpected exception while attempting to send message " + message.id(), throwable);
-            });
-        }
+        // pass message to endpoints
+        for (Endpoint endpoint : this.endpoints)
+            endpoint.send(message);
     }
 }
