@@ -62,6 +62,7 @@ public class DiscordSync extends JavaPlugin {
         // CONFIG
         this.saveResource("users.yml", false);
         this.saveResource("channels.yml", false);
+        this.saveResource("emotes.yml", false);
         this.saveDefaultConfig();
         this.reloadConfig();
 

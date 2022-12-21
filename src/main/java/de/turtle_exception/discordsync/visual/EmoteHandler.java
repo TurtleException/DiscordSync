@@ -14,6 +14,8 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -22,10 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
@@ -61,6 +60,46 @@ public class EmoteHandler implements Listener {
 
         if (enabled)
             this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+
+        // load from config
+        YamlConfiguration emoteYaml = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "emotes.yml"));
+        ConfigurationSection players = emoteYaml.getConfigurationSection("players");
+        ConfigurationSection guilds  = emoteYaml.getConfigurationSection("guilds");
+
+        if (players != null) {
+            for (String key : players.getKeys(false)) {
+                UUID uuid = UUID.fromString(key);
+
+                ConfigurationSection guildSection = players.getConfigurationSection(key);
+                if (guildSection == null) continue;
+
+                for (String guildId : guildSection.getKeys(false)) {
+                    Guild guild = plugin.getJDA().getGuildById(guildId);
+                    long  emote = guildSection.getLong(guildId);
+                    if (guild == null) continue;
+                    Emoji emoji = guild.getEmojiById(emote);
+                    if (emoji == null) continue;
+
+                    synchronized (tableLock) {
+                        playerEmoji.put(uuid, guild.getIdLong(), emoji);
+                    }
+                }
+            }
+        }
+
+        if (guilds != null) {
+            for (String key : guilds.getKeys(false)) {
+                Guild guild = plugin.getJDA().getGuildById(key);
+                long  emote = guilds.getLong(key);
+                if (guild == null) continue;
+                Emoji emoji = guild.getEmojiById(emote);
+                if (emoji == null) continue;
+
+                synchronized (tableLock) {
+                    guildEmoji.put(guild.getIdLong(), emoji);
+                }
+            }
+        }
     }
 
     /* - - - */
@@ -116,11 +155,24 @@ public class EmoteHandler implements Listener {
 
                 // add emote for all guilds
                 for (Guild guild : guilds) {
+                    // delete old emoji
+                    synchronized (tableLock) {
+                        Emoji emoji = playerEmoji.get(player.getUniqueId(), guild.getIdLong());
+
+                        if (emoji instanceof RichCustomEmoji rce)
+                            rce.delete().complete();
+                    }
+
+                    // create emoji
                     RichCustomEmoji emoji = guild.createEmoji(player.getName(), icon).complete();
 
+                    // cache emoji
                     synchronized (tableLock) {
                         playerEmoji.put(player.getUniqueId(), guild.getIdLong(), emoji);
                     }
+
+                    // write cache to file
+                    this.save("player." + player.getUniqueId() + "." + guild.getId(), emoji.getIdLong());
                 }
 
                 plugin.getLogger().log(Level.INFO, "Created emoji \"" + player.getName() + "\" for " + guilds.size() + " guilds.");
@@ -141,6 +193,14 @@ public class EmoteHandler implements Listener {
 
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
+                // delete old emoji
+                synchronized (tableLock) {
+                    Emoji emoji = guildEmoji.get(guild.getIdLong());
+
+                    if (emoji instanceof RichCustomEmoji rce)
+                        rce.delete().complete();
+                }
+
                 String url  = guild.getIconUrl();
                 String name = guild.getName().replaceAll(" ", "");
 
@@ -151,9 +211,13 @@ public class EmoteHandler implements Listener {
                 // only add the emote for the guild itself
                 RichCustomEmoji emoji = guild.createEmoji(name, icon).complete();
 
+                // cache emoji
                 synchronized (tableLock) {
                     guildEmoji.put(guild.getIdLong(), emoji);
                 }
+
+                // write cache to file
+                this.save("guild." + guild.getId(), emoji.getIdLong());
 
                 plugin.getLogger().log(Level.INFO, "Created emoji \"" + name + "\".");
             } catch (IOException e) {
@@ -193,6 +257,19 @@ public class EmoteHandler implements Listener {
         // ByteArrayStreams don't need to be closed
 
         return Icon.from(in, Icon.IconType.PNG);
+    }
+
+    /* - - - */
+
+    private void save(@NotNull String path, long id) {
+        try {
+            File file = new File(plugin.getDataFolder(), "emotes.yml");
+            YamlConfiguration emoteYaml = YamlConfiguration.loadConfiguration(file);
+            emoteYaml.set(path, id);
+            emoteYaml.save(file);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.FINE, "Encountered an IOException when attempting to save emote id (" + path + ":" + id + ")", e);
+        }
     }
 
     /* - - - */
