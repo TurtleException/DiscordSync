@@ -136,7 +136,11 @@ public class Channel implements Entity {
                 return;
             }
 
-            String discordMsg = plugin.getFormatHandler().toDiscord(message, snowflake);
+            long target = snowflake;
+            if (channel instanceof GuildChannel gChannel)
+                target = gChannel.getGuild().getIdLong();
+
+            String discordMsg = plugin.getFormatHandler().toDiscord(message, target);
 
             MessageCreateAction action = channel.sendMessage(
                     new MessageCreateBuilder()
