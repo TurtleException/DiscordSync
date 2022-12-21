@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -87,9 +88,13 @@ public class DiscordSync extends JavaPlugin {
             jdaLogFilter = new JDALogFilter(this);
             jdaLogFilter.setLevel(Level.WARNING);
             jda = getJDABuilder().build();
+            jda.awaitReady();
         } catch (InvalidTokenException e) {
             getLogger().log(Level.SEVERE, "Invalid token! Please make sure to set your Bot token in the config.yml");
             throw e;
+        } catch (InterruptedException e) {
+            getLogger().log(Level.SEVERE, "Encountered an exception when attempting to await JDA status READY", e);
+            throw new RuntimeException(e);
         }
 
         // VISUALS
@@ -135,7 +140,7 @@ public class DiscordSync extends JavaPlugin {
             ));
         }
 
-        getLogger().log(Level.INFO, "Loaded " + userCache.size() + " users.");
+        getLogger().log(Level.INFO, "Loaded " + userCache.size() + " user(s).");
     }
 
     public void saveUsers() {
@@ -143,9 +148,11 @@ public class DiscordSync extends JavaPlugin {
 
         for (SyncUser user : userCache) {
             long         id        = user.id();
+            String       name      = user.getName();
             List<String> minecraft = user.getMinecraftIds().stream().map(UUID::toString).toList();
             List<String> discord   = user.getDiscordIds().stream().map(Object::toString).toList();
 
+            userYaml.set(id + ".name", name);
             userYaml.set(id + ".minecraft", minecraft);
             userYaml.set(id + ".discord", discord);
         }
@@ -175,19 +182,19 @@ public class DiscordSync extends JavaPlugin {
         YamlConfiguration channelYaml = new YamlConfiguration();
 
         for (Channel channel : channelCache) {
-            long       id           = channel.id();
-            String     name         = channel.getName();
-            List<UUID> channelUUIDs = channel.getWorlds();
-            List<Long> snowflakes   = channel.getSnowflakes();
+            long       id         = channel.id();
+            String     name       = channel.getName();
+            List<UUID> worldUUIDs = channel.getWorlds();
+            List<Long> snowflakes = channel.getSnowflakes();
 
-            ArrayList<String> channels = new ArrayList<>();
-            if (channelUUIDs != null)
-                channels.addAll(channelUUIDs.stream().map(UUID::toString).toList());
+            ArrayList<String> worlds = new ArrayList<>();
+            if (worldUUIDs != null)
+                worlds.addAll(worldUUIDs.stream().map(UUID::toString).toList());
             else
-                channels.add("*");
+                worlds.add("*");
 
             channelYaml.set(id + ".name", name);
-            channelYaml.set(id + ".worlds", channels);
+            channelYaml.set(id + ".worlds", worlds);
             channelYaml.set(id + ".discord", snowflakes);
         }
 
@@ -294,13 +301,28 @@ public class DiscordSync extends JavaPlugin {
                 GatewayIntent.GUILD_MEMBERS,
                 GatewayIntent.GUILD_MESSAGES,
                 GatewayIntent.MESSAGE_CONTENT
+        ).disableCache(
+                // we have to disable these manually because otherwise JDA will complain about missing intents
+                CacheFlag.ACTIVITY,
+                CacheFlag.VOICE_STATE,
+                CacheFlag.EMOJI,
+                CacheFlag.STICKER,
+                CacheFlag.CLIENT_STATUS,
+                CacheFlag.ONLINE_STATUS,
+                CacheFlag.SCHEDULED_EVENTS
         );
 
         // INTENTS
         if (emojis)
-            builder.enableIntents(GatewayIntent.GUILD_EMOJIS_AND_STICKERS);
+            builder.enableIntents(GatewayIntent.GUILD_EMOJIS_AND_STICKERS)
+                    .enableCache(CacheFlag.EMOJI);
         if (onlineStatus)
-            builder.enableIntents(GatewayIntent.GUILD_PRESENCES);
+            builder.enableIntents(GatewayIntent.GUILD_PRESENCES)
+                    .enableCache(
+                            CacheFlag.ACTIVITY,
+                            CacheFlag.CLIENT_STATUS,
+                            CacheFlag.ONLINE_STATUS
+                    );
         if (typingIndicator)
             builder.enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING);
         if (directMessages) {

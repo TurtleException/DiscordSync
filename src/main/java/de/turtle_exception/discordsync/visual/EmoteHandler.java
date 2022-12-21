@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
@@ -63,8 +64,8 @@ public class EmoteHandler implements Listener {
 
         // load from config
         YamlConfiguration emoteYaml = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "emotes.yml"));
-        ConfigurationSection players = emoteYaml.getConfigurationSection("players");
-        ConfigurationSection guilds  = emoteYaml.getConfigurationSection("guilds");
+        ConfigurationSection players = emoteYaml.getConfigurationSection("player");
+        ConfigurationSection guilds  = emoteYaml.getConfigurationSection("guild");
 
         if (players != null) {
             for (String key : players.getKeys(false)) {
@@ -77,7 +78,7 @@ public class EmoteHandler implements Listener {
                     Guild guild = plugin.getJDA().getGuildById(guildId);
                     long  emote = guildSection.getLong(guildId);
                     if (guild == null) continue;
-                    Emoji emoji = guild.getEmojiById(emote);
+                    RichCustomEmoji emoji = guild.getEmojiById(emote);
                     if (emoji == null) continue;
 
                     synchronized (tableLock) {
@@ -92,7 +93,7 @@ public class EmoteHandler implements Listener {
                 Guild guild = plugin.getJDA().getGuildById(key);
                 long  emote = guilds.getLong(key);
                 if (guild == null) continue;
-                Emoji emoji = guild.getEmojiById(emote);
+                RichCustomEmoji emoji = guild.getEmojiById(emote);
                 if (emoji == null) continue;
 
                 synchronized (tableLock) {
@@ -202,7 +203,10 @@ public class EmoteHandler implements Listener {
                 }
 
                 String url  = guild.getIconUrl();
-                String name = guild.getName().replaceAll(" ", "");
+                String name = guild.getName().replaceAll("[^\\w|[-_]]", "");
+
+                if (name.length() > 32)
+                    name = name.substring(0, 32);
 
                 if (url == null) return;
 
@@ -219,7 +223,7 @@ public class EmoteHandler implements Listener {
                 // write cache to file
                 this.save("guild." + guild.getId(), emoji.getIdLong());
 
-                plugin.getLogger().log(Level.INFO, "Created emoji \"" + name + "\".");
+                plugin.getLogger().log(Level.INFO, "Created emoji \"" + emoji.getName() + "\".");
             } catch (IOException e) {
                 plugin.getLogger().log(Level.WARNING, "Could not retrieve image for guild " + guild.getId(), e);
             } catch (RejectedExecutionException ignored) {
@@ -234,24 +238,23 @@ public class EmoteHandler implements Listener {
 
     /* - - - */
 
-    private @NotNull Icon getImage(@NotNull String url, boolean circular) throws IOException {
+    private static @NotNull Icon getImage(@NotNull String url, boolean circular) throws IOException {
         BufferedImage image = ImageIO.read(new URL(url));
-        int size = image.getWidth();
+        int diameter = Math.min(image.getWidth(), image.getHeight());
+
+        BufferedImage result = new BufferedImage(diameter, diameter, BufferedImage.TYPE_INT_ARGB);
 
         if (circular) {
-            Graphics2D graphics = image.createGraphics();
+            Graphics2D graphics = result.createGraphics();
 
-            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            graphics.fillOval(0, 0, size, size);
-
-            graphics.setComposite(AlphaComposite.SrcIn);
+            graphics.setClip(new Ellipse2D.Double(0, 0, diameter, diameter));
             graphics.drawImage(image, 0, 0, null);
 
             graphics.dispose();
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", out);
+        ImageIO.write(circular ? result : image, "png", out);
         InputStream in = new ByteArrayInputStream(out.toByteArray());
 
         // ByteArrayStreams don't need to be closed

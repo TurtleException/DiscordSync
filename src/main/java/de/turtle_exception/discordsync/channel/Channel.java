@@ -57,7 +57,7 @@ public class Channel implements Entity {
         this.snowflakes = snowflakes;
 
         for (Long snowflake : snowflakes) {
-            GuildChannel channel = plugin.getJDA().getChannelById(GuildChannel.class, snowflake);
+            GuildChannel channel = plugin.getJDA().getGuildChannelById(snowflake);
             if (channel == null) continue;
             plugin.getEmoteHandler().register(channel.getGuild());
         }
