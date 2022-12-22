@@ -1,6 +1,7 @@
-package de.turtle_exception.discordsync.channel;
+package de.turtle_exception.discordsync.commands;
 
 import de.turtle_exception.discordsync.DiscordSync;
+import de.turtle_exception.discordsync.channel.Channel;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

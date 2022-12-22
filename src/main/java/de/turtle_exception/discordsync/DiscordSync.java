@@ -1,7 +1,7 @@
 package de.turtle_exception.discordsync;
 
 import de.turtle_exception.discordsync.channel.Channel;
-import de.turtle_exception.discordsync.channel.ChannelCommand;
+import de.turtle_exception.discordsync.commands.ChannelCommand;
 import de.turtle_exception.discordsync.events.SyncChannelCreateEvent;
 import de.turtle_exception.discordsync.events.SyncChannelDeleteEvent;
 import de.turtle_exception.discordsync.events.SyncUserCreateEvent;
