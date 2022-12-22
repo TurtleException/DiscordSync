@@ -6,7 +6,7 @@
 
     <groupId>de.turtle-exception.discordsync</groupId>
     <artifactId>DiscordSync</artifactId>
-    <version>3.0.0-alpha.71</version>
+    <version>3.0.0-alpha.73</version>
 
     <name>DiscordSync</name>
     <description>Spigot plugin that mirrors Discord channels and Minecraft chats</description>
@@ -96,12 +96,14 @@
             <artifactId>FancyFormat</artifactId>
             <version>1.0.0-alpha.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.19.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>

@@ -74,7 +74,7 @@ public class Channel implements Entity {
     /* - - - */
 
     @Override
-    public long id() {
+    public long getId() {
         return this.id;
     }
 
@@ -118,7 +118,7 @@ public class Channel implements Entity {
         // TODO: quick response code as key
         messageCache.put("", message);
         // reserve space in message caches
-        responseCodes.forEach((channel, cache) -> cache.offer(message.id(), null));
+        responseCodes.forEach((channel, cache) -> cache.offer(message.getId(), null));
 
         // log chat message
         plugin.getServer().getLogger().log(Level.INFO, "<" + name + "> " + message.author().getName() + ":  " + message.content().toString(Format.PLAINTEXT));

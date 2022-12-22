@@ -51,9 +51,9 @@ public class DiscordChannel extends Endpoint {
             action.setMessageReference(reference);
 
         action.queue(success -> {
-            channel.getResponseCodes().get(snowflake).put(message.id(), success.getIdLong());
+            channel.getResponseCodes().get(snowflake).put(message.getId(), success.getIdLong());
         }, throwable -> {
-            channel.getPlugin().getLogger().log(Level.WARNING, "Encountered an unexpected exception while attempting to send message " + message.id(), throwable);
+            channel.getPlugin().getLogger().log(Level.WARNING, "Encountered an unexpected exception while attempting to send message " + message.getId(), throwable);
         });
     }
 }

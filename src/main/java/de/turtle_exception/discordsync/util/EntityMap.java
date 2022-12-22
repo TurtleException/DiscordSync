@@ -36,7 +36,7 @@ public class EntityMap<K, E extends Entity> extends FixedBlockingQueueMap<K, E> 
     public E get(long id) {
         synchronized (lock) {
             for (E e : values)
-                if (e != null && e.id() == id)
+                if (e != null && e.getId() == id)
                     return e;
             return null;
         }

@@ -21,7 +21,7 @@ public abstract class Endpoint implements Entity {
     }
 
     @Override
-    public long id() {
+    public long getId() {
         return id;
     }
 

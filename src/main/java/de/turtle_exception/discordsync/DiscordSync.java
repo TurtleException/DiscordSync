@@ -148,7 +148,7 @@ public class DiscordSync extends JavaPlugin {
         YamlConfiguration userYaml = new YamlConfiguration();
 
         for (SyncUser user : userCache) {
-            long         id        = user.id();
+            long         id        = user.getId();
             String       name      = user.getName();
             List<String> minecraft = user.getMinecraftIds().stream().map(UUID::toString).toList();
             List<String> discord   = user.getDiscordIds().stream().map(Object::toString).toList();
@@ -189,7 +189,7 @@ public class DiscordSync extends JavaPlugin {
         YamlConfiguration channelYaml = new YamlConfiguration();
 
         for (Channel channel : channelCache) {
-            long       id         = channel.id();
+            long       id         = channel.getId();
             String     name       = channel.getName();
             List<UUID> worldUUIDs = channel.getWorlds();
             List<Long> snowflakes = channel.getSnowflakes();
@@ -306,7 +306,7 @@ public class DiscordSync extends JavaPlugin {
         if (channel == null)
             this.channelOverrides.remove(player);
         else
-            this.channelOverrides.put(player, channel.id());
+            this.channelOverrides.put(player, channel.getId());
     }
 
     /* - - - */

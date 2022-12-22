@@ -22,7 +22,7 @@ public class SyncUser implements Entity {
     }
 
     @Override
-    public long id() {
+    public long getId() {
         return this.id;
     }
 
