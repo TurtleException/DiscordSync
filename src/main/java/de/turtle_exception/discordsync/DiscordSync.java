@@ -2,7 +2,6 @@ package de.turtle_exception.discordsync;
 
 import de.turtle_exception.discordsync.channel.Channel;
 import de.turtle_exception.discordsync.channel.ChannelCommand;
-import de.turtle_exception.discordsync.channel.ChannelMapper;
 import de.turtle_exception.discordsync.events.SyncChannelCreateEvent;
 import de.turtle_exception.discordsync.events.SyncChannelDeleteEvent;
 import de.turtle_exception.discordsync.events.SyncUserCreateEvent;
@@ -27,6 +26,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,14 +35,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 public class DiscordSync extends JavaPlugin {
-    private final EntitySet<SyncUser> userCache = new EntitySet<>();
-
-    private ChannelMapper channelMapper;
-    private final EntitySet<Channel> channelCache = new EntitySet<>();
+    private final EntitySet<SyncUser>    userCache = new EntitySet<>();
+    private final EntitySet<Channel>  channelCache = new EntitySet<>();
+    private final ConcurrentHashMap<UUID, Long> channelOverrides = new ConcurrentHashMap<>();
 
     private FormatHandler formatHandler;
     private FancyFormatter formatter;
@@ -51,7 +52,7 @@ public class DiscordSync extends JavaPlugin {
     private JDA jda;
 
     private AvatarHandler avatarHandler;
-    private EmoteHandler  emoteHandler;
+    private EmoteHandler   emoteHandler;
 
     public DiscordSync() { }
 
@@ -59,6 +60,7 @@ public class DiscordSync extends JavaPlugin {
     public void onEnable() {
         this.userCache.clear();
         this.channelCache.clear();
+        this.channelOverrides.clear();
 
         // CONFIG
         this.saveResource("users.yml", false);
@@ -105,7 +107,6 @@ public class DiscordSync extends JavaPlugin {
         this.reloadUsers();
 
         // CHANNELS
-        this.channelMapper = new ChannelMapper(this);
         this.reloadChannels();
     }
 
@@ -175,6 +176,12 @@ public class DiscordSync extends JavaPlugin {
             List<Long>   snowflakes = channelYaml.getLongList(key + ".discord");
 
             channelCache.put(new Channel(id, this, name, worlds, snowflakes));
+
+            List<String> players = channelYaml.getStringList(key + ".players");
+            for (String player : players) {
+                UUID uuid = UUID.fromString(player);
+                channelOverrides.put(uuid, id);
+            }
         }
     }
 
@@ -193,9 +200,15 @@ public class DiscordSync extends JavaPlugin {
             else
                 worlds.add("*");
 
+            ArrayList<UUID> players = new ArrayList<>();
+            for (Map.Entry<UUID, Long> entry : channelOverrides.entrySet())
+                if (entry.getValue() == id)
+                    players.add(entry.getKey());
+
             channelYaml.set(id + ".name", name);
             channelYaml.set(id + ".worlds", worlds);
             channelYaml.set(id + ".discord", snowflakes);
+            channelYaml.set(id + ".players", players);
         }
 
         try {
@@ -259,12 +272,41 @@ public class DiscordSync extends JavaPlugin {
         getServer().getPluginManager().callEvent(new SyncChannelDeleteEvent(channel));
     }
 
-    public @NotNull ChannelMapper getChannelMapper() {
-        return channelMapper;
-    }
-
     public @NotNull EntitySet<Channel> getChannelCache() {
         return channelCache;
+    }
+
+    public @NotNull Channel getChannel(@NotNull Player player) {
+        Long id = channelOverrides.get(player.getUniqueId());
+        if (id != null) {
+            Channel override = channelCache.get(id);
+            if (override != null)
+                return override;
+        }
+
+        Channel global = Channel.getNullChannel(this);
+        for (Channel channel : channelCache) {
+            List<UUID> worlds = channel.getWorlds();
+
+            if (worlds == null) {
+                global = channel;
+                continue;
+            }
+
+            for (UUID world : worlds) {
+                if (player.getWorld().getUID().equals(world)) {
+                    return channel;
+                }
+            }
+        }
+        return global;
+    }
+
+    public void setChannelOverride(@NotNull UUID player, @Nullable Channel channel) {
+        if (channel == null)
+            this.channelOverrides.remove(player);
+        else
+            this.channelOverrides.put(player, channel.id());
     }
 
     /* - - - */

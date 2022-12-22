@@ -4,7 +4,6 @@ import de.turtle_exception.discordsync.DiscordSync;
 import de.turtle_exception.discordsync.Entity;
 import de.turtle_exception.discordsync.SyncMessage;
 import de.turtle_exception.discordsync.channel.endpoints.DiscordChannel;
-import de.turtle_exception.discordsync.channel.endpoints.MinecraftEndpoint;
 import de.turtle_exception.discordsync.channel.endpoints.MinecraftServer;
 import de.turtle_exception.discordsync.channel.endpoints.MinecraftWorld;
 import de.turtle_exception.discordsync.util.EntityMap;
@@ -54,7 +53,6 @@ public class Channel implements Entity {
         else
             for (String world : worlds)
                 this.endpoints.add(new MinecraftWorld(this, UUID.fromString(world)));
-        this.registerListeners();
 
         // DISCORD ENDPOINTS
         for (Long snowflake : snowflakes) {
@@ -65,26 +63,6 @@ public class Channel implements Entity {
             if (channel == null) continue;
             plugin.getEmoteHandler().register(channel.getGuild());
         }
-    }
-
-    private void registerListeners() {
-        ArrayList<MinecraftWorld> worldEndpoints = new ArrayList<>();
-
-        for (Endpoint endpoint : this.endpoints) {
-            if (!(endpoint instanceof MinecraftEndpoint)) continue;
-
-            if (endpoint instanceof MinecraftServer) {
-                plugin.getChannelMapper().register(this);
-                return;
-            }
-
-            if (endpoint instanceof MinecraftWorld mWorld)
-                worldEndpoints.add(mWorld);
-        }
-
-        // make sure no server endpoint exists before registering worlds
-        for (MinecraftWorld world : worldEndpoints)
-            plugin.getChannelMapper().register(world.getUUID(), this);
     }
 
     public static @NotNull Channel getNullChannel(@NotNull DiscordSync plugin) {
