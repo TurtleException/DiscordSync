@@ -9,4 +9,9 @@ public record SyncMessage(
         @NotNull FormatText content,
         long reference,
         @NotNull SourceInfo sourceInfo
-) implements Entity { }
+) implements Entity {
+    @Override
+    public long getId() {
+        return id;
+    }
+}
