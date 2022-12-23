@@ -17,6 +17,9 @@ import de.turtle_exception.discordsync.visual.AvatarHandler;
 import de.turtle_exception.discordsync.visual.EmoteHandler;
 import de.turtle_exception.discordsync.visual.FormatHandler;
 import de.turtle_exception.fancyformat.FancyFormatter;
+import de.turtle_exception.fancyformat.Format;
+import de.turtle_exception.fancyformat.FormatText;
+import de.turtle_exception.fancyformat.styles.Color;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -24,6 +27,8 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -45,7 +50,9 @@ public class DiscordSync extends JavaPlugin {
     private final EntitySet<Channel>  channelCache = new EntitySet<>();
     private final ConcurrentHashMap<UUID, Long> channelOverrides = new ConcurrentHashMap<>();
 
-    private FormatHandler formatHandler;
+    private MessageDispatcher messageDispatcher;
+
+    private FormatHandler  formatHandler;
     private FancyFormatter formatter;
 
     private JDALogFilter jdaLogFilter;
@@ -70,7 +77,14 @@ public class DiscordSync extends JavaPlugin {
         this.reloadConfig();
 
         this.formatHandler = new FormatHandler(this);
-        this.formatter = new FancyFormatter();
+        this.formatter = new FancyFormatter()
+                .setMinecraftFormattingCode('§')
+                .setCodeStyles(Color.DARK_GRAY)
+                .setMentionAliasProvider((mentionType, s) -> {
+                    return s;
+                });
+
+        this.messageDispatcher = new MessageDispatcher(this);
 
         // COMMANDS
         ChannelCommand channelCommandHandler = new ChannelCommand(this);
@@ -307,6 +321,25 @@ public class DiscordSync extends JavaPlugin {
             this.channelOverrides.remove(player);
         else
             this.channelOverrides.put(player, channel.getId());
+    }
+
+    /* - - - */
+
+    public @NotNull MessageDispatcher getMessageDispatcher() {
+        return messageDispatcher;
+    }
+
+    public void sendMessage(@NotNull Player recipient, @NotNull String key, String... args) {
+        FormatText content = getMessageDispatcher().get(key, args);
+
+        BaseComponent[] prefix = getMessageDispatcher().getPrefix();
+        BaseComponent[] text   = ComponentSerializer.parse(content.toString(Format.MINECRAFT_JSON));
+
+        BaseComponent[] message = new BaseComponent[prefix.length + text.length];
+        System.arraycopy(prefix, 0, message, 0, prefix.length);
+        System.arraycopy(text  , 0, message, prefix.length, text.length);
+
+        recipient.spigot().sendMessage(message);
     }
 
     /* - - - */

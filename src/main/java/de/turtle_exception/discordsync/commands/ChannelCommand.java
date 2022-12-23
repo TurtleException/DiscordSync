@@ -25,19 +25,19 @@ public class ChannelCommand implements CommandExecutor, TabCompleter {
         if (!(sender instanceof Player player)) return true;
 
         if (args.length == 0) {
-            // TODO: do some fancy stuff
-            player.sendMessage("You current channel is " + plugin.getChannel(player).getName());
+            plugin.sendMessage(player, "command.channel.current", plugin.getChannel(player).getName());
             return true;
         }
 
         if (args[0].equals("reset")) {
             plugin.setChannelOverride(player.getUniqueId(), null);
-            player.sendMessage("Reset channel override.");
+            plugin.sendMessage(player, "command.channel.reset");
             return true;
         }
 
         if (args[0].equals("list")) {
-            player.sendMessage(String.join(", ", plugin.getChannelCache().stream().map(Channel::getName).toList()));
+            String list = String.join("§8, §7", plugin.getChannelCache().stream().map(Channel::getName).toList());
+            plugin.sendMessage(player, "command.channel.list", list);
             return true;
         }
 

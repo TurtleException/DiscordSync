@@ -1,0 +1,6 @@
+{
+  "command.channel.current": "4#§7Your current channel is §e{0}7e.",
+  "command.channel.reset": "4#§7Channel override has been reset.",
+  "command.channel.list": "4#§7List of all available channels§8: §7{0}§8.",
+  "general.prefix": "3#[{\"text\":\"[\",\"color\":\"dark_gray\"},{\"text\":\"DiscordSync\",\"bold\":true,\"color\":\"gold\",\"hoverEvent\":{\"action\":\"show_text\",\"contents\":[{\"text\":\"DiscordSync\",\"color\":\"gold\"},{\"text\":\"\\nv{0}\",\"italic\":\"true\",\"color\":\"aqua\"}]}},{\"text\":\"] \",\"color\":\"dark_gray\"}]"
+}
