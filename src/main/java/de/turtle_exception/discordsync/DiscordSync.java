@@ -11,6 +11,7 @@ import de.turtle_exception.discordsync.listeners.PresenceListener;
 import de.turtle_exception.discordsync.listeners.UserListener;
 import de.turtle_exception.discordsync.util.EntitySet;
 import de.turtle_exception.discordsync.util.JDALogFilter;
+import de.turtle_exception.discordsync.util.ResourceUtil;
 import de.turtle_exception.discordsync.util.time.TurtleType;
 import de.turtle_exception.discordsync.util.time.TurtleUtil;
 import de.turtle_exception.discordsync.visual.AvatarHandler;
@@ -70,9 +71,9 @@ public class DiscordSync extends JavaPlugin {
         this.channelOverrides.clear();
 
         // CONFIG
-        this.saveResource("users.yml", false);
-        this.saveResource("channels.yml", false);
-        this.saveResource("emotes.yml", false);
+        ResourceUtil.saveDefault(this, "users.yml");
+        ResourceUtil.saveDefault(this, "channels.yml");
+        ResourceUtil.saveDefault(this, "emotes.yml");
         this.saveDefaultConfig();
         this.reloadConfig();
 
@@ -417,5 +418,9 @@ public class DiscordSync extends JavaPlugin {
         builder.setStatus(OnlineStatus.DO_NOT_DISTURB);
 
         return builder;
+    }
+
+    public @NotNull ClassLoader getPluginClassLoader() {
+        return getClassLoader();
     }
 }

@@ -2,18 +2,17 @@ package de.turtle_exception.discordsync;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import de.turtle_exception.discordsync.util.ResourceUtil;
+import de.turtle_exception.discordsync.util.StringUtil;
 import de.turtle_exception.fancyformat.Format;
 import de.turtle_exception.fancyformat.FormatText;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
-import org.bukkit.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
-import java.text.MessageFormat;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
@@ -36,25 +35,8 @@ public class MessageDispatcher {
         ext.mkdir();
 
         // save language files
-        URL url = DiscordSync.class.getClassLoader().getResource("lang");
-        if (url == null)
-            throw new NullPointerException("URL of lang resources is null.");
-
-        String path = url.getPath();
-        if (path == null)
-            throw new NullPointerException("Path of lang resources is null.");
-
-        File[] files = new File(path).listFiles();
-        if (files == null)
-            throw new NullPointerException("No lang files found!");
-
-        // create all external files that don't yet exist
-        for (File file : files) {
-            File extFile = new File(ext, file.getName());
-            if (!extFile.exists())
-                FileUtil.copy(file, new File(ext, file.getName()));
-        }
-
+        if (!ResourceUtil.saveDefaults(plugin, "lang"))
+            throw new IllegalStateException("Could not save default lang files.");
 
         // set language
         String lang = plugin.getConfig().getString("language");
@@ -96,7 +78,7 @@ public class MessageDispatcher {
         if (pattern == null)
             throw new IllegalArgumentException("Unknown translatable key: " + key);
 
-        return plugin.getFormatter().ofNative(MessageFormat.format(pattern, (Object[]) format));
+        return plugin.getFormatter().ofNative(StringUtil.format(pattern, format));
     }
 
     public @NotNull String getLanguage() {
