@@ -3,7 +3,8 @@ package de.turtle_exception.discordsync.visual;
 import com.google.common.collect.Sets;
 import de.turtle_exception.discordsync.DiscordSync;
 import de.turtle_exception.discordsync.SyncMessage;
-import de.turtle_exception.fancyformat.Format;
+import de.turtle_exception.fancyformat.formats.DiscordFormat;
+import de.turtle_exception.fancyformat.formats.MinecraftLegacyFormat;
 import kotlin.jvm.functions.Function2;
 import kotlin.jvm.functions.Function3;
 import net.dv8tion.jda.api.entities.Member;
@@ -60,18 +61,18 @@ public class FormatHandler {
             throw new NullPointerException("config.yml is missing one or more format settings!");
 
         // TODO: custom user formatting
-        register(new MinToken("user"   , (message, player, component) -> replaceAll(component, "user"   , message.author().getName()))                         , true, true);
-        register(new MinToken("message", (message, player, component) -> replaceAll(component, "message", message.content().toString(Format.MINECRAFT_LEGACY))), true, true);
-        register(new MinToken("player" , (message, player, component) -> replaceAll(component, "player" , message.sourceInfo().getPlayer().getDisplayName()))  , true, false);
-        register(new MinToken("dc_nick", (message, player, component) -> replaceAll(component, "dc_nick", message.sourceInfo().getEffectiveDiscordName()))     , false, true);
-        register(new MinToken("dc_name", (message, player, component) -> replaceAll(component, "dc_name", message.sourceInfo().getUser().getName()))           , false, true);
-        register(new MinToken("dc_tag" , (message, player, component) -> replaceAll(component, "dc_tag" , message.sourceInfo().getUser().getAsTag()))          , false, true);
-        register(new MinToken("channel", (message, player, component) -> replaceAll(component, "channel", message.sourceInfo().getChannel().getName()))        , false, true);
-        register(new MinToken("guild"  , (message, player, component) -> replaceAll(component, "guild"  , getGuild(message)))                                  , false, true);
+        register(new MinToken("user"   , (message, player, component) -> replaceAll(component, "user"   , message.author().getName()))                             , true, true);
+        register(new MinToken("message", (message, player, component) -> replaceAll(component, "message", message.content().toString(MinecraftLegacyFormat.get()))), true, true);
+        register(new MinToken("player" , (message, player, component) -> replaceAll(component, "player" , message.sourceInfo().getPlayer().getDisplayName()))      , true, false);
+        register(new MinToken("dc_nick", (message, player, component) -> replaceAll(component, "dc_nick", message.sourceInfo().getEffectiveDiscordName()))         , false, true);
+        register(new MinToken("dc_name", (message, player, component) -> replaceAll(component, "dc_name", message.sourceInfo().getUser().getName()))               , false, true);
+        register(new MinToken("dc_tag" , (message, player, component) -> replaceAll(component, "dc_tag" , message.sourceInfo().getUser().getAsTag()))              , false, true);
+        register(new MinToken("channel", (message, player, component) -> replaceAll(component, "channel", message.sourceInfo().getChannel().getName()))            , false, true);
+        register(new MinToken("guild"  , (message, player, component) -> replaceAll(component, "guild"  , getGuild(message)))                                      , false, true);
         // TODO: mention?
 
         register(new DisToken("user"   , (message, channel) -> message.author().getName())                       , true , true );
-        register(new DisToken("message", (message, channel) -> message.content().toString(Format.DISCORD))       , true , true );
+        register(new DisToken("message", (message, channel) -> message.content().toString(DiscordFormat.get()))  , true , true );
         register(new DisToken("player" , (message, channel) -> message.sourceInfo().getPlayer().getDisplayName()), true , false);
         register(new DisToken("dc_nick", (message, channel) -> message.sourceInfo().getEffectiveDiscordName())   , false, true );
         register(new DisToken("dc_name", (message, channel) -> message.sourceInfo().getUser().getName())         , false, true );

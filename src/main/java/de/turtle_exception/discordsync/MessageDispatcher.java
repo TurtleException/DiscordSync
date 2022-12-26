@@ -4,10 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import de.turtle_exception.discordsync.util.ResourceUtil;
 import de.turtle_exception.discordsync.util.StringUtil;
-import de.turtle_exception.fancyformat.Format;
 import de.turtle_exception.fancyformat.FormatText;
+import de.turtle_exception.fancyformat.formats.SpigotComponentsFormat;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -69,7 +68,7 @@ public class MessageDispatcher {
             throw e;
         }
 
-        this.prefix = ComponentSerializer.parse(get("general.prefix", plugin.getDescription().getVersion()).toString(Format.MINECRAFT_JSON));
+        this.prefix = get("general.prefix", plugin.getDescription().getVersion()).parse(SpigotComponentsFormat.get());
     }
 
     public @NotNull FormatText get(@NotNull String key, String... format) {
@@ -78,7 +77,7 @@ public class MessageDispatcher {
         if (pattern == null)
             throw new IllegalArgumentException("Unknown translatable key: " + key);
 
-        return plugin.getFormatter().ofNative(StringUtil.format(pattern, format));
+        return plugin.getFormatter().formNative(StringUtil.format(pattern, format));
     }
 
     public @NotNull String getLanguage() {

@@ -9,7 +9,7 @@ import de.turtle_exception.discordsync.channel.endpoints.MinecraftWorld;
 import de.turtle_exception.discordsync.util.EntityMap;
 import de.turtle_exception.discordsync.util.EntitySet;
 import de.turtle_exception.discordsync.util.FixedBlockingQueueMap;
-import de.turtle_exception.fancyformat.Format;
+import de.turtle_exception.fancyformat.formats.PlaintextFormat;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -121,7 +121,7 @@ public class Channel implements Entity {
         responseCodes.forEach((channel, cache) -> cache.offer(message.getId(), null));
 
         // log chat message
-        plugin.getServer().getLogger().log(Level.INFO, "<" + name + "> " + message.author().getName() + ":  " + message.content().toString(Format.PLAINTEXT));
+        plugin.getServer().getLogger().log(Level.INFO, "<" + name + "> " + message.author().getName() + ":  " + message.content().toString(PlaintextFormat.get()));
 
         // pass message to endpoints
         for (Endpoint endpoint : this.endpoints)

@@ -18,8 +18,8 @@ import de.turtle_exception.discordsync.visual.AvatarHandler;
 import de.turtle_exception.discordsync.visual.EmoteHandler;
 import de.turtle_exception.discordsync.visual.FormatHandler;
 import de.turtle_exception.fancyformat.FancyFormatter;
-import de.turtle_exception.fancyformat.Format;
 import de.turtle_exception.fancyformat.FormatText;
+import de.turtle_exception.fancyformat.formats.SpigotComponentsFormat;
 import de.turtle_exception.fancyformat.styles.Color;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -29,7 +29,6 @@ import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -334,7 +333,7 @@ public class DiscordSync extends JavaPlugin {
         FormatText content = getMessageDispatcher().get(key, args);
 
         BaseComponent[] prefix = getMessageDispatcher().getPrefix();
-        BaseComponent[] text   = ComponentSerializer.parse(content.toString(Format.MINECRAFT_JSON));
+        BaseComponent[] text   = content.parse(SpigotComponentsFormat.get());
 
         BaseComponent[] message = new BaseComponent[prefix.length + text.length];
         System.arraycopy(prefix, 0, message, 0, prefix.length);

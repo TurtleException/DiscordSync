@@ -7,8 +7,8 @@ import de.turtle_exception.discordsync.SyncUser;
 import de.turtle_exception.discordsync.channel.Channel;
 import de.turtle_exception.discordsync.util.time.TurtleType;
 import de.turtle_exception.discordsync.util.time.TurtleUtil;
-import de.turtle_exception.fancyformat.Format;
 import de.turtle_exception.fancyformat.FormatText;
+import de.turtle_exception.fancyformat.formats.DiscordFormat;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -51,7 +51,7 @@ public class ChatListener extends ListenerAdapter implements Listener {
             User   user   = event.getAuthor();
 
             SourceInfo  source  = new SourceInfo(user, member, event.getChannel());
-            FormatText  content = plugin.getFormatter().newText(event.getMessage().getContentRaw(), Format.DISCORD);
+            FormatText  content = plugin.getFormatter().fromFormat(event.getMessage().getContentRaw(), DiscordFormat.get());
             SyncMessage message = new SyncMessage(TurtleUtil.newId(TurtleType.MESSAGE), author, content, -1, source);
 
             channel.send(message);
@@ -74,7 +74,7 @@ public class ChatListener extends ListenerAdapter implements Listener {
         // TODO: reference
 
         // players use Discord markdown
-        FormatText  content = plugin.getFormatter().newText(event.getMessage(), Format.DISCORD);
+        FormatText  content = plugin.getFormatter().fromFormat(event.getMessage(), DiscordFormat.get());
 
         SourceInfo  source  = new SourceInfo(event.getPlayer(), event.getPlayer().getWorld());
         SyncMessage message = new SyncMessage(TurtleUtil.newId(TurtleType.MESSAGE), author, content, -1, source);
