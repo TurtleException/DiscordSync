@@ -33,16 +33,23 @@ public class DiscordChannel extends Endpoint {
         if (message.sourceInfo().isFromChannel(snowflake)) return;
 
         MessageChannel discord = channel.getPlugin().getJDA().getChannelById(MessageChannel.class, snowflake);
-        if (discord == null) {
-            channel.getPlugin().getLogger().log(Level.WARNING, "Missing channel " + snowflake);
-            return;
+        if (discord != null) {
+            this.doSend(discord, message);
+        } else {
+            channel.getPlugin().getJDA().openPrivateChannelById(snowflake).queue(privateChannel -> {
+                doSend(privateChannel, message);
+            }, throwable -> {
+                channel.getPlugin().getLogger().log(Level.WARNING, "Missing channel " + snowflake);
+            });
         }
+    }
 
-        String discordMsg = channel.getPlugin().getFormatHandler().toDiscord(message, discord);
+    protected void doSend(@NotNull MessageChannel discord, @NotNull SyncMessage message) {
+        String msg = channel.getPlugin().getFormatHandler().toDiscord(message, discord);
 
         MessageCreateAction action = discord.sendMessage(
                 new MessageCreateBuilder()
-                        .setContent(discordMsg)
+                        .setContent(msg)
                         .build());
 
         // get the discord response code (id of referenced message) for this specific channel

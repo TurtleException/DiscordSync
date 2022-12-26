@@ -11,6 +11,7 @@ import de.turtle_exception.fancyformat.FormatText;
 import de.turtle_exception.fancyformat.formats.DiscordFormat;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bukkit.event.EventHandler;
@@ -34,8 +35,16 @@ public class ChatListener extends ListenerAdapter implements Listener {
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         if (event.getAuthor().getIdLong() == plugin.getJDA().getSelfUser().getIdLong()) return;
 
+        long discord = event.getChannel().getIdLong();
+
+        if (event.getChannel() instanceof PrivateChannel pChannel) {
+            User privateAuthor = pChannel.getUser();
+            if (privateAuthor != null)
+                discord = privateAuthor.getIdLong();
+        }
+
         for (Channel channel : plugin.getChannelCache()) {
-            if (!channel.getSnowflakes().contains(event.getChannel().getIdLong())) continue;
+            if (!channel.getSnowflakes().contains(discord)) continue;
 
             String name = event.getMember() != null
                     ? event.getMember().getEffectiveName()

@@ -2,6 +2,7 @@ package de.turtle_exception.discordsync;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -80,6 +81,11 @@ public class SourceInfo {
 
     public boolean isFromChannel(long snowflake) {
         if (channel == null) return false;
+
+        if (channel instanceof PrivateChannel pChannel) {
+            User u = pChannel.getUser();
+            return u != null && u.getIdLong() == snowflake;
+        }
         return channel.getIdLong() == snowflake;
     }
 }
