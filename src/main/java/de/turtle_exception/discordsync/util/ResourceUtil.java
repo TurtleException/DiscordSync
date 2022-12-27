@@ -57,6 +57,9 @@ public class ResourceUtil {
 
             try (Stream<Path> stream = Files.walk(source)) {
                 stream.forEach(srcPath -> {
+                    if (srcPath.equals(source))
+                        return;
+
                     try {
                         Path absoluteSrcPath = Paths.get(srcPath.toString());
                         Path        destPath = dest.resolve(absoluteSrcPath.getFileName());
