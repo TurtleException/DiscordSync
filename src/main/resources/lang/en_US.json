@@ -1,6 +1,11 @@
 {
+  "chat.reference.hover": "4#§7§oClick to reply\n§r§8@{0}",
+  "chat.author.discord": "4#§7§l{0}\n§r§8@{1}",
+  "chat.source.discord.channel": "4#§8C§7§l{0}\n§r§8@{1}",
+  "chat.source.discord.guild": "4#§8G§7§l{0}\n§r§8@{1}",
   "command.channel.current": "4#§7Your current channel is §e{0}§7.",
   "command.channel.reset": "4#§7Channel override has been reset.",
   "command.channel.list": "4#§7List of all available channels§8: §7{0}§8.",
-  "general.prefix": "3#[{\"text\":\"[\",\"color\":\"dark_gray\"},{\"text\":\"DiscordSync\",\"bold\":true,\"color\":\"gold\",\"hoverEvent\":{\"action\":\"show_text\",\"contents\":[{\"text\":\"DiscordSync\",\"color\":\"gold\"},{\"text\":\"\\nv{0}\",\"italic\":\"true\",\"color\":\"aqua\"}]}},{\"text\":\"] \",\"color\":\"dark_gray\"}]"
+  "general.prefix": "3#[{\"text\":\"[\",\"color\":\"dark_gray\"},{\"text\":\"DiscordSync\",\"bold\":true,\"color\":\"gold\",\"hoverEvent\":{\"action\":\"show_text\",\"contents\":[{\"text\":\"DiscordSync\",\"color\":\"gold\"},{\"text\":\"\\nv{0}\",\"italic\":\"true\",\"color\":\"aqua\"}]}},{\"text\":\"] \",\"color\":\"dark_gray\"}]",
+  "user.info": "4#§6§l{0}\n§r§8@{1}"
 }

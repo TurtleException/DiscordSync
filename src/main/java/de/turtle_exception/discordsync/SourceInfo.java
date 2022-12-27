@@ -59,7 +59,7 @@ public class SourceInfo {
         return user;
     }
 
-    public @Nullable Member getMember() throws IllegalStateException {
+    public Member getMember() throws IllegalStateException {
         if (user == null)
             throw new IllegalStateException("Not a Discord SourceInfo!");
         return member;

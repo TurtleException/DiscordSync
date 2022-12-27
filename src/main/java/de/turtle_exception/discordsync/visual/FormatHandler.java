@@ -4,21 +4,21 @@ import com.google.common.collect.Sets;
 import de.turtle_exception.discordsync.DiscordSync;
 import de.turtle_exception.discordsync.SyncMessage;
 import de.turtle_exception.fancyformat.formats.DiscordFormat;
-import de.turtle_exception.fancyformat.formats.MinecraftLegacyFormat;
-import kotlin.jvm.functions.Function2;
-import kotlin.jvm.functions.Function3;
+import de.turtle_exception.fancyformat.formats.SpigotComponentsFormat;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Entity;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BiFunction;
 
 public class FormatHandler {
     private final DiscordSync plugin;
@@ -29,7 +29,7 @@ public class FormatHandler {
     private final String formatDisDis;
 
     private record MinToken(@NotNull String token,
-                            @NotNull Function3<SyncMessage, Player, BaseComponent, List<BaseComponent>> func
+                            @NotNull BiFunction<SyncMessage, Player, BaseComponent> func
     ) {
         public @NotNull String get() {
             return "%" + token + "%";
@@ -37,7 +37,7 @@ public class FormatHandler {
     }
 
     private record DisToken(@NotNull String token,
-                            @NotNull Function2<SyncMessage, MessageChannel, String> func
+                            @NotNull BiFunction<SyncMessage, MessageChannel, String> func
     ) {
         public @NotNull String get() {
             return "%" + token + "%";
@@ -61,14 +61,14 @@ public class FormatHandler {
             throw new NullPointerException("config.yml is missing one or more format settings!");
 
         // TODO: custom user formatting
-        register(new MinToken("user"   , (message, player, component) -> replaceAll(component, "user"   , message.author().getName()))                             , true, true);
-        register(new MinToken("message", (message, player, component) -> replaceAll(component, "message", message.content().toString(MinecraftLegacyFormat.get()))), true, true);
-        register(new MinToken("player" , (message, player, component) -> replaceAll(component, "player" , message.sourceInfo().getPlayer().getDisplayName()))      , true, false);
-        register(new MinToken("dc_nick", (message, player, component) -> replaceAll(component, "dc_nick", message.sourceInfo().getEffectiveDiscordName()))         , false, true);
-        register(new MinToken("dc_name", (message, player, component) -> replaceAll(component, "dc_name", message.sourceInfo().getUser().getName()))               , false, true);
-        register(new MinToken("dc_tag" , (message, player, component) -> replaceAll(component, "dc_tag" , message.sourceInfo().getUser().getAsTag()))              , false, true);
-        register(new MinToken("channel", (message, player, component) -> replaceAll(component, "channel", message.sourceInfo().getChannel().getName()))            , false, true);
-        register(new MinToken("guild"  , (message, player, component) -> replaceAll(component, "guild"  , getGuild(message)))                                      , false, true);
+        register(new MinToken("user"   , (message, player) -> getUser(message))       , true , true );
+        register(new MinToken("message", (message, player) -> getMessage(message))    , true , true );
+        register(new MinToken("player" , (message, player) -> getPlayer(message))     , true , false);
+        register(new MinToken("dc_nick", (message, player) -> getDiscordNick(message)), false, true );
+        register(new MinToken("dc_name", (message, player) -> getDiscordName(message)), false, true );
+        register(new MinToken("dc_tag" , (message, player) -> getDiscordTag(message)) , false, true );
+        register(new MinToken("channel", (message, player) -> getChannel(message))    , false, true );
+        register(new MinToken("guild"  , (message, player) -> getGuild(message))      , false, true );
         // TODO: mention?
 
         register(new DisToken("user"   , (message, channel) -> message.author().getName())                       , true , true );
@@ -79,7 +79,7 @@ public class FormatHandler {
         register(new DisToken("dc_tag" , (message, channel) -> message.sourceInfo().getUser().getAsTag())        , false, true );
         register(new DisToken("channel", (message, channel) -> message.sourceInfo().getChannel().getName())      , false, true );
         register(new DisToken("mention", (message, channel) -> message.sourceInfo().getUser().getAsMention())    , false, true );
-        register(new DisToken("guild"  , (message, channel) -> getGuild(message))                                , false, true );
+        register(new DisToken("guild"  , (message, channel) -> getGuildName(message))                            , false, true );
         register(new DisToken("emote"  , (message, channel) -> {
             long target = channel instanceof GuildChannel gChannel
                     ? gChannel.getGuild().getIdLong()
@@ -123,17 +123,48 @@ public class FormatHandler {
 
             for (MinToken token : tokens) {
                 // skip if the current component does not contain this token
-                if (!current.toPlainText().contains(token.get())) continue;
+                if (!(current instanceof TextComponent tComp) || !tComp.getText().contains(token.get())) continue;
 
-                // apply function -> split component into one or more new components
-                List<BaseComponent> res = token.func().invoke(message, recipient, current);
+                String text = tComp.getText();
+                ArrayList<BaseComponent> insertion = new ArrayList<>();
+
+                // apply function -> split each token component into one or more new components
+                BaseComponent res = token.func().apply(message, recipient);
+                res.copyFormatting(tComp, false);
+
+                // build list with all token components (replaced by res) and the intermediate TextComponents
+                int index = 0;
+                while (index < text.length()) {
+                    int tokenIndex = text.indexOf(token.get(), index);
+                    if (tokenIndex < 0) break;
+
+                    // check for text before the token
+                    if (tokenIndex > index) {
+                        TextComponent duplicate = tComp.duplicate();
+                        duplicate.setText(text.substring(index, tokenIndex));
+                        insertion.add(duplicate);
+                    }
+
+                    // add token argument
+                    insertion.add(res);
+
+                    // increment index
+                    index = tokenIndex + token.get().length();
+                }
+
+                // handle text at the end
+                if (index < text.length()) {
+                    TextComponent duplicate = tComp.duplicate();
+                    duplicate.setText(text.substring(index));
+                    insertion.add(duplicate);
+                }
 
                 // replace component(s)
                 components.remove(i);
-                components.addAll(i, res);
+                components.addAll(i, insertion);
 
                 // iterator should continue after the added components (-1 because i will be incremented)
-                i += res.size() - 1;
+                i += insertion.size() - 1;
                 continue iterator;
             }
         }
@@ -154,12 +185,12 @@ public class FormatHandler {
         }
 
         for (DisToken token : tokens)
-            format = format.replaceAll(token.get(), token.func().invoke(message, recipient));
+            format = format.replaceAll(token.get(), token.func().apply(message, recipient));
 
         return format;
     }
 
-    /* - - - */
+    /* - Discord Formatting - */
 
     private @NotNull String getEmote(@NotNull SyncMessage message, long target) {
         return message.sourceInfo().isMinecraft()
@@ -167,18 +198,92 @@ public class FormatHandler {
                 : plugin.getEmoteHandler().getEmote(message.sourceInfo().getChannel());
     }
 
-    private @NotNull String getGuild(@NotNull SyncMessage message) {
+    private @NotNull String getGuildName(@NotNull SyncMessage message) {
         Member member = message.sourceInfo().getMember();
         return member != null
                 ? member.getGuild().getName()
                 : "PRIVATE";
     }
 
-    /* - - - */
+    /* - Minecraft Formatting - */
 
-    private @NotNull List<BaseComponent> replaceAll(@NotNull BaseComponent component, @NotNull String token, @NotNull String replacement) {
-        String legacyText = component.toLegacyText();
-        legacyText = legacyText.replaceAll("%" + token + "%", replacement);
-        return Arrays.asList(TextComponent.fromLegacyText(legacyText));
+    private @NotNull TextComponent getUser(@NotNull SyncMessage message) {
+        TextComponent component = new TextComponent(message.author().getName());
+
+        BaseComponent[] hoverText = plugin.getMessageDispatcher()
+                .get("user.info", message.author().getName(), String.valueOf(message.author().getId()))
+                .parse(SpigotComponentsFormat.get());
+
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));
+
+        return component;
+    }
+
+    private @NotNull TextComponent getMessage(@NotNull SyncMessage message) {
+        TextComponent component = new TextComponent(message.content().parse(SpigotComponentsFormat.get()));
+
+        BaseComponent[] hoverText = plugin.getMessageDispatcher()
+                .get("chat.reference.hover", String.valueOf(message.getId()))
+                .parse(SpigotComponentsFormat.get());
+
+        component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, /* TODO */ "null"));
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));
+
+        return component;
+    }
+
+    private @NotNull TextComponent getPlayer(@NotNull SyncMessage message) {
+        TextComponent component = new TextComponent(message.sourceInfo().getPlayer().getDisplayName());
+        Entity entity = new Entity("minecraft:player", message.sourceInfo().getPlayer().getUniqueId().toString(), null);
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ENTITY, entity));
+        return component;
+    }
+
+    private @NotNull TextComponent getDiscordNick(@NotNull SyncMessage message) {
+        TextComponent component = new TextComponent(message.sourceInfo().getEffectiveDiscordName());
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(getDiscordHover(message))));
+        return component;
+    }
+
+    private @NotNull TextComponent getDiscordName(@NotNull SyncMessage message) {
+        TextComponent component = new TextComponent(message.sourceInfo().getUser().getName());
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(getDiscordHover(message))));
+        return component;
+    }
+
+    private @NotNull TextComponent getDiscordTag(@NotNull SyncMessage message) {
+        TextComponent component = new TextComponent(message.sourceInfo().getUser().getAsTag());
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(getDiscordHover(message))));
+        return component;
+    }
+
+    private @NotNull BaseComponent[] getDiscordHover(@NotNull SyncMessage message) {
+        return plugin.getMessageDispatcher()
+                .get("chat.author.discord", message.sourceInfo().getUser().getAsTag(), message.sourceInfo().getUser().getId())
+                .parse(SpigotComponentsFormat.get());
+    }
+
+    private @NotNull TextComponent getChannel(@NotNull SyncMessage message) {
+        TextComponent component = new TextComponent(message.sourceInfo().getUser().getName());
+
+        BaseComponent[] hoverText = plugin.getMessageDispatcher()
+                .get("chat.source.discord.channel", message.sourceInfo().getChannel().getName(), message.sourceInfo().getChannel().getId())
+                .parse(SpigotComponentsFormat.get());
+
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));
+
+        return component;
+    }
+
+    private @NotNull TextComponent getGuild(@NotNull SyncMessage message) {
+        TextComponent component = new TextComponent(message.sourceInfo().getUser().getName());
+
+        BaseComponent[] hoverText = plugin.getMessageDispatcher()
+                .get("chat.source.discord.guild", message.sourceInfo().getMember().getGuild().getName(), message.sourceInfo().getMember().getGuild().getId())
+                .parse(SpigotComponentsFormat.get());
+
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));
+
+        return component;
     }
 }
