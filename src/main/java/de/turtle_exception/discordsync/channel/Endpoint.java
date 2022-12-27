@@ -1,7 +1,7 @@
 package de.turtle_exception.discordsync.channel;
 
 import de.turtle_exception.discordsync.Entity;
-import de.turtle_exception.discordsync.SyncMessage;
+import de.turtle_exception.discordsync.message.MessageEntity;
 import de.turtle_exception.discordsync.util.time.TurtleType;
 import de.turtle_exception.discordsync.util.time.TurtleUtil;
 import org.jetbrains.annotations.NotNull;
@@ -25,5 +25,5 @@ public abstract class Endpoint implements Entity {
         return id;
     }
 
-    public abstract void send(@NotNull SyncMessage message);
+    public abstract void send(@NotNull MessageEntity message);
 }

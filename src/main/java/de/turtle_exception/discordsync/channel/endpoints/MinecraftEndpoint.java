@@ -1,8 +1,8 @@
 package de.turtle_exception.discordsync.channel.endpoints;
 
-import de.turtle_exception.discordsync.SyncMessage;
 import de.turtle_exception.discordsync.channel.Channel;
 import de.turtle_exception.discordsync.channel.Endpoint;
+import de.turtle_exception.discordsync.message.MessageEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,9 +18,9 @@ public abstract class MinecraftEndpoint extends Endpoint {
     }
 
     @Override
-    public void send(@NotNull SyncMessage message) {
+    public void send(@NotNull MessageEntity message) {
         for (Player player : this.getPlayers())
-            player.spigot().sendMessage(channel.getPlugin().getFormatHandler().toMinecraft(message, player));
+            player.spigot().sendMessage(message.toMinecraft(player));
     }
 
     public abstract Collection<? extends Player> getPlayers();

@@ -1,4 +1,4 @@
-package de.turtle_exception.discordsync;
+package de.turtle_exception.discordsync.message.source;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SourceInfo {
+public class Author extends Source {
     // MINECRAFT
     private final Player player;
     private final World  world;
@@ -19,7 +19,7 @@ public class SourceInfo {
     private final Member member;
     private final MessageChannelUnion channel;
 
-    public SourceInfo(@NotNull Player player, @NotNull World world) {
+    public Author(@NotNull Player player, @NotNull World world) {
         this.player  = player;
         this.world   = world;
         this.user    = null;
@@ -27,7 +27,7 @@ public class SourceInfo {
         this.channel = null;
     }
 
-    public SourceInfo(@NotNull User user, @Nullable Member member, @NotNull MessageChannelUnion channel) {
+    public Author(@NotNull User user, @Nullable Member member, @NotNull MessageChannelUnion channel) {
         this.user    = user;
         this.member  = member;
         this.channel = channel;
@@ -79,7 +79,8 @@ public class SourceInfo {
         return channel;
     }
 
-    public boolean isFromChannel(long snowflake) {
+    @Override
+    public boolean isFromDiscordChannel(long snowflake) {
         if (channel == null) return false;
 
         if (channel instanceof PrivateChannel pChannel) {

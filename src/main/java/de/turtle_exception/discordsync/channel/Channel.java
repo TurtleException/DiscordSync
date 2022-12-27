@@ -2,7 +2,8 @@ package de.turtle_exception.discordsync.channel;
 
 import de.turtle_exception.discordsync.DiscordSync;
 import de.turtle_exception.discordsync.Entity;
-import de.turtle_exception.discordsync.SyncMessage;
+import de.turtle_exception.discordsync.message.MessageEntity;
+import de.turtle_exception.discordsync.message.SyncMessage;
 import de.turtle_exception.discordsync.channel.endpoints.DiscordChannel;
 import de.turtle_exception.discordsync.channel.endpoints.MinecraftServer;
 import de.turtle_exception.discordsync.channel.endpoints.MinecraftWorld;
@@ -27,7 +28,7 @@ public class Channel implements Entity {
     private final DiscordSync plugin;
     private @NotNull String name;
 
-    private final EntityMap<String, SyncMessage> messageCache;
+    private final EntityMap<String, MessageEntity> messageCache;
     /** Discord response codes */
     // TODO: should this be locked?
     private final ConcurrentHashMap<Long, FixedBlockingQueueMap<Long, Long>> responseCodes;
@@ -40,7 +41,7 @@ public class Channel implements Entity {
         this.name = name;
 
         int backlog = plugin.getConfig().getInt("messageBacklog", 1000);
-        messageCache = new EntityMap<>(new String[backlog], new SyncMessage[backlog]);
+        messageCache = new EntityMap<>(new String[backlog], new MessageEntity[backlog]);
         responseCodes = new ConcurrentHashMap<>(snowflakes.size());
 
         // populate responseCode map
@@ -114,14 +115,15 @@ public class Channel implements Entity {
 
     /* - - - */
 
-    public void send(@NotNull SyncMessage message) {
+    public void send(@NotNull MessageEntity message) {
         // TODO: quick response code as key
         messageCache.put("", message);
         // reserve space in message caches
         responseCodes.forEach((channel, cache) -> cache.offer(message.getId(), null));
 
         // log chat message
-        plugin.getServer().getLogger().log(Level.INFO, "<" + name + "> " + message.author().getName() + ":  " + message.content().toString(PlaintextFormat.get()));
+        if (message instanceof SyncMessage sMsg)
+            plugin.getServer().getLogger().log(Level.INFO, "<" + name + "> " + sMsg.getAuthor().getName() + ":  " + sMsg.getContent().toString(PlaintextFormat.get()));
 
         // pass message to endpoints
         for (Endpoint endpoint : this.endpoints)

@@ -1,8 +1,8 @@
 package de.turtle_exception.discordsync.channel.endpoints;
 
-import de.turtle_exception.discordsync.SyncMessage;
 import de.turtle_exception.discordsync.channel.Channel;
 import de.turtle_exception.discordsync.channel.Endpoint;
+import de.turtle_exception.discordsync.message.MessageEntity;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
@@ -28,9 +28,9 @@ public class DiscordChannel extends Endpoint {
     }
 
     @Override
-    public void send(@NotNull SyncMessage message) {
+    public void send(@NotNull MessageEntity message) {
         // ignore if the message came from this channel
-        if (message.sourceInfo().isFromChannel(snowflake)) return;
+        if (message.getSource().isFromDiscordChannel(snowflake)) return;
 
         MessageChannel discord = channel.getPlugin().getJDA().getChannelById(MessageChannel.class, snowflake);
         if (discord != null) {
@@ -44,8 +44,8 @@ public class DiscordChannel extends Endpoint {
         }
     }
 
-    protected void doSend(@NotNull MessageChannel discord, @NotNull SyncMessage message) {
-        String msg = channel.getPlugin().getFormatHandler().toDiscord(message, discord);
+    protected void doSend(@NotNull MessageChannel discord, @NotNull MessageEntity message) {
+        String msg = message.toDiscord(discord);
 
         MessageCreateAction action = discord.sendMessage(
                 new MessageCreateBuilder()
@@ -53,7 +53,7 @@ public class DiscordChannel extends Endpoint {
                         .build());
 
         // get the discord response code (id of referenced message) for this specific channel
-        Long reference = channel.getResponseCodes().get(snowflake).get(message.reference());
+        Long reference = channel.getResponseCodes().get(snowflake).get(message.getReference());
         if (reference != null)
             action.setMessageReference(reference);
 

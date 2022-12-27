@@ -2,7 +2,7 @@ package de.turtle_exception.discordsync.visual;
 
 import com.google.common.collect.Sets;
 import de.turtle_exception.discordsync.DiscordSync;
-import de.turtle_exception.discordsync.SyncMessage;
+import de.turtle_exception.discordsync.message.SyncMessage;
 import de.turtle_exception.fancyformat.formats.DiscordFormat;
 import de.turtle_exception.fancyformat.formats.SpigotComponentsFormat;
 import net.dv8tion.jda.api.entities.Member;
@@ -17,7 +17,10 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Set;
 import java.util.function.BiFunction;
 
 public class FormatHandler {
@@ -71,15 +74,15 @@ public class FormatHandler {
         register(new MinToken("guild"  , (message, player) -> getGuild(message))      , false, true );
         // TODO: mention?
 
-        register(new DisToken("user"   , (message, channel) -> message.author().getName())                       , true , true );
-        register(new DisToken("message", (message, channel) -> message.content().toString(DiscordFormat.get()))  , true , true );
-        register(new DisToken("player" , (message, channel) -> message.sourceInfo().getPlayer().getDisplayName()), true , false);
-        register(new DisToken("dc_nick", (message, channel) -> message.sourceInfo().getEffectiveDiscordName())   , false, true );
-        register(new DisToken("dc_name", (message, channel) -> message.sourceInfo().getUser().getName())         , false, true );
-        register(new DisToken("dc_tag" , (message, channel) -> message.sourceInfo().getUser().getAsTag())        , false, true );
-        register(new DisToken("channel", (message, channel) -> message.sourceInfo().getChannel().getName())      , false, true );
-        register(new DisToken("mention", (message, channel) -> message.sourceInfo().getUser().getAsMention())    , false, true );
-        register(new DisToken("guild"  , (message, channel) -> getGuildName(message))                            , false, true );
+        register(new DisToken("user"   , (message, channel) -> message.getAuthor().getName())                     , true , true );
+        register(new DisToken("message", (message, channel) -> message.getContent().toString(DiscordFormat.get())), true , true );
+        register(new DisToken("player" , (message, channel) -> message.getSource().getPlayer().getDisplayName())  , true , false);
+        register(new DisToken("dc_nick", (message, channel) -> message.getSource().getEffectiveDiscordName())     , false, true );
+        register(new DisToken("dc_name", (message, channel) -> message.getSource().getUser().getName())           , false, true );
+        register(new DisToken("dc_tag" , (message, channel) -> message.getSource().getUser().getAsTag())          , false, true );
+        register(new DisToken("channel", (message, channel) -> message.getSource().getChannel().getName())        , false, true );
+        register(new DisToken("mention", (message, channel) -> message.getSource().getUser().getAsMention())      , false, true );
+        register(new DisToken("guild"  , (message, channel) -> getGuildName(message))                             , false, true );
         register(new DisToken("emote"  , (message, channel) -> {
             long target = channel instanceof GuildChannel gChannel
                     ? gChannel.getGuild().getIdLong()
@@ -108,7 +111,7 @@ public class FormatHandler {
         LinkedList<BaseComponent> components = new LinkedList<>();
         Set<MinToken> tokens;
 
-        if (message.sourceInfo().isMinecraft()) {
+        if (message.getSource().isMinecraft()) {
             components.addAll(Arrays.asList(TextComponent.fromLegacyText(formatMinMin)));
             tokens = this.tokensMinMin;
         } else {
@@ -176,7 +179,7 @@ public class FormatHandler {
         Set<DisToken> tokens;
         String format;
 
-        if (message.sourceInfo().isMinecraft()) {
+        if (message.getSource().isMinecraft()) {
             tokens = this.tokensMinDis;
             format = this.formatMinDis;
         } else {
@@ -193,13 +196,13 @@ public class FormatHandler {
     /* - Discord Formatting - */
 
     private @NotNull String getEmote(@NotNull SyncMessage message, long target) {
-        return message.sourceInfo().isMinecraft()
-                ? plugin.getEmoteHandler().getEmote(message.sourceInfo().getPlayer(), target)
-                : plugin.getEmoteHandler().getEmote(message.sourceInfo().getChannel());
+        return message.getSource().isMinecraft()
+                ? plugin.getEmoteHandler().getEmote(message.getSource().getPlayer(), target)
+                : plugin.getEmoteHandler().getEmote(message.getSource().getChannel());
     }
 
     private @NotNull String getGuildName(@NotNull SyncMessage message) {
-        Member member = message.sourceInfo().getMember();
+        Member member = message.getSource().getMember();
         return member != null
                 ? member.getGuild().getName()
                 : "PRIVATE";
@@ -208,10 +211,10 @@ public class FormatHandler {
     /* - Minecraft Formatting - */
 
     private @NotNull TextComponent getUser(@NotNull SyncMessage message) {
-        TextComponent component = new TextComponent(message.author().getName());
+        TextComponent component = new TextComponent(message.getAuthor().getName());
 
         BaseComponent[] hoverText = plugin.getMessageDispatcher()
-                .get("user.info", message.author().getName(), String.valueOf(message.author().getId()))
+                .get("user.info", message.getAuthor().getName(), String.valueOf(message.getAuthor().getId()))
                 .parse(SpigotComponentsFormat.get());
 
         component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));
@@ -220,7 +223,7 @@ public class FormatHandler {
     }
 
     private @NotNull TextComponent getMessage(@NotNull SyncMessage message) {
-        TextComponent component = new TextComponent(message.content().parse(SpigotComponentsFormat.get()));
+        TextComponent component = new TextComponent(message.getContent().parse(SpigotComponentsFormat.get()));
 
         BaseComponent[] hoverText = plugin.getMessageDispatcher()
                 .get("chat.reference.hover", String.valueOf(message.getId()))
@@ -233,41 +236,41 @@ public class FormatHandler {
     }
 
     private @NotNull TextComponent getPlayer(@NotNull SyncMessage message) {
-        TextComponent component = new TextComponent(message.sourceInfo().getPlayer().getDisplayName());
-        Entity entity = new Entity("minecraft:player", message.sourceInfo().getPlayer().getUniqueId().toString(), null);
+        TextComponent component = new TextComponent(message.getSource().getPlayer().getDisplayName());
+        Entity entity = new Entity("minecraft:player", message.getSource().getPlayer().getUniqueId().toString(), null);
         component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ENTITY, entity));
         return component;
     }
 
     private @NotNull TextComponent getDiscordNick(@NotNull SyncMessage message) {
-        TextComponent component = new TextComponent(message.sourceInfo().getEffectiveDiscordName());
+        TextComponent component = new TextComponent(message.getSource().getEffectiveDiscordName());
         component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(getDiscordHover(message))));
         return component;
     }
 
     private @NotNull TextComponent getDiscordName(@NotNull SyncMessage message) {
-        TextComponent component = new TextComponent(message.sourceInfo().getUser().getName());
+        TextComponent component = new TextComponent(message.getSource().getUser().getName());
         component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(getDiscordHover(message))));
         return component;
     }
 
     private @NotNull TextComponent getDiscordTag(@NotNull SyncMessage message) {
-        TextComponent component = new TextComponent(message.sourceInfo().getUser().getAsTag());
+        TextComponent component = new TextComponent(message.getSource().getUser().getAsTag());
         component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(getDiscordHover(message))));
         return component;
     }
 
     private @NotNull BaseComponent[] getDiscordHover(@NotNull SyncMessage message) {
         return plugin.getMessageDispatcher()
-                .get("chat.author.discord", message.sourceInfo().getUser().getAsTag(), message.sourceInfo().getUser().getId())
+                .get("chat.author.discord", message.getSource().getUser().getAsTag(), message.getSource().getUser().getId())
                 .parse(SpigotComponentsFormat.get());
     }
 
     private @NotNull TextComponent getChannel(@NotNull SyncMessage message) {
-        TextComponent component = new TextComponent(message.sourceInfo().getUser().getName());
+        TextComponent component = new TextComponent(message.getSource().getUser().getName());
 
         BaseComponent[] hoverText = plugin.getMessageDispatcher()
-                .get("chat.source.discord.channel", message.sourceInfo().getChannel().getName(), message.sourceInfo().getChannel().getId())
+                .get("chat.source.discord.channel", message.getSource().getChannel().getName(), message.getSource().getChannel().getId())
                 .parse(SpigotComponentsFormat.get());
 
         component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));
@@ -276,10 +279,10 @@ public class FormatHandler {
     }
 
     private @NotNull TextComponent getGuild(@NotNull SyncMessage message) {
-        TextComponent component = new TextComponent(message.sourceInfo().getUser().getName());
+        TextComponent component = new TextComponent(message.getSource().getUser().getName());
 
         BaseComponent[] hoverText = plugin.getMessageDispatcher()
-                .get("chat.source.discord.guild", message.sourceInfo().getMember().getGuild().getName(), message.sourceInfo().getMember().getGuild().getId())
+                .get("chat.source.discord.guild", message.getSource().getMember().getGuild().getName(), message.getSource().getMember().getGuild().getId())
                 .parse(SpigotComponentsFormat.get());
 
         component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));

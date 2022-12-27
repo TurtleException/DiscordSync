@@ -1,8 +1,8 @@
 package de.turtle_exception.discordsync.listeners;
 
 import de.turtle_exception.discordsync.DiscordSync;
-import de.turtle_exception.discordsync.SourceInfo;
-import de.turtle_exception.discordsync.SyncMessage;
+import de.turtle_exception.discordsync.message.source.Author;
+import de.turtle_exception.discordsync.message.SyncMessage;
 import de.turtle_exception.discordsync.SyncUser;
 import de.turtle_exception.discordsync.channel.Channel;
 import de.turtle_exception.discordsync.util.time.TurtleType;
@@ -59,9 +59,9 @@ public class ChatListener extends ListenerAdapter implements Listener {
             Member member = event.getMember();
             User   user   = event.getAuthor();
 
-            SourceInfo  source  = new SourceInfo(user, member, event.getChannel());
+            Author source  = new Author(user, member, event.getChannel());
             FormatText  content = plugin.getFormatter().fromFormat(event.getMessage().getContentRaw(), DiscordFormat.get());
-            SyncMessage message = new SyncMessage(TurtleUtil.newId(TurtleType.MESSAGE), author, content, -1, source);
+            SyncMessage message = new SyncMessage(plugin, TurtleUtil.newId(TurtleType.MESSAGE), author, content, -1, source);
 
             channel.send(message);
             return;
@@ -85,8 +85,8 @@ public class ChatListener extends ListenerAdapter implements Listener {
         // players use Discord markdown
         FormatText  content = plugin.getFormatter().fromFormat(event.getMessage(), DiscordFormat.get());
 
-        SourceInfo  source  = new SourceInfo(event.getPlayer(), event.getPlayer().getWorld());
-        SyncMessage message = new SyncMessage(TurtleUtil.newId(TurtleType.MESSAGE), author, content, -1, source);
+        Author source  = new Author(event.getPlayer(), event.getPlayer().getWorld());
+        SyncMessage message = new SyncMessage(plugin, TurtleUtil.newId(TurtleType.MESSAGE), author, content, -1, source);
         Channel     channel = plugin.getChannel(event.getPlayer());
 
         channel.send(message);
