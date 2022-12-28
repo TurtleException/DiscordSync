@@ -2,6 +2,7 @@ package de.turtle_exception.discordsync;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import de.turtle_exception.discordsync.util.LangFetcher;
 import de.turtle_exception.discordsync.util.ResourceUtil;
 import de.turtle_exception.discordsync.util.StringUtil;
 import de.turtle_exception.fancyformat.FormatText;
@@ -21,7 +22,8 @@ public class MessageDispatcher {
     private final DiscordSync plugin;
     private final String language;
 
-    private final ConcurrentHashMap<String, String> data = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String> pluginData = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String>   gameData = new ConcurrentHashMap<>();
 
     // cached for convenience (only has to be parsed once)
     private final BaseComponent[] prefix;
@@ -46,6 +48,15 @@ public class MessageDispatcher {
         language = lang;
 
 
+        // load game lang data
+        try {
+            String version = plugin.getServer().getVersion();
+            this.gameData.putAll(LangFetcher.get(version, language));
+        } catch (IOException e) {
+            throw new RuntimeException("Could not load game lang data.", e);
+        }
+
+
         // read JSON data
         File file = new File(ext, language + ".json");
         if (!file.exists())
@@ -59,7 +70,7 @@ public class MessageDispatcher {
             JsonObject json   = gson.fromJson(reader, JsonObject.class);
 
             for (String key : json.keySet())
-                this.data.put(key, json.get(key).getAsString());
+                this.pluginData.put(key, json.get(key).getAsString());
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Encountered an unexpected IOException while attempting to load language file.", e);
             throw new RuntimeException(e);
@@ -72,12 +83,16 @@ public class MessageDispatcher {
     }
 
     public @NotNull FormatText get(@NotNull String key, String... format) {
-        String pattern = data.get(key);
+        String pattern = pluginData.get(key);
 
         if (pattern == null)
             throw new IllegalArgumentException("Unknown translatable key: " + key);
 
         return plugin.getFormatter().formNative(StringUtil.format(pattern, format));
+    }
+
+    public @NotNull String getGame(@NotNull String key, String... format) {
+        return gameData.get(key).formatted((Object[]) format);
     }
 
     public @NotNull String getLanguage() {
