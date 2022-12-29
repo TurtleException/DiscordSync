@@ -6,6 +6,7 @@ import de.turtle_exception.discordsync.util.LangFetcher;
 import de.turtle_exception.discordsync.util.ResourceUtil;
 import de.turtle_exception.discordsync.util.StringUtil;
 import de.turtle_exception.fancyformat.FormatText;
+import de.turtle_exception.fancyformat.formats.PlaintextFormat;
 import de.turtle_exception.fancyformat.formats.SpigotComponentsFormat;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.jetbrains.annotations.NotNull;
@@ -79,10 +80,22 @@ public class MessageDispatcher {
             throw e;
         }
 
-        this.prefix = get("general.prefix", plugin.getDescription().getVersion()).parse(SpigotComponentsFormat.get());
+        this.prefix = getPlugin("general.prefix", plugin.getDescription().getVersion()).parse(SpigotComponentsFormat.get());
     }
 
     public @NotNull FormatText get(@NotNull String key, String... format) {
+        String pattern = pluginData.get(key);
+        if (pattern != null)
+            return plugin.getFormatter().formNative(StringUtil.format(pattern, format));
+
+        pattern = gameData.get(key);
+        if (pattern == null)
+            throw new IllegalArgumentException("Unknown translatable key: " + key);
+
+        return plugin.getFormatter().fromFormat(pattern, PlaintextFormat.get());
+    }
+
+    public @NotNull FormatText getPlugin(@NotNull String key, String... format) {
         String pattern = pluginData.get(key);
 
         if (pattern == null)

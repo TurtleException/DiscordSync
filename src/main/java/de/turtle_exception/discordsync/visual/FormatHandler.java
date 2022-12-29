@@ -214,7 +214,7 @@ public class FormatHandler {
         TextComponent component = new TextComponent(message.getAuthor().getName());
 
         BaseComponent[] hoverText = plugin.getMessageDispatcher()
-                .get("user.info", message.getAuthor().getName(), String.valueOf(message.getAuthor().getId()))
+                .getPlugin("user.info", message.getAuthor().getName(), String.valueOf(message.getAuthor().getId()))
                 .parse(SpigotComponentsFormat.get());
 
         component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));
@@ -226,7 +226,7 @@ public class FormatHandler {
         TextComponent component = new TextComponent(message.getContent().parse(SpigotComponentsFormat.get()));
 
         BaseComponent[] hoverText = plugin.getMessageDispatcher()
-                .get("chat.reference.hover", String.valueOf(message.getId()))
+                .getPlugin("chat.reference.hover", String.valueOf(message.getId()))
                 .parse(SpigotComponentsFormat.get());
 
         component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, /* TODO */ "null"));
@@ -262,7 +262,7 @@ public class FormatHandler {
 
     private @NotNull BaseComponent[] getDiscordHover(@NotNull SyncMessage message) {
         return plugin.getMessageDispatcher()
-                .get("chat.author.discord", message.getSource().getUser().getAsTag(), message.getSource().getUser().getId())
+                .getPlugin("chat.author.discord", message.getSource().getUser().getAsTag(), message.getSource().getUser().getId())
                 .parse(SpigotComponentsFormat.get());
     }
 
@@ -270,7 +270,7 @@ public class FormatHandler {
         TextComponent component = new TextComponent(message.getSource().getUser().getName());
 
         BaseComponent[] hoverText = plugin.getMessageDispatcher()
-                .get("chat.source.discord.channel", message.getSource().getChannel().getName(), message.getSource().getChannel().getId())
+                .getPlugin("chat.source.discord.channel", message.getSource().getChannel().getName(), message.getSource().getChannel().getId())
                 .parse(SpigotComponentsFormat.get());
 
         component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));
@@ -282,7 +282,7 @@ public class FormatHandler {
         TextComponent component = new TextComponent(message.getSource().getUser().getName());
 
         BaseComponent[] hoverText = plugin.getMessageDispatcher()
-                .get("chat.source.discord.guild", message.getSource().getMember().getGuild().getName(), message.getSource().getMember().getGuild().getId())
+                .getPlugin("chat.source.discord.guild", message.getSource().getMember().getGuild().getName(), message.getSource().getMember().getGuild().getId())
                 .parse(SpigotComponentsFormat.get());
 
         component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));

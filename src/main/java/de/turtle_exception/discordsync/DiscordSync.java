@@ -7,6 +7,7 @@ import de.turtle_exception.discordsync.events.SyncChannelDeleteEvent;
 import de.turtle_exception.discordsync.events.SyncUserCreateEvent;
 import de.turtle_exception.discordsync.events.SyncUserDeleteEvent;
 import de.turtle_exception.discordsync.listeners.ChatListener;
+import de.turtle_exception.discordsync.listeners.EventListener;
 import de.turtle_exception.discordsync.listeners.PresenceListener;
 import de.turtle_exception.discordsync.listeners.UserListener;
 import de.turtle_exception.discordsync.util.EntitySet;
@@ -330,7 +331,7 @@ public class DiscordSync extends JavaPlugin {
     }
 
     public void sendMessage(@NotNull Player recipient, @NotNull String key, String... args) {
-        FormatText content = getMessageDispatcher().get(key, args);
+        FormatText content = getMessageDispatcher().getPlugin(key, args);
 
         BaseComponent[] prefix = getMessageDispatcher().getPrefix();
         BaseComponent[] text   = content.parse(SpigotComponentsFormat.get());
