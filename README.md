@@ -16,3 +16,7 @@ There is an [older version](https://github.com/TurtleException/DiscordSync/tree/
 as a JAR-file and has many known bugs & issues.
 
 As long as the most recent commit isn't older than a few days it is safe to say that the plugin will soon be finished.
+
+### Progress note
+As of the end of 2022, almost all planned features are implemented & being tested and debugged. The first beta-releases
+should be done early in the new year.
