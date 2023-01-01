@@ -3,6 +3,7 @@ package de.turtle_exception.discordsync.channel.endpoints;
 import de.turtle_exception.discordsync.channel.Channel;
 import de.turtle_exception.discordsync.channel.Endpoint;
 import de.turtle_exception.discordsync.message.MessageEntity;
+import de.turtle_exception.discordsync.message.SyncMessage;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
@@ -53,9 +54,11 @@ public class DiscordChannel extends Endpoint {
                         .build());
 
         // get the discord response code (id of referenced message) for this specific channel
-        Long reference = channel.getResponseCodes().get(snowflake).get(message.getReference());
-        if (reference != null)
-            action.setMessageReference(reference);
+        if (message instanceof SyncMessage syncMessage) {
+            Long reference = channel.getResponseCodes().get(snowflake).get(syncMessage.getReference());
+            if (reference != null)
+                action.setMessageReference(reference);
+        }
 
         action.queue(success -> {
             channel.getResponseCodes().get(snowflake).put(message.getId(), success.getIdLong());

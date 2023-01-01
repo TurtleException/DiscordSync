@@ -59,7 +59,7 @@ public class ChatListener extends ListenerAdapter implements Listener {
             Member member = event.getMember();
             User   user   = event.getAuthor();
 
-            Author source  = new Author(user, member, event.getChannel());
+            Author      source  = new Author(user, member, event.getChannel());
             FormatText  content = plugin.getFormatter().fromFormat(event.getMessage().getContentRaw(), DiscordFormat.get());
             SyncMessage message = new SyncMessage(plugin, TurtleUtil.newId(TurtleType.MESSAGE), author, content, -1, source);
 
@@ -85,7 +85,7 @@ public class ChatListener extends ListenerAdapter implements Listener {
         // players use Discord markdown
         FormatText  content = plugin.getFormatter().fromFormat(event.getMessage(), DiscordFormat.get());
 
-        Author source  = new Author(event.getPlayer(), event.getPlayer().getWorld());
+        Author      source  = new Author(event.getPlayer(), event.getPlayer().getWorld());
         SyncMessage message = new SyncMessage(plugin, TurtleUtil.newId(TurtleType.MESSAGE), author, content, -1, source);
         Channel     channel = plugin.getChannel(event.getPlayer());
 

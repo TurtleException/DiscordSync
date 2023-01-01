@@ -13,23 +13,16 @@ public abstract class MessageEntity implements Entity {
     protected final @NotNull Source source;
 
     protected final long id;
-    protected final long reference;
 
-
-    protected MessageEntity(@NotNull DiscordSync plugin, @NotNull Source source, long id, long reference) {
+    protected MessageEntity(@NotNull DiscordSync plugin, @NotNull Source source, long id) {
         this.plugin = plugin;
         this.source = source;
         this.id = id;
-        this.reference = reference;
     }
 
     @Override
     public long getId() {
         return id;
-    }
-
-    public long getReference() {
-        return reference;
     }
 
     public @NotNull Source getSource() {

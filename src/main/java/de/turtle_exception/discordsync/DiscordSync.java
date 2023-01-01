@@ -97,6 +97,7 @@ public class DiscordSync extends JavaPlugin {
 
         // LISTENERS
         this.getServer().getPluginManager().registerEvents(new PresenceListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new EventListener(this), this);
         this.getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         this.getServer().getPluginManager().registerEvents(new UserListener(this), this);
 

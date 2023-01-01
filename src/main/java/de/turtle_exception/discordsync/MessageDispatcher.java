@@ -6,9 +6,10 @@ import de.turtle_exception.discordsync.util.LangFetcher;
 import de.turtle_exception.discordsync.util.ResourceUtil;
 import de.turtle_exception.discordsync.util.StringUtil;
 import de.turtle_exception.fancyformat.FormatText;
-import de.turtle_exception.fancyformat.formats.PlaintextFormat;
+import de.turtle_exception.fancyformat.formats.MinecraftLegacyFormat;
 import de.turtle_exception.fancyformat.formats.SpigotComponentsFormat;
 import net.md_5.bungee.api.chat.BaseComponent;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -16,9 +17,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MessageDispatcher {
     private static final String DEFAULT_LANGUAGE = "en_US";
+    // TODO: this does not include snapshot versions
+    private static final Pattern VERSION_PATTERN = Pattern.compile("\\d+.\\d+(?:.\\d+)?");
 
     private final DiscordSync plugin;
     private final String language;
@@ -50,11 +55,23 @@ public class MessageDispatcher {
 
 
         // load game lang data
-        try {
-            String version = plugin.getServer().getVersion();
-            this.gameData.putAll(LangFetcher.get(version, language));
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load game lang data.", e);
+        if (language.equalsIgnoreCase("en_US")) {
+            try {
+                gameData.putAll(LangFetcher.getGame());
+            } catch (IOException e) {
+                throw new RuntimeException("Could not load game lang data.", e);
+            }
+        } else {
+            try {
+                Matcher matcher = VERSION_PATTERN.matcher(Bukkit.getBukkitVersion());
+                if (!matcher.find())
+                    throw new RuntimeException("Could not parse game version from server version: " + Bukkit.getBukkitVersion());
+                this.gameData.putAll(LangFetcher.get(matcher.group(), language));
+            } catch (ArrayIndexOutOfBoundsException e) {
+                throw new RuntimeException("Unsupported version format: " + Bukkit.getBukkitVersion());
+            } catch (IOException e) {
+                throw new RuntimeException("Could not load game lang data.", e);
+            }
         }
 
 
@@ -92,7 +109,7 @@ public class MessageDispatcher {
         if (pattern == null)
             throw new IllegalArgumentException("Unknown translatable key: " + key);
 
-        return plugin.getFormatter().fromFormat(pattern, PlaintextFormat.get());
+        return plugin.getFormatter().fromFormat(pattern.formatted((Object[]) format), MinecraftLegacyFormat.get());
     }
 
     public @NotNull FormatText getPlugin(@NotNull String key, String... format) {

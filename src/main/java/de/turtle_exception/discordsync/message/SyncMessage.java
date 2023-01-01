@@ -12,11 +12,13 @@ import org.jetbrains.annotations.NotNull;
 public final class SyncMessage extends MessageEntity {
     private final @NotNull SyncUser author;
     private final @NotNull FormatText content;
+    private final long reference;
 
     public SyncMessage(@NotNull DiscordSync plugin, long id, @NotNull SyncUser author, @NotNull FormatText content, long reference, @NotNull Author source) {
-        super(plugin, source, id, reference);
+        super(plugin, source, id);
         this.author = author;
         this.content = content;
+        this.reference = reference;
     }
 
     public @NotNull SyncUser getAuthor() {
@@ -30,6 +32,10 @@ public final class SyncMessage extends MessageEntity {
     @Override
     public @NotNull Author getSource() {
         return (Author) source;
+    }
+
+    public long getReference() {
+        return reference;
     }
 
     /* - - - */
