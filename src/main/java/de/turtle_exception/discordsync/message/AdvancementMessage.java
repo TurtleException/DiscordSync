@@ -30,19 +30,23 @@ public class AdvancementMessage extends EventMessage {
 
     @Override
     public @NotNull String toDiscord(@NotNull MessageChannel recipient) {
-        String title            = plugin.getMessageDispatcher().get(advancementKey + ".title").toString(DiscordFormat.get());
-        String message          = plugin.getMessageDispatcher().get("chat.type.advancement.task", player.getDisplayName(), "*" + title + "*").toString(DiscordFormat.get());
+        String title            = plugin.getMessageDispatcher().getGame(advancementKey + ".title").toString(DiscordFormat.get());
+        String message          = plugin.getMessageDispatcher().getGame("chat.type.advancement.task", player.getDisplayName(), "*" + title + "*").toString(DiscordFormat.get());
         String descriptionTitle = plugin.getMessageDispatcher().getPlugin("event.advancement.description").toString(DiscordFormat.get());
-        String descriptionText  = plugin.getMessageDispatcher().get(advancementKey + ".description").toString(DiscordFormat.get());
+        String descriptionText  = plugin.getMessageDispatcher().getGame(advancementKey + ".description").toString(DiscordFormat.get());
 
         return message + "\n\n" + descriptionTitle + "\n" + descriptionText;
     }
 
     @Override
     public @NotNull BaseComponent[] toMinecraft(@NotNull Player recipient) {
-        String          title           = plugin.getMessageDispatcher().get(advancementKey + ".title").toString(PlaintextFormat.get());
-        BaseComponent[] message         = plugin.getMessageDispatcher().get("chat.type.advancement.task", player.getDisplayName(), "§5" + title).parse(SpigotComponentsFormat.get());
-        BaseComponent[] descriptionText = plugin.getMessageDispatcher().get(advancementKey + ".description").parse(SpigotComponentsFormat.get());
+        String prefix = "[";
+        if (advancement.getDisplay() != null)
+            prefix = "§" + advancement.getDisplay().getType().getColor().getChar() + "[";
+
+        String          title           = plugin.getMessageDispatcher().getGame(advancementKey + ".title").toString(PlaintextFormat.get());
+        BaseComponent[] message         = plugin.getMessageDispatcher().getGame("chat.type.advancement.task", player.getDisplayName(), prefix + title + "]§f").parse(SpigotComponentsFormat.get());
+        BaseComponent[] descriptionText = plugin.getMessageDispatcher().getGame(advancementKey + ".description").parse(SpigotComponentsFormat.get());
 
         // TODO: make this text customizable (including formatting)
 

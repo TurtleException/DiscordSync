@@ -100,29 +100,14 @@ public class MessageDispatcher {
         this.prefix = getPlugin("general.prefix", plugin.getDescription().getVersion()).parse(SpigotComponentsFormat.get());
     }
 
-    public @NotNull FormatText get(@NotNull String key, String... format) {
-        String pattern = pluginData.get(key);
-        if (pattern != null)
-            return plugin.getFormatter().formNative(StringUtil.format(pattern, format));
-
-        pattern = gameData.get(key);
-        if (pattern == null)
-            throw new IllegalArgumentException("Unknown translatable key: " + key);
-
-        return plugin.getFormatter().fromFormat(pattern.formatted((Object[]) format), MinecraftLegacyFormat.get());
-    }
-
     public @NotNull FormatText getPlugin(@NotNull String key, String... format) {
-        String pattern = pluginData.get(key);
-
-        if (pattern == null)
-            throw new IllegalArgumentException("Unknown translatable key: " + key);
-
-        return plugin.getFormatter().formNative(StringUtil.format(pattern, format));
+        return plugin.getFormatter().formNative(StringUtil.format(pluginData.getOrDefault(key, key), format));
     }
 
-    public @NotNull String getGame(@NotNull String key, String... format) {
-        return gameData.get(key).formatted((Object[]) format);
+    public @NotNull FormatText getGame(@NotNull String key, String... format) {
+        if (pluginData.contains("overrides." + key))
+            return getPlugin("overrides." + key, format);
+        return plugin.getFormatter().fromFormat(gameData.getOrDefault(key, key).formatted(((Object[]) format)), MinecraftLegacyFormat.get());
     }
 
     public @NotNull String getLanguage() {

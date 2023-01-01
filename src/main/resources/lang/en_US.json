@@ -1,4 +1,5 @@
 {
+  "overrides": [ ],
   "chat.reference.hover": "4#§7§oClick to reply\n§r§8@{0}",
   "chat.author.discord": "4#§7§l{0}\n§r§8@{1}",
   "chat.source.discord.channel": "4#§8C§7§l{0}\n§r§8@{1}",

@@ -50,7 +50,7 @@ public class JoinMessage extends EventMessage {
 
     @Override
     public @NotNull String toDiscord(@NotNull MessageChannel recipient) {
-        String message         = plugin.getMessageDispatcher().get("multiplayer.player.joined", player.getDisplayName()).toString(DiscordFormat.get());
+        String message         = plugin.getMessageDispatcher().getGame("multiplayer.player.joined", player.getDisplayName()).toString(DiscordFormat.get());
         String lastOnlineTitle = plugin.getMessageDispatcher().getPlugin("event.playerJoin.lastOnline").toString(DiscordFormat.get());
 
         // TODO: embeds
@@ -60,7 +60,7 @@ public class JoinMessage extends EventMessage {
 
     @Override
     public @NotNull BaseComponent[] toMinecraft(@NotNull Player recipient) {
-        TextComponent comp = new TextComponent(plugin.getMessageDispatcher().get("multiplayer.player.joined", player.getDisplayName()).parse(SpigotComponentsFormat.get()));
+        TextComponent comp = new TextComponent(plugin.getMessageDispatcher().getGame("multiplayer.player.joined", player.getDisplayName()).parse(SpigotComponentsFormat.get()));
         comp.setColor(ChatColor.YELLOW);
 
         return new BaseComponent[]{ comp };

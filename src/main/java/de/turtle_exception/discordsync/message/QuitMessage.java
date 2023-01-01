@@ -22,12 +22,12 @@ public class QuitMessage extends EventMessage {
 
     @Override
     public @NotNull String toDiscord(@NotNull MessageChannel recipient) {
-        return plugin.getMessageDispatcher().get("multiplayer.player.left", player.getDisplayName()).toString(DiscordFormat.get());
+        return plugin.getMessageDispatcher().getGame("multiplayer.player.left", player.getDisplayName()).toString(DiscordFormat.get());
     }
 
     @Override
     public @NotNull BaseComponent[] toMinecraft(@NotNull Player recipient) {
-        TextComponent comp = new TextComponent(plugin.getMessageDispatcher().get("multiplayer.player.left", player.getDisplayName()).parse(SpigotComponentsFormat.get()));
+        TextComponent comp = new TextComponent(plugin.getMessageDispatcher().getGame("multiplayer.player.left", player.getDisplayName()).parse(SpigotComponentsFormat.get()));
         comp.setColor(ChatColor.YELLOW);
 
         return new BaseComponent[]{ comp };
