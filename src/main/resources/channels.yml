@@ -1,9 +1,0 @@
-# Do not modify this file if you don't know what you're doing!
-
-# This is the standard channel that is equivalent to the vanilla chat system
-132359450001474304:
-  name: global
-  worlds:
-    - '*'
-  discord:
-    - null
