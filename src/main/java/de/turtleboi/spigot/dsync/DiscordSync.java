@@ -3,7 +3,11 @@ package de.turtleboi.spigot.dsync;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class DiscordSync extends JavaPlugin {
-    public DiscordSync() { }
+    public static DiscordSync plugin;
+
+    public DiscordSync() {
+        plugin = this;
+    }
 
     @Override
     public void onEnable() {
