@@ -1,5 +1,5 @@
 name: DiscordSync
-main: de.turtle_exception.discordsync.DiscordSync
+main: de.turtleboi.spigot.dsync.DiscordSync
 load: STARTUP
 
 version: ${project.version}

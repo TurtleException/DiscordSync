@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.turtle-exception.discordsync</groupId>
+    <groupId>de.turtleboi.spigot.dsync</groupId>
     <artifactId>DiscordSync</artifactId>
     <version>3.0.1-alpha.1</version>
 
@@ -64,7 +64,7 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                             <mainClass>
-                                de.turtle_exception.discordsync.DiscordSync
+                                de.turtleboi.spigot.dsync.DiscordSync
                             </mainClass>
                         </manifest>
                     </archive>
