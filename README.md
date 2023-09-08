@@ -1,10 +1,6 @@
-[version-shield]: https://img.shields.io/github/v/release/TurtleException/DiscordSync?include_prereleases
-[license-shield]: https://img.shields.io/github/license/TurtleException/DiscordSync
-
-<img align="right" src=".github/DiscordSync.png" height="200" width="200">
-
-[![version-shield]](https://github.com/TurtleException/DiscordSync/releases)
-[![license-shield]](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Release](https://img.shields.io/github/release/TurtleException/DiscordSync.svg)]()
+![version](https://img.shields.io/badge/minecraft-1.20-green.svg)
 
 # DiscordSync
 A simple, easy-to-use spigot plugin that can mirror multiple chats between Discord channels and a Minecraft Server. You
