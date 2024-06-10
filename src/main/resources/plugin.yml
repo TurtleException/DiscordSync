@@ -9,8 +9,3 @@ description: ${project.description}
 
 author: TurtleException
 website: https://github.com/TurtleException/DiscordSync
-
-commands:
-  channel:
-    description: "General command to control channels" # TODO
-    usage: "/channel <info|switch|list|create|delete|mute>" # TODO
