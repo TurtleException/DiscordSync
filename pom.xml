@@ -12,12 +12,10 @@
     <description>Spigot plugin that mirrors Discord channels and Minecraft chats</description>
     <url>https://github.com/TurtleException/DiscordSync</url>
 
-    <!--
-         ,,
-        (_ \_- -_
-          \ TUTL )
-            lU lU
-    -->
+    <!--   ,,
+          (_ \_- -_
+            \TURTLE)
+              lU lU   -->
 
     <licenses>
         <license>
@@ -26,8 +24,35 @@
         </license>
     </licenses>
 
+
+    <developers>
+        <developer>
+            <name>TurtleException</name>
+            <email>dev@turtle-mail.de</email>
+            <timezone>Europe/Berlin</timezone>
+        </developer>
+    </developers>
+
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -41,33 +66,37 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>17</source>
-                    <target>17</target>
-                </configuration>
-            </plugin>
         </plugins>
+
+
         <resources>
             <!-- Write version to resources -->
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>*</include>
-                    <include>lang/*</include>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>config.yml</include>
+                    <include>users.yml</include>
                 </includes>
             </resource>
         </resources>
     </build>
+
 
     <repositories>
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+
+        <!-- FancyFormat requires Jitpack for now -->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
@@ -75,6 +104,14 @@
     </repositories>
 
     <dependencies>
+        <!-- Annotations (@NotNull and the like) -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.0.1</version>
+        </dependency>
+
+        <!-- Inter-compatible text formatting -->
         <dependency>
             <groupId>com.github.TurtleException</groupId>
             <artifactId>FancyFormat</artifactId>
@@ -100,7 +137,8 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--  :/  -->
+
+        <!--  Logging (re-route JDA log to Spigot loggers)  -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
