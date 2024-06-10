@@ -38,7 +38,7 @@ public class UserRegistry {
         return null;
     }
 
-    public void createUser(@NotNull Member member) {
+    private @NotNull User createUser(@NotNull Member member) {
         final long   id   = IdUtil.newId((byte) 0);
         final String name = member.getEffectiveName();
 
@@ -46,9 +46,11 @@ public class UserRegistry {
         this.addDiscord(user, member.getIdLong());
 
         this.users.put(id, user);
+
+        return user;
     }
 
-    public void createUser(@NotNull OfflinePlayer player) {
+    private @NotNull User createUser(@NotNull OfflinePlayer player) {
         final long   id   = IdUtil.newId((byte) 0);
         final String name = player.getName() != null ? player.getName() : player.getUniqueId().toString();
 
@@ -56,6 +58,30 @@ public class UserRegistry {
         this.addMinecraft(user, player.getUniqueId());
 
         this.users.put(id, user);
+
+        return user;
+    }
+
+    public @NotNull User provideUser(@NotNull Member member) {
+        try (CloseableLock ignored = this.lock.write()) {
+            User user = this.getUser(member.getIdLong());
+
+            if (user != null)
+                return user;
+
+            return this.createUser(member);
+        }
+    }
+
+    public @NotNull User provideUser(@NotNull OfflinePlayer player) {
+        try (CloseableLock ignored = this.lock.write()) {
+            User user = this.getUser(player.getUniqueId());
+
+            if (user != null)
+                return user;
+
+            return this.createUser(player);
+        }
     }
 
     public void addDiscord(@NotNull User user, long snowflake) {
