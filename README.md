@@ -1,12 +1,14 @@
 [version-shield]: https://img.shields.io/github/v/release/TurtleException/DiscordSync?include_prereleases
 [license-shield]: https://img.shields.io/github/license/TurtleException/DiscordSync
+[build-shield]: https://img.shields.io/github/actions/workflow/status/TurtleException/DiscordSync/build.yaml
 [mc-1-20-shield]: https://img.shields.io/badge/minecraft-1.20-green.svg
 
 <!--suppress HtmlRequiredAltAttribute, CheckImageSize -->
-<img align="right" src=".github/DiscordSync.png" height="200" width="200">
+<img align="right" src=".github/DiscordSync.png" height="150" width="150">
 
-[![version-shield]](https://github.com/TurtleException/FancyFormat/releases)
+[![version-shield]](https://github.com/TurtleException/DiscordSync/releases)
 [![license-shield]](LICENSE)
+[![build-shield]](https://github.com/TurtleException/DiscordSync/actions/workflows/build.yaml)
 
 [![mc-1-20-shield]]()
 
