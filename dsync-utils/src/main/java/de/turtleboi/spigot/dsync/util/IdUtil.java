@@ -1,5 +1,7 @@
 package de.turtleboi.spigot.dsync.util;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * An id is composed like this:
  * <pre> {@code
@@ -31,6 +33,10 @@ public class IdUtil {
     private static int increment = 0;
 
     private IdUtil() { }
+
+    public static long newId(@NotNull String type) {
+        return newId((byte) type.hashCode());
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     public static synchronized long newId(byte type) {
