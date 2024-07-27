@@ -1,5 +1,6 @@
 package de.turtleboi.spigot.dsync.api;
 
+import de.turtleboi.spigot.dsync.api.entity.dao.UserDAO;
 import org.jetbrains.annotations.NotNull;
 
 public interface ObeliskAPI {
@@ -13,5 +14,5 @@ public interface ObeliskAPI {
 
     /* - - - */
 
-    // TODO
+    @NotNull UserDAO getUserDAO();
 }
