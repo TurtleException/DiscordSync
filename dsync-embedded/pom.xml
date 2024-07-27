@@ -7,7 +7,6 @@
     <groupId>de.turtleboi.spigot.dsync</groupId>
     <artifactId>dsync-embedded</artifactId>
     <version>3.0.1-alpha.1</version>
-    <packaging>pom</packaging>
 
     <name>DiscordSync Embedded Adapter</name>
     <description>DiscordSync API adapter that is embedded as a spigot plugin</description>
