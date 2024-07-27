@@ -1,6 +1,5 @@
 package de.turtleboi.spigot.dsync.embedded;
 
-import de.turtleboi.spigot.dsync.DiscordSync;
 import net.dv8tion.jda.api.JDA;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LogEvent;
