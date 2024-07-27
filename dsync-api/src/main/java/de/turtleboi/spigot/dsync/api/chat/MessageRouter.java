@@ -8,9 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MessageRouter {
     private final Set<MessageHandler> handlers = ConcurrentHashMap.newKeySet();
+    private final MessageHistory history;
 
-    public MessageRouter() {
-
+    public MessageRouter(int backlog) {
+        this.history = new MessageHistory(backlog);
     }
 
     public void registerHandler(@NotNull MessageHandler handler) {
@@ -21,7 +22,8 @@ public class MessageRouter {
         this.handlers.remove(handler);
     }
 
-    public void handle(@NotNull Message message) {
+    public synchronized void handle(@NotNull Message message) {
+        this.history.add(message);
         this.handlers.forEach(handler -> handler.onMessage(message));
     }
 }
