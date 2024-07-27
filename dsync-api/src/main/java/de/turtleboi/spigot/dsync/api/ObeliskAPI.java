@@ -1,5 +1,6 @@
 package de.turtleboi.spigot.dsync.api;
 
+import de.turtleboi.spigot.dsync.api.chat.MessageRouter;
 import de.turtleboi.spigot.dsync.api.entity.dao.UserDAO;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,6 +14,8 @@ public interface ObeliskAPI {
     }
 
     /* - - - */
+
+    @NotNull MessageRouter getMessageRouter();
 
     @NotNull UserDAO getUserDAO();
 }
