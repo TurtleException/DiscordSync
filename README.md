@@ -1,16 +1,25 @@
 [version-shield]: https://img.shields.io/github/v/release/TurtleException/DiscordSync?include_prereleases
 [license-shield]: https://img.shields.io/github/license/TurtleException/DiscordSync
-[build-shield]: https://img.shields.io/github/actions/workflow/status/TurtleException/DiscordSync/build.yaml
 [mc-1-20-shield]: https://img.shields.io/badge/minecraft-1.20-green.svg
+
+[build-shield-api]: https://img.shields.io/github/actions/workflow/status/TurtleException/DiscordSync/build-api.yaml?label=API
+[build-shield-core]: https://img.shields.io/github/actions/workflow/status/TurtleException/DiscordSync/build-core.yaml?label=Core
+[build-shield-embedded]: https://img.shields.io/github/actions/workflow/status/TurtleException/DiscordSync/build-embedded.yaml?label=Embedded
+[build-shield-utils]: https://img.shields.io/github/actions/workflow/status/TurtleException/DiscordSync/build-utils.yaml?label=Utils
 
 <!--suppress HtmlRequiredAltAttribute, CheckImageSize -->
 <img align="right" src=".github/DiscordSync.png" height="150" width="150">
 
 [![version-shield]](https://github.com/TurtleException/DiscordSync/releases)
 [![license-shield]](LICENSE)
-[![build-shield]](https://github.com/TurtleException/DiscordSync/actions/workflows/build.yaml)
-
 [![mc-1-20-shield]]()
+
+#### Build status
+
+[![build-shield-api]](https://github.com/TurtleException/DiscordSync/actions/workflows/build-api.yaml)
+[![build-shield-core]](https://github.com/TurtleException/DiscordSync/actions/workflows/build-core.yaml)
+[![build-shield-embedded]](https://github.com/TurtleException/DiscordSync/actions/workflows/build-embedded.yaml)
+[![build-shield-utils]](https://github.com/TurtleException/DiscordSync/actions/workflows/build-utils.yaml)
 
 # DiscordSync
 A simple, easy-to-use spigot plugin that can mirror the chat between a Discord channel and a Minecraft Server.
