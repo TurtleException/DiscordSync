@@ -35,4 +35,4 @@ jobs:
       - name: Build API Module
         run: mvn -B clean install --file dsync-api/pom.xml
       - name: Build Core Module
-        run: mvn .B package --file dsync-core/pom.xml
+        run: mvn -B package --file dsync-core/pom.xml
