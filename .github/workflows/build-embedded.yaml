@@ -5,16 +5,16 @@ on:
     branches:
       - "v03"
     paths:
-      - "dsync-embedded"
-      - "dsync-api"
-      - "dsync-utils"
+      - "dsync-embedded/**"
+      - "dsync-api/**"
+      - "dsync-utils/**"
   pull_request:
     branches:
       - "v03"
     paths:
-      - "dsync-embedded"
-      - "dsync-api"
-      - "dsync-utils"
+      - "dsync-embedded/**"
+      - "dsync-api/**"
+      - "dsync-utils/**"
   workflow_dispatch:
 
 jobs:

@@ -5,12 +5,12 @@ on:
     branches:
       - "v03"
     paths:
-      - "dsync-utils"
+      - "dsync-utils/**"
   pull_request:
     branches:
       - "v03"
     paths:
-      - "dsync-utils"
+      - "dsync-utils/**"
   workflow_dispatch:
 
 jobs:

@@ -5,14 +5,14 @@ on:
     branches:
       - "v03"
     paths:
-      - "dsync-api"
-      - "dsync-utils"
+      - "dsync-api/**"
+      - "dsync-utils/**"
   pull_request:
     branches:
       - "v03"
     paths:
-      - "dsync-api"
-      - "dsync-utils"
+      - "dsync-api/**"
+      - "dsync-utils/**"
   workflow_dispatch:
 
 jobs:
