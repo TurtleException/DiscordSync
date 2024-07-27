@@ -1,5 +1,5 @@
 name: DiscordSync
-main: de.turtleboi.spigot.dsync.DiscordSync
+main: de.turtleboi.spigot.dsync.core.DiscordSync
 load: STARTUP
 
 version: ${project.version}

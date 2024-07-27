@@ -1,4 +1,4 @@
-package de.turtleboi.spigot.dsync.user;
+package de.turtleboi.spigot.dsync.core.user;
 
 import de.turtleboi.spigot.dsync.util.CloseableLock;
 import de.turtleboi.spigot.dsync.util.IdUtil;

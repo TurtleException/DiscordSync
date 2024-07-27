@@ -1,0 +1,11 @@
+name: DiscordSync
+main: de.turtleboi.spigot.dsync.embedded.DiscordSyncEmbedded
+load: STARTUP
+
+version: ${project.version}
+
+api-version: 1.20
+description: ${project.description}
+
+author: TurtleException
+website: https://github.com/TurtleException/DiscordSync

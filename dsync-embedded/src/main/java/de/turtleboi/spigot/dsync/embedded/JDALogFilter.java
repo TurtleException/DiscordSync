@@ -1,4 +1,4 @@
-package de.turtleboi.spigot.dsync.util;
+package de.turtleboi.spigot.dsync.embedded;
 
 import de.turtleboi.spigot.dsync.DiscordSync;
 import net.dv8tion.jda.api.JDA;
@@ -14,13 +14,13 @@ import java.util.logging.LogRecord;
 
 // this works with Log4J
 public class JDALogFilter extends AbstractFilter {
-    private final DiscordSync plugin;
+    private final DiscordSyncEmbedded plugin;
     private final Logger logger = (Logger) LogManager.getLogger(JDA.class);
 
     private boolean enabled = true;
     private Level level;
 
-    public JDALogFilter(@NotNull DiscordSync plugin) {
+    public JDALogFilter(@NotNull DiscordSyncEmbedded plugin) {
         this.plugin = plugin;
         this.level = plugin.getLogger().getLevel();
         this.start();
