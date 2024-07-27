@@ -88,6 +88,13 @@
             <version>24.0.1</version>
         </dependency>
 
+        <!-- Shared Utilities -->
+        <dependency>
+            <groupId>de.turtleboi.spigot.dsync</groupId>
+            <artifactId>dsync-utils</artifactId>
+            <version>3.0.1-alpha.1</version>
+        </dependency>
+
         <!-- Shared API classes -->
         <dependency>
             <groupId>de.turtleboi.spigot.dsync</groupId>
