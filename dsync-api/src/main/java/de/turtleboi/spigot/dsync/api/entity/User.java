@@ -1,6 +1,6 @@
 package de.turtleboi.spigot.dsync.api.entity;
 
-import de.turtleboi.spigot.dsync.api.ObeliskAPI;
+import de.turtleboi.spigot.dsync.api.DiscordSyncAPI;
 import de.turtleboi.spigot.dsync.api.entity.dao.UserDAO;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.UUID;
 
 public final class User {
-    private final @NotNull ObeliskAPI api;
+    private final @NotNull DiscordSyncAPI api;
     private final long id;
 
-    public User(@NotNull ObeliskAPI api, long id) {
+    public User(@NotNull DiscordSyncAPI api, long id) {
         this.api = api;
         this.id = id;
     }

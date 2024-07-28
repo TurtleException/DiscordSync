@@ -1,6 +1,6 @@
 package de.turtleboi.spigot.dsync.embedded;
 
-import de.turtleboi.spigot.dsync.api.ObeliskAPI;
+import de.turtleboi.spigot.dsync.api.DiscordSyncAPI;
 import de.turtleboi.spigot.dsync.api.chat.MessageRouter;
 import de.turtleboi.spigot.dsync.api.entity.dao.UserDAO;
 import de.turtleboi.spigot.dsync.embedded.user.UserManager;
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-public class DiscordSyncEmbedded extends JavaPlugin implements ObeliskAPI {
+public class DiscordSyncEmbedded extends JavaPlugin implements DiscordSyncAPI {
     private UserManager userManager;
     private MessageRouter messageRouter;
 
@@ -26,7 +26,7 @@ public class DiscordSyncEmbedded extends JavaPlugin implements ObeliskAPI {
         JDALogFilter jdaLogFilter = new JDALogFilter(this);
         jdaLogFilter.start();
 
-        ObeliskAPI.register(this);
+        DiscordSyncAPI.register(this);
     }
 
     @Override

@@ -4,12 +4,12 @@ import de.turtleboi.spigot.dsync.api.chat.MessageRouter;
 import de.turtleboi.spigot.dsync.api.entity.dao.UserDAO;
 import org.jetbrains.annotations.NotNull;
 
-public interface ObeliskAPI {
-    static void register(@NotNull ObeliskAPI api) throws IllegalStateException {
+public interface DiscordSyncAPI {
+    static void register(@NotNull DiscordSyncAPI api) throws IllegalStateException {
         Bootstrap.register(api);
     }
 
-    static @NotNull ObeliskAPI getInstance() throws IllegalStateException {
+    static @NotNull DiscordSyncAPI getInstance() throws IllegalStateException {
         return Bootstrap.get();
     }
 
