@@ -7,6 +7,9 @@ import de.turtleboi.spigot.dsync.util.IdUtil;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class MessageBuilder {
     private User author;
     private Player authorAsPlayer;
@@ -14,12 +17,14 @@ public class MessageBuilder {
     private FormatText content;
     private Message replyTo;
 
+    private final Map<String, Object> context = new ConcurrentHashMap<>();
+
     public @NotNull Message build() throws IllegalArgumentException {
         final long id = IdUtil.newId("dsync-message");
 
         // TODO: checks
 
-        return new Message(id, this.author, this.content, this.replyTo);
+        return new Message(id, this.author, this.content, this.replyTo, this.context);
     }
 
     public User getAuthor() {
@@ -65,5 +70,12 @@ public class MessageBuilder {
     public MessageBuilder setReplyTo(Message replyTo) {
         this.replyTo = replyTo;
         return this;
+    }
+
+    public void setContext(@NotNull String key, Object val) {
+        if (val == null)
+            this.context.remove(key);
+        else
+            this.context.put(key, val);
     }
 }

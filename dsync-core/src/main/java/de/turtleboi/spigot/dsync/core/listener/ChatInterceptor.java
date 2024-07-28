@@ -39,6 +39,14 @@ public class ChatInterceptor implements Listener {
         FormatText content = new FormatText(messageBuilder.getContentRaw(), format);
         messageBuilder.setContent(content);
 
+        messageBuilder.setContext("source", "minecraft");
+        messageBuilder.setContext("world.name", event.getPlayer().getWorld().getName());
+        messageBuilder.setContext("author.minecraft.uuid", event.getPlayer().getUniqueId());
+        messageBuilder.setContext("author.minecraft.name", event.getPlayer().getName());
+        messageBuilder.setContext("author.minecraft.displayName", event.getPlayer().getDisplayName());
+        messageBuilder.setContext("author.minecraft.customName", event.getPlayer().getCustomName());
+        messageBuilder.setContext("author.minecraft.playerListName", event.getPlayer().getPlayerListName());
+
         MessageRouter router = api.getMessageRouter();
         router.handle(messageBuilder.build());
     }
