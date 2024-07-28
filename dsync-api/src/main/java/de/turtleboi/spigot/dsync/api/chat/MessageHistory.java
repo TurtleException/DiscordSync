@@ -42,19 +42,18 @@ public class MessageHistory implements Iterable<Message> {
         return new Iterator<>() {
             @Override
             public boolean hasNext() {
-                if (current[0] == null)
-                    return false;
-
-                return current[0].older != null;
+                return current[0] != null;
             }
 
             @Override
             public synchronized Message next() {
-                if (current[0] == null)
+                Node n = current[0];
+
+                if (n == null)
                     return null;
 
-                current[0] = current[0].older;
-                return current[0].message;
+                current[0] = n.older;
+                return n.message;
             }
         };
     }
@@ -65,19 +64,18 @@ public class MessageHistory implements Iterable<Message> {
         return new Iterator<>() {
             @Override
             public boolean hasNext() {
-                if (current[0] == null)
-                    return false;
-
-                return current[0].newer != null;
+                return current[0] != null;
             }
 
             @Override
             public synchronized Message next() {
-                if (current[0] == null)
+                Node n = current[0];
+
+                if (n == null)
                     return null;
 
-                current[0] = current[0].newer;
-                return current[0].message;
+                current[0] = n.newer;
+                return n.message;
             }
         };
     }

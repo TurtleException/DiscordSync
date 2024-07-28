@@ -1,6 +1,6 @@
 # The format for the MINECRAFT CHAT (depending on the message source)
 format:
-  minecraft: "§6%user%§8:  §7%message%"
-  discord: "§9%user%§8:  §7%message%"
+  minecraft: "§6%user%§8: %reply% §7%message%"
+  discord: "§9%user%§8: %reply% §7%message%"
 
 chatPrefix: "§8[§6DiscordSync§8]"
