@@ -9,13 +9,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.logging.Level;
 
 public class DiscordSyncEmbedded extends JavaPlugin implements DiscordSyncAPI {
     private UserManager userManager;
     private MessageRouter messageRouter;
 
     @Override
-    public void onEnable() {
+    public void onLoad() {
         this.saveResource("config.yml", false);
         this.saveResource("users.yml", false);
 
@@ -28,6 +29,7 @@ public class DiscordSyncEmbedded extends JavaPlugin implements DiscordSyncAPI {
         JDALogFilter jdaLogFilter = new JDALogFilter(this);
         jdaLogFilter.start();
 
+        this.getLogger().log(Level.INFO, "Registering API");
         DiscordSyncAPI.register(this);
     }
 

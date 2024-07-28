@@ -119,6 +119,7 @@
             <groupId>de.turtleboi.spigot.dsync</groupId>
             <artifactId>dsync-api</artifactId>
             <version>3.0.1-alpha.1</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
