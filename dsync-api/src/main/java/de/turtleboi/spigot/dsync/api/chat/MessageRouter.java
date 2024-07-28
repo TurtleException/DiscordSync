@@ -3,6 +3,7 @@ package de.turtleboi.spigot.dsync.api.chat;
 import de.turtleboi.spigot.dsync.api.entity.Message;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,6 +21,10 @@ public class MessageRouter {
 
     public void unregisterHandler(@NotNull MessageHandler handler) {
         this.handlers.remove(handler);
+    }
+
+    public @NotNull Set<MessageHandler> getHandlers() {
+        return Collections.unmodifiableSet(this.handlers);
     }
 
     public synchronized void handle(@NotNull Message message) {

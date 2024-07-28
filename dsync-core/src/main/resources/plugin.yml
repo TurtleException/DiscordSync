@@ -9,3 +9,8 @@ description: ${project.description}
 
 author: TurtleException
 website: https://github.com/TurtleException/DiscordSync
+
+commands:
+  dsync:
+    description: "DiscordSync Admin command"
+    aliases: [ "discordsync" ]
