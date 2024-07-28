@@ -10,10 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 public class UserManager implements UserDAO {
@@ -150,7 +147,7 @@ public class UserManager implements UserDAO {
     }
 
     @Override
-    public @NotNull String getUserName(long id) {
+    public @NotNull String getUserName(long id) throws NoSuchElementException {
         String idStr = String.valueOf(id);
 
         try (CloseableLock ignored = this.lock.read()) {
@@ -164,12 +161,11 @@ public class UserManager implements UserDAO {
             }
         }
 
-        // TODO: replace with custom exception
-        throw new Error("Not implemented");
+        throw new NoSuchElementException("Unknown user: " + id);
     }
 
     @Override
-    public @NotNull List<Long> getUserDiscordAccounts(long id) {
+    public @NotNull List<Long> getUserDiscordAccounts(long id) throws NoSuchElementException {
         String idStr = String.valueOf(id);
 
         try (CloseableLock ignored = this.lock.read()) {
@@ -179,12 +175,11 @@ public class UserManager implements UserDAO {
                 return section.getLongList("discord");
         }
 
-        // TODO: replace with custom exception
-        throw new Error("Not implemented");
+        throw new NoSuchElementException("Unknown user: " + id);
     }
 
     @Override
-    public @NotNull List<UUID> getUserMinecraftAccounts(long id) {
+    public @NotNull List<UUID> getUserMinecraftAccounts(long id) throws NoSuchElementException {
         String idStr = String.valueOf(id);
 
         try (CloseableLock ignored = this.lock.read()) {
@@ -208,35 +203,32 @@ public class UserManager implements UserDAO {
             }
         }
 
-        // TODO: replace with custom exception
-        throw new Error("Not implemented");
+        throw new NoSuchElementException("Unknown user: " + id);
     }
 
     @Override
-    public void setUserName(long id, @NotNull String name) {
+    public void setUserName(long id, @NotNull String name) throws NoSuchElementException {
         String idStr = String.valueOf(id);
 
         try (CloseableLock ignored = this.lock.write()) {
             ConfigurationSection section = this.config.getConfigurationSection(idStr);
 
-            // TODO: replace with custom exception
             if (section == null)
-                throw new Error("Not implemented");
+                throw new NoSuchElementException("Unknown user: " + id);
 
             section.set("name", name);
         }
     }
 
     @Override
-    public void addUserDiscordAccount(long id, long snowflake) {
+    public void addUserDiscordAccount(long id, long snowflake) throws NoSuchElementException {
         String idStr = String.valueOf(id);
 
         try (CloseableLock ignored = this.lock.write()) {
             ConfigurationSection section = this.config.getConfigurationSection(idStr);
 
-            // TODO: replace with custom exception
             if (section == null)
-                throw new Error("Not implemented");
+                throw new NoSuchElementException("Unknown user: " + id);
 
             List<Long> snowflakes = section.getLongList("discord");
             snowflakes.add(snowflake);
@@ -246,15 +238,14 @@ public class UserManager implements UserDAO {
     }
 
     @Override
-    public void removeUserDiscordAccount(long id, long snowflake) {
+    public void removeUserDiscordAccount(long id, long snowflake) throws NoSuchElementException {
         String idStr = String.valueOf(id);
 
         try (CloseableLock ignored = this.lock.write()) {
             ConfigurationSection section = this.config.getConfigurationSection(idStr);
 
-            // TODO: replace with custom exception
             if (section == null)
-                throw new Error("Not implemented");
+                throw new NoSuchElementException("Unknown user: " + id);
 
             List<Long> snowflakes = section.getLongList("discord");
             snowflakes.remove(snowflake);
@@ -264,15 +255,14 @@ public class UserManager implements UserDAO {
     }
 
     @Override
-    public void addUserMinecraftAccount(long id, @NotNull UUID uuid) {
+    public void addUserMinecraftAccount(long id, @NotNull UUID uuid) throws NoSuchElementException {
         String idStr = String.valueOf(id);
 
         try (CloseableLock ignored = this.lock.write()) {
             ConfigurationSection section = this.config.getConfigurationSection(idStr);
 
-            // TODO: replace with custom exception
             if (section == null)
-                throw new Error("Not implemented");
+                throw new NoSuchElementException("Unknown user: " + id);
 
             List<String> uuids = section.getStringList("minecraft");
             uuids.add(uuid.toString());
@@ -282,15 +272,14 @@ public class UserManager implements UserDAO {
     }
 
     @Override
-    public void removeUserMinecraftAccount(long id, @NotNull UUID uuid) {
+    public void removeUserMinecraftAccount(long id, @NotNull UUID uuid) throws NoSuchElementException {
         String idStr = String.valueOf(id);
 
         try (CloseableLock ignored = this.lock.write()) {
             ConfigurationSection section = this.config.getConfigurationSection(idStr);
 
-            // TODO: replace with custom exception
             if (section == null)
-                throw new Error("Not implemented");
+                throw new NoSuchElementException("Unknown user: " + id);
 
             List<String> uuids = section.getStringList("minecraft");
             uuids.remove(uuid.toString());
