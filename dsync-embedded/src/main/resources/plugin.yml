@@ -1,6 +1,11 @@
-name: DiscordSync
+name: DiscordSync-Adapter-Embedded
 main: de.turtleboi.spigot.dsync.embedded.DiscordSyncEmbedded
 load: STARTUP
+
+loadbefore:
+  - DiscordSync
+depend:
+  - DiscordSync
 
 version: ${project.version}
 
