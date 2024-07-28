@@ -41,28 +41,25 @@ public class UserManager implements UserDAO {
 
     @Override
     public @NotNull User provideUserByDiscord(long snowflake, @NotNull String name) {
-        try (CloseableLock ignored = this.lock.read()) {
+        try (CloseableLock ignored = this.lock.write()) {
             return this.getUserByDiscordId(snowflake).orElseGet(() -> {
                 // no user has claimed the discord id yet, create a new one
-                try (CloseableLock ignored1 = this.lock.write()) {
-                    User user = this.createUser(name);
-                    user.addDiscordAccount(snowflake);
-                    return user;
-                }
+                User user = this.createUser(name);
+                user.addDiscordAccount(snowflake);
+                return user;
             });
         }
     }
 
     @Override
     public @NotNull User provideUserByMinecraft(@NotNull UUID uuid, @NotNull String name) {
-        try (CloseableLock ignored = this.lock.read()) {
+        try (CloseableLock ignored = this.lock.write()) {
             return this.getUserByMinecraftId(uuid).orElseGet(() -> {
                 // no user has claimed the discord id yet, create a new one
-                try (CloseableLock ignored1 = this.lock.write()) {
-                    User user = this.createUser(name);
-                    user.addMinecraftAccount(uuid);
-                    return user;
-                }
+                User user = this.createUser(name);
+                user.addMinecraftAccount(uuid);
+
+                return user;
             });
         }
     }
