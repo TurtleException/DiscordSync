@@ -2,3 +2,5 @@
 format:
   minecraft: "§6%user%§8:  §7%message%"
   discord: "§9%user%§8:  §7%message%"
+
+chatPrefix: "§8[§6DiscordSync§8]"
