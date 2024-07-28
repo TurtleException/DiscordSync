@@ -58,12 +58,26 @@ public class MessageDispatcher implements MessageHandler {
         TextComponent component = new TextComponent(TextComponent.fromLegacyText(format));
         injectContent(component, contentComponent);
 
+        sanitizeNullText(component);
+
         this.plugin.getServer().spigot().broadcast(component);
+    }
+
+    private static void sanitizeNullText(@NotNull BaseComponent component) {
+        if (component instanceof TextComponent tComponent) {
+            if (tComponent.getText() == null)
+                tComponent.setText("");
+        }
+
+        List<BaseComponent> extra = component.getExtra();
+        if (extra != null)
+            for (BaseComponent baseComponent : extra)
+                sanitizeNullText(baseComponent);
     }
 
     private static void injectContent(@NotNull BaseComponent component, @NotNull BaseComponent content) {
         if (component instanceof TextComponent tComponent) {
-            if (tComponent.getText().equals("%message%")) {
+            if (tComponent.getText() != null && tComponent.getText().equals("%message%")) {
                 tComponent.setText(null);
 
                 List<BaseComponent> oldExtra = tComponent.getExtra();
