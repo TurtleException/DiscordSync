@@ -1,28 +1,4 @@
-discord:
-  # The Discord bot token
-  token: "null"
-  # Put your Discord channel id here
-  channel: 0
-
-# The amount of messages that are kept in memory (important for
-# replies, should be at least 100 or unexpected behaviour may occur)
-messageBacklog: 1000
-# Allow the use of custom emojis as player name prefix
-useEmoji: true
-
+# The format for the MINECRAFT CHAT (depending on the message source)
 format:
-  minecraftChat:
-    minecraft: "§6%user%§8:  §7%message%"
-    discord: "§9%user%§8:  §7%message%"
-  discordChat:
-    minecraft: "%emote% **__%user%__:**  %message%"
-    discord: "%emote% **__%user%__:** %message%"
-
-avatar:
-  bust: "https://mc-heads.net/avatar/%uuid%"
-  body: "https://mc-heads.net/body/%uuid%"
-  head: "https://minotar.net/helm/%uuid%/256"
-
-emote:
-  playerCircular: false
-  guildCircular: true
+  minecraft: "§6%user%§8:  §7%message%"
+  discord: "§9%user%§8:  §7%message%"
