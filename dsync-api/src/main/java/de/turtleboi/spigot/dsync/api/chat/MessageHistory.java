@@ -84,7 +84,8 @@ public class MessageHistory implements Iterable<Message> {
 
     public synchronized void add(@NotNull Message message) {
         Node node = new Node(message, this.newest);
-        this.newest.newer = node;
+        if (this.newest != null)
+            this.newest.newer = node;
         this.newest = node;
 
         this.size++;
