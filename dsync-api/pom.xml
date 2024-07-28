@@ -86,25 +86,6 @@
                 </executions>
             </plugin>
         </plugins>
-
-
-        <resources>
-            <!-- Write version to resources -->
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>plugin.yml</include>
-                </includes>
-            </resource>
-
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>config.yml</include>
-                </includes>
-            </resource>
-        </resources>
     </build>
 
 

@@ -17,9 +17,9 @@ public class DiscordSyncEmbedded extends JavaPlugin implements DiscordSyncAPI {
     @Override
     public void onEnable() {
         this.saveResource("config.yml", false);
-        this.saveResource("users.yaml", false);
+        this.saveResource("users.yml", false);
 
-        YamlConfiguration userConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "users.yaml"));
+        YamlConfiguration userConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "users.yml"));
         this.userManager = new UserManager(this, userConfig);
 
         int backlog = this.getConfig().getInt("messageBacklog", 1000);
