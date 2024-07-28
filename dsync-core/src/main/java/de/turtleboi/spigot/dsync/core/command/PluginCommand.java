@@ -4,7 +4,6 @@ import de.turtleboi.spigot.dsync.api.DiscordSyncAPI;
 import de.turtleboi.spigot.dsync.api.chat.MessageHandler;
 import de.turtleboi.spigot.dsync.api.chat.MessageHistory;
 import de.turtleboi.spigot.dsync.api.chat.MessageRouter;
-import de.turtleboi.spigot.dsync.api.entity.Message;
 import de.turtleboi.spigot.dsync.core.DiscordSyncCore;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.Command;
@@ -45,10 +44,7 @@ public class PluginCommand implements CommandExecutor {
         this.sendMessage(sender, "Message handlers§8: §e" + handlers.size());
 
         MessageHistory history = router.getHistory();
-        int messageCount = 0;
-        for (Message m : history)
-            messageCount++;
-        this.sendMessage(sender, "Cached messages§8: §e" + messageCount);
+        this.sendMessage(sender, "Cached messages§8: §e" + history.size() + "§8/§e" + history.capacity());
 
         return true;
     }

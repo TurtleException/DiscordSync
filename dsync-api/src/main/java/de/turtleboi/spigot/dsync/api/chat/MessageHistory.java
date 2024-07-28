@@ -27,6 +27,14 @@ public class MessageHistory implements Iterable<Message> {
         this.capacity = capacity;
     }
 
+    public int size() {
+        return this.size;
+    }
+
+    public int capacity() {
+        return this.capacity;
+    }
+
     @Override
     public @NotNull Iterator<Message> iterator() {
         final Node[] current = { this.newest };
