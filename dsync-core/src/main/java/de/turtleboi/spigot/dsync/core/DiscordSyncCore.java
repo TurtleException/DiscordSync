@@ -1,6 +1,7 @@
 package de.turtleboi.spigot.dsync.core;
 
 import de.turtleboi.spigot.dsync.api.DiscordSyncAPI;
+import de.turtleboi.spigot.dsync.core.listener.ChatInterceptor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class DiscordSyncCore extends JavaPlugin {
@@ -9,5 +10,7 @@ public class DiscordSyncCore extends JavaPlugin {
         DiscordSyncAPI api = DiscordSyncAPI.getInstance();
 
         this.saveResource("config.yml", false);
+
+        this.getServer().getPluginManager().registerEvents(new ChatInterceptor(), this);
     }
 }

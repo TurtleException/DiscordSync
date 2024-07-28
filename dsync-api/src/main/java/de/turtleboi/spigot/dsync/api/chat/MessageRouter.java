@@ -26,4 +26,8 @@ public class MessageRouter {
         this.history.add(message);
         this.handlers.forEach(handler -> handler.onMessage(message));
     }
+
+    public @NotNull MessageHistory getHistory() {
+        return this.history;
+    }
 }
