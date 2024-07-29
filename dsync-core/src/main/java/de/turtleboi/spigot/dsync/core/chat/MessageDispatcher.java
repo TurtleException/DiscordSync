@@ -151,7 +151,7 @@ public class MessageDispatcher implements MessageHandler {
         if (referencedMessage == null)
             return new TextComponent();
 
-        TextComponent component = new TextComponent("[REPLY]");
+        TextComponent component = new TextComponent("[@" + referencedMessage.getAuthor().getName() + "]");
 
         List<BaseComponent> components = new ArrayList<>();
 
