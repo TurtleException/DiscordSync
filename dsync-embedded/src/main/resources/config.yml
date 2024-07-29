@@ -1,3 +1,6 @@
+# Your Discord bot token
+discord.token: null
+
 # The amount of messages that are kept in memory (important for
 # replies, should be at least 100 or unexpected behaviour may occur)
 messageBacklog: 1000
